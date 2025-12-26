@@ -22,17 +22,17 @@ const HeroSection = () => {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-xl md:text-2xl text-muted-foreground mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+        <p className="text-xl md:text-2xl text-muted-foreground mb-4 animate-fade-in [animation-delay:0.2s]">
           منصة احترافية متخصصة في الأمن السيبراني
         </p>
 
         {/* AI Tag */}
-        <p className="text-lg text-muted-foreground/70 mb-10 opacity-0 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+        <p className="text-lg text-muted-foreground/70 mb-10 animate-fade-in [animation-delay:0.3s]">
           ذكاء اصطناعي • Ai (Qusay_kali)
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center opacity-0 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in [animation-delay:0.4s]">
           <Link to="/ai" className="cyber-button-primary">
             ابدأ مع الذكاء الاصطناعي
           </Link>
