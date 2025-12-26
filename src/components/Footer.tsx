@@ -22,7 +22,7 @@ const Footer = () => {
           {/* Social Links */}
           <div className="flex items-center gap-4">
             <a
-              href="https://instagram.com/qusay_kali"
+              href="https://www.instagram.com/qusay_kali1/"
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-xl bg-secondary border border-border/50 flex items-center justify-center hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
