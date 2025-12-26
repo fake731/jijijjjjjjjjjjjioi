@@ -16,7 +16,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-muted-foreground text-sm">
-            © 2024 Qusay_kali. جميع الحقوق محفوظة
+            © 2025 Qusay_kali. جميع الحقوق محفوظة
           </p>
 
           {/* Social Links */}
