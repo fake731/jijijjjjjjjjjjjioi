@@ -6,57 +6,127 @@
 
 @layer base {
   :root {
-    --background: 220 20% 4%;
-    --foreground: 180 100% 50%;
+    --background: 220 25% 6%;
+    --foreground: 200 100% 50%;
 
-    --card: 220 20% 8%;
-    --card-foreground: 180 100% 50%;
+    --card: 220 25% 10%;
+    --card-foreground: 200 100% 50%;
 
-    --popover: 220 20% 8%;
-    --popover-foreground: 180 100% 50%;
+    --popover: 220 25% 10%;
+    --popover-foreground: 200 100% 50%;
 
-    --primary: 180 100% 50%;
-    --primary-foreground: 220 20% 4%;
+    --primary: 200 100% 50%;
+    --primary-foreground: 220 25% 4%;
 
-    --secondary: 220 20% 12%;
-    --secondary-foreground: 180 100% 70%;
+    --secondary: 220 25% 14%;
+    --secondary-foreground: 200 100% 70%;
 
-    --muted: 220 15% 15%;
-    --muted-foreground: 180 30% 60%;
+    --muted: 220 20% 18%;
+    --muted-foreground: 200 40% 65%;
 
-    --accent: 180 100% 40%;
-    --accent-foreground: 220 20% 4%;
+    --accent: 200 100% 45%;
+    --accent-foreground: 220 25% 4%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 180 50% 20%;
-    --input: 220 20% 15%;
-    --ring: 180 100% 50%;
+    --border: 200 60% 25%;
+    --input: 220 25% 18%;
+    --ring: 200 100% 50%;
 
     --radius: 0.75rem;
 
-    /* Custom cyber colors */
-    --cyber-cyan: 180 100% 50%;
-    --cyber-cyan-glow: 180 100% 60%;
-    --cyber-dark: 220 20% 4%;
-    --cyber-darker: 220 25% 2%;
-    --cyber-card: 220 20% 8%;
-    --cyber-border: 180 50% 20%;
+    /* Custom cyber colors - Electric Blue */
+    --cyber-cyan: 200 100% 50%;
+    --cyber-cyan-glow: 200 100% 60%;
+    --cyber-dark: 220 25% 6%;
+    --cyber-darker: 220 30% 3%;
+    --cyber-card: 220 25% 10%;
+    --cyber-border: 200 60% 25%;
 
     /* Gradients */
-    --gradient-cyber: linear-gradient(135deg, hsl(180 100% 50% / 0.1), hsl(180 100% 40% / 0.05));
-    --gradient-glow: linear-gradient(180deg, hsl(180 100% 50% / 0.15), transparent);
+    --gradient-cyber: linear-gradient(135deg, hsl(200 100% 50% / 0.1), hsl(200 100% 40% / 0.05));
+    --gradient-glow: linear-gradient(180deg, hsl(200 100% 50% / 0.15), transparent);
     
     /* Shadows */
-    --shadow-cyber: 0 0 30px hsl(180 100% 50% / 0.3);
-    --shadow-cyber-lg: 0 0 60px hsl(180 100% 50% / 0.4);
+    --shadow-cyber: 0 0 30px hsl(200 100% 50% / 0.3);
+    --shadow-cyber-lg: 0 0 60px hsl(200 100% 50% / 0.4);
     --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.5);
   }
 
+  .light {
+    --background: 210 40% 98%;
+    --foreground: 220 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+
+    --primary: 200 100% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 30% 92%;
+    --secondary-foreground: 220 30% 20%;
+
+    --muted: 210 25% 88%;
+    --muted-foreground: 220 20% 40%;
+
+    --accent: 200 100% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 210 20% 85%;
+    --input: 210 25% 92%;
+    --ring: 200 100% 45%;
+
+    /* Custom cyber colors - Light mode */
+    --cyber-cyan: 200 100% 45%;
+    --cyber-cyan-glow: 200 100% 55%;
+    --cyber-dark: 210 40% 98%;
+    --cyber-darker: 210 30% 95%;
+    --cyber-card: 0 0% 100%;
+    --cyber-border: 210 20% 85%;
+  }
+
   .dark {
-    --background: 220 20% 4%;
-    --foreground: 180 100% 50%;
+    --background: 220 25% 6%;
+    --foreground: 200 100% 50%;
+
+    --card: 220 25% 10%;
+    --card-foreground: 200 100% 50%;
+
+    --popover: 220 25% 10%;
+    --popover-foreground: 200 100% 50%;
+
+    --primary: 200 100% 50%;
+    --primary-foreground: 220 25% 4%;
+
+    --secondary: 220 25% 14%;
+    --secondary-foreground: 200 100% 70%;
+
+    --muted: 220 20% 18%;
+    --muted-foreground: 200 40% 65%;
+
+    --accent: 200 100% 45%;
+    --accent-foreground: 220 25% 4%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 200 60% 25%;
+    --input: 220 25% 18%;
+    --ring: 200 100% 50%;
+
+    --cyber-cyan: 200 100% 50%;
+    --cyber-cyan-glow: 200 100% 60%;
+    --cyber-dark: 220 25% 6%;
+    --cyber-darker: 220 30% 3%;
+    --cyber-card: 220 25% 10%;
+    --cyber-border: 200 60% 25%;
   }
 }
 
@@ -104,16 +174,32 @@
   }
 
   .gradient-cyber-bg {
-    background: radial-gradient(ellipse at center top, hsl(180 100% 50% / 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at center, hsl(180 100% 50% / 0.03) 0%, transparent 70%),
+    background: radial-gradient(ellipse at center top, hsl(200 100% 50% / 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at center, hsl(200 100% 50% / 0.03) 0%, transparent 70%),
                 hsl(var(--background));
   }
 
   .cyber-grid {
     background-image: 
-      linear-gradient(hsl(180 100% 50% / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(180 100% 50% / 0.03) 1px, transparent 1px);
+      linear-gradient(hsl(200 100% 50% / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(200 100% 50% / 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
+  }
+
+  .light .text-glow {
+    text-shadow: none;
+  }
+
+  .light .text-glow-sm {
+    text-shadow: none;
+  }
+
+  .light .box-glow {
+    box-shadow: 0 4px 20px hsl(var(--cyber-cyan) / 0.15);
+  }
+
+  .light .box-glow-sm {
+    box-shadow: 0 2px 10px hsl(var(--cyber-cyan) / 0.1);
   }
 }
 
@@ -168,6 +254,11 @@
 @keyframes scan-line {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100%); }
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
 }
 
 .animate-float {
