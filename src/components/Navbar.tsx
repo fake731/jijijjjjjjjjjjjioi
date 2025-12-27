@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Shield, Menu, X, Sun } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const navItems = [
   { label: "الرئيسية", path: "/" },
@@ -47,22 +48,23 @@ const Navbar = () => {
 
           {/* Theme Toggle */}
           <div className="hidden lg:flex items-center gap-4">
-            <button className="w-10 h-10 rounded-xl bg-secondary border border-border/50 flex items-center justify-center hover:border-primary/50 transition-all duration-300">
-              <Sun className="w-5 h-5 text-muted-foreground" />
-            </button>
+            <ThemeToggle />
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden w-10 h-10 rounded-xl bg-secondary border border-border/50 flex items-center justify-center"
-          >
-            {isOpen ? (
-              <X className="w-5 h-5 text-primary" />
-            ) : (
-              <Menu className="w-5 h-5 text-primary" />
-            )}
-          </button>
+          <div className="lg:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="w-10 h-10 rounded-xl bg-secondary border border-border/50 flex items-center justify-center"
+            >
+              {isOpen ? (
+                <X className="w-5 h-5 text-primary" />
+              ) : (
+                <Menu className="w-5 h-5 text-primary" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
