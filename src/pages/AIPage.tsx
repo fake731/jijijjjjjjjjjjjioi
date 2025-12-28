@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Brain, Send, User, Bot, Lock, AlertTriangle, Globe } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   role: "user" | "assistant";
@@ -18,7 +17,12 @@ const sensitiveKeywords = [
   "قاعدة بيانات", "sql", "xss", "csrf", "phishing", "تصيد", "spoof",
   "انتحال", "keylogger", "trojan", "rat", "botnet", "reverse",
   "meterpreter", "metasploit", "nmap", "kali", "penetration", "pentest",
-  "vulnerability",
+  "vulnerability", "استغلال", "تجسس", "spy", "sniff", "intercept",
+  "mitm", "man in the middle", "zero day", "0day", "buffer overflow",
+  "privilege escalation", "تصعيد صلاحيات", "lateral movement", "persistence",
+  "c2", "command and control", "exfiltration", "تسريب", "dump", "hash",
+  "rainbow table", "wordlist", "dictionary attack", "social engineering",
+  "reconnaissance", "footprinting", "enumeration", "scanning", "exploitation",
 ];
 
 const AIPage = () => {
@@ -151,7 +155,7 @@ const AIPage = () => {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "qusay123" || password === "Qusay123") {
+    if (password === "Qusay_kali" || password === "qusay_kali") {
       setIsAuthenticated(true);
       setShowPasswordModal(false);
       setPasswordError("");
@@ -162,8 +166,8 @@ const AIPage = () => {
     } else {
       setPasswordError(
         language === "ar"
-          ? "كلمة السر غير صحيحة. تجدها في الانستغرام @qusay_kali1"
-          : "Incorrect password. Find it on Instagram @qusay_kali1"
+          ? "كلمة السر غير صحيحة. كلمة السر هي: Qusay_kali"
+          : "Incorrect password. The password is: Qusay_kali"
       );
     }
     setPassword("");
@@ -171,6 +175,29 @@ const AIPage = () => {
 
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "ar" ? "en" : "ar"));
+  };
+
+  const t = {
+    title: language === "ar" ? "Qusay AI" : "Qusay AI",
+    subtitle: language === "ar" ? "مساعدك الذكي في الأمن السيبراني" : "Your smart cybersecurity assistant",
+    developer: language === "ar" ? "تطوير: Qusay_kali" : "Developed by: Qusay_kali",
+    advancedMode: language === "ar" ? "وضع متقدم مفعّل" : "Advanced mode enabled",
+    welcome: language === "ar" ? "مرحباً بك!" : "Welcome!",
+    askAnything: language === "ar" ? "اسألني أي سؤال عن الأمن السيبراني" : "Ask me anything about cybersecurity",
+    advancedTip: language === "ar" 
+      ? "للأسئلة المتقدمة، كلمة السر هي: Qusay_kali" 
+      : "For advanced questions, the password is: Qusay_kali",
+    typePlaceholder: language === "ar" ? "اكتب سؤالك هنا..." : "Type your question here...",
+    advancedRequest: language === "ar" ? "طلب متقدم" : "Advanced Request",
+    advancedDesc: language === "ar" 
+      ? "هذا السؤال يتطلب صلاحيات متقدمة. أدخل كلمة السر للمتابعة." 
+      : "This question requires advanced permissions. Enter the password to continue.",
+    passwordHint: language === "ar" 
+      ? "كلمة السر هي: Qusay_kali" 
+      : "The password is: Qusay_kali",
+    enterPassword: language === "ar" ? "أدخل كلمة السر..." : "Enter password...",
+    cancel: language === "ar" ? "إلغاء" : "Cancel",
+    confirm: language === "ar" ? "تأكيد" : "Confirm",
   };
 
   return (
@@ -186,16 +213,15 @@ const AIPage = () => {
               </div>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-primary text-glow mb-2">
-              {language === "ar" ? "الذكاء الاصطناعي" : "AI Assistant"}
+              {t.title}
             </h1>
-            <p className="text-muted-foreground">
-              {language === "ar" ? "مساعدك الذكي في الأمن السيبراني" : "Your smart cybersecurity assistant"}
-            </p>
+            <p className="text-muted-foreground">{t.subtitle}</p>
+            <p className="text-xs text-primary/70 mt-1">{t.developer}</p>
             <div className="flex items-center justify-center gap-3 mt-4">
               {isAuthenticated && (
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-sm">
                   <Lock className="w-4 h-4" />
-                  {language === "ar" ? "وضع متقدم مفعّل" : "Advanced mode enabled"}
+                  {t.advancedMode}
                 </span>
               )}
               <button
@@ -215,20 +241,9 @@ const AIPage = () => {
               {messages.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
                   <Bot className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg mb-2">
-                    {language === "ar" ? "مرحباً بك!" : "Welcome!"}
-                  </p>
-                  <p className="text-sm">
-                    {language === "ar"
-                      ? "اسألني أي سؤال عن الأمن السيبراني"
-                      : "Ask me anything about cybersecurity"}
-                  </p>
-                  <p className="text-xs mt-4 text-muted-foreground/70">
-                    💡{" "}
-                    {language === "ar"
-                      ? "للأسئلة المتقدمة، ستحتاج كلمة السر من الانستغرام"
-                      : "For advanced questions, you'll need the password from Instagram"}
-                  </p>
+                  <p className="text-lg mb-2">{t.welcome}</p>
+                  <p className="text-sm">{t.askAnything}</p>
+                  <p className="text-xs mt-4 text-muted-foreground/70">💡 {t.advancedTip}</p>
                 </div>
               ) : (
                 messages.map((message, index) => (
@@ -272,18 +287,9 @@ const AIPage = () => {
                   </div>
                   <div className="bg-secondary border border-border/50 rounded-2xl p-4">
                     <div className="flex gap-1">
-                      <span
-                        className="w-2 h-2 bg-primary rounded-full animate-bounce"
-                        style={{ animationDelay: "0ms" }}
-                      />
-                      <span
-                        className="w-2 h-2 bg-primary rounded-full animate-bounce"
-                        style={{ animationDelay: "150ms" }}
-                      />
-                      <span
-                        className="w-2 h-2 bg-primary rounded-full animate-bounce"
-                        style={{ animationDelay: "300ms" }}
-                      />
+                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                      <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                     </div>
                   </div>
                 </div>
@@ -298,9 +304,7 @@ const AIPage = () => {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={
-                    language === "ar" ? "اكتب سؤالك هنا..." : "Type your question here..."
-                  }
+                  placeholder={t.typePlaceholder}
                   className="flex-1 px-4 py-3 rounded-xl bg-secondary border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
                   disabled={isLoading}
                   dir={language === "ar" ? "rtl" : "ltr"}
@@ -327,45 +331,13 @@ const AIPage = () => {
               <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
                 <Lock className="w-8 h-8 text-primary" />
               </div>
-              <h2 className="text-2xl font-bold text-primary mb-2">
-                {language === "ar" ? "طلب متقدم" : "Advanced Request"}
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                {language === "ar"
-                  ? "هذا السؤال يتطلب صلاحيات متقدمة. أدخل كلمة السر للمتابعة."
-                  : "This question requires advanced permissions. Enter the password to continue."}
-              </p>
+              <h2 className="text-2xl font-bold text-primary mb-2">{t.advancedRequest}</h2>
+              <p className="text-muted-foreground text-sm">{t.advancedDesc}</p>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-destructive/10 border border-destructive/30 mb-6">
-              <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-muted-foreground">
-                {language === "ar" ? (
-                  <>
-                    كلمة السر موجودة في حساب الانستغرام{" "}
-                    <a
-                      href="https://www.instagram.com/qusay_kali1/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      @qusay_kali1
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    Password is available on Instagram{" "}
-                    <a
-                      href="https://www.instagram.com/qusay_kali1/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      @qusay_kali1
-                    </a>
-                  </>
-                )}
-              </p>
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-primary/10 border border-primary/30 mb-6">
+              <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-muted-foreground">{t.passwordHint}</p>
             </div>
 
             <form onSubmit={handlePasswordSubmit}>
@@ -373,7 +345,7 @@ const AIPage = () => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder={language === "ar" ? "أدخل كلمة السر..." : "Enter password..."}
+                placeholder={t.enterPassword}
                 className="w-full px-4 py-3 rounded-xl bg-secondary border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all mb-4"
                 autoFocus
               />
@@ -388,10 +360,10 @@ const AIPage = () => {
                   }}
                   className="flex-1 px-6 py-3 rounded-xl border border-border/50 text-muted-foreground hover:bg-secondary transition-colors"
                 >
-                  {language === "ar" ? "إلغاء" : "Cancel"}
+                  {t.cancel}
                 </button>
                 <button type="submit" className="flex-1 cyber-button-primary">
-                  {language === "ar" ? "تأكيد" : "Confirm"}
+                  {t.confirm}
                 </button>
               </div>
             </form>
