@@ -1,79 +1,117 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Bug, Search, AlertTriangle, Copy, Check, Terminal, Globe } from "lucide-react";
+import { Terminal, Copy, Check, Globe, FolderOpen, FileText, User, Settings, HardDrive, Network, Search, Trash2, Edit, Archive, Clock, Key, Shield, Monitor, Cpu, Database, Command, ArrowRight, Home, List, Eye, Download, Upload, Layers, Box, RefreshCw, Power, Zap } from "lucide-react";
 import { useState } from "react";
 
 interface KaliCommand {
   command: string;
   description: { ar: string; en: string };
+  icon: React.ReactNode;
+  category: string;
 }
 
 const kaliCommands: KaliCommand[] = [
-  // Nmap Commands (10)
-  { command: "nmap -sP 192.168.1.0/24", description: { ar: "فحص جميع الأجهزة في الشبكة", en: "Scan all devices in network" } },
-  { command: "nmap -sS -sV 192.168.1.1", description: { ar: "فحص المنافذ مع إصدارات الخدمات", en: "Port scan with service versions" } },
-  { command: "nmap -O 192.168.1.1", description: { ar: "اكتشاف نظام التشغيل", en: "OS detection" } },
-  { command: "nmap -A -T4 192.168.1.1", description: { ar: "فحص شامل وسريع", en: "Aggressive fast scan" } },
-  { command: "nmap --script vuln 192.168.1.1", description: { ar: "فحص الثغرات المعروفة", en: "Vulnerability scan" } },
-  { command: "nmap -p 1-65535 192.168.1.1", description: { ar: "فحص جميع المنافذ", en: "Full port scan" } },
-  { command: "nmap -sU 192.168.1.1", description: { ar: "فحص منافذ UDP", en: "UDP port scan" } },
-  { command: "nmap -sN 192.168.1.1", description: { ar: "فحص خفي لتجاوز الجدار الناري", en: "Stealth null scan" } },
-  { command: "nmap --script http-enum 192.168.1.1", description: { ar: "اكتشاف مجلدات الويب", en: "Web directory enumeration" } },
-  { command: "nmap -oA scan_results 192.168.1.1", description: { ar: "حفظ النتائج بجميع الصيغ", en: "Save results in all formats" } },
+  // Navigation Commands
+  { command: "cd /path/to/directory", description: { ar: "تغيير المجلد الحالي", en: "Change current directory" }, icon: <FolderOpen className="w-4 h-4" />, category: "navigation" },
+  { command: "cd ..", description: { ar: "الرجوع للمجلد السابق", en: "Go to parent directory" }, icon: <ArrowRight className="w-4 h-4 rotate-180" />, category: "navigation" },
+  { command: "cd ~", description: { ar: "الذهاب للمجلد الرئيسي", en: "Go to home directory" }, icon: <Home className="w-4 h-4" />, category: "navigation" },
+  { command: "pwd", description: { ar: "عرض المسار الحالي", en: "Print working directory" }, icon: <FolderOpen className="w-4 h-4" />, category: "navigation" },
   
-  // Nikto Commands (5)
-  { command: "nikto -h http://target.com", description: { ar: "فحص ثغرات خادم الويب", en: "Web server vulnerability scan" } },
-  { command: "nikto -h http://target.com -ssl", description: { ar: "فحص موقع HTTPS", en: "HTTPS site scan" } },
-  { command: "nikto -h http://target.com -Tuning 9", description: { ar: "فحص SQL Injection", en: "SQL Injection scan" } },
-  { command: "nikto -h http://target.com -o report.html", description: { ar: "حفظ التقرير بصيغة HTML", en: "Save report as HTML" } },
-  { command: "nikto -h http://target.com -evasion 1", description: { ar: "تجاوز IDS", en: "IDS evasion" } },
+  // Listing Commands
+  { command: "ls", description: { ar: "عرض محتويات المجلد", en: "List directory contents" }, icon: <List className="w-4 h-4" />, category: "listing" },
+  { command: "ls -la", description: { ar: "عرض كل الملفات مع التفاصيل", en: "List all files with details" }, icon: <Eye className="w-4 h-4" />, category: "listing" },
+  { command: "ls -lh", description: { ar: "عرض الملفات بأحجام مقروءة", en: "List with human-readable sizes" }, icon: <FileText className="w-4 h-4" />, category: "listing" },
+  { command: "tree", description: { ar: "عرض هيكل المجلدات", en: "Display directory tree" }, icon: <Layers className="w-4 h-4" />, category: "listing" },
   
-  // Dirb Commands (5)
-  { command: "dirb http://target.com", description: { ar: "اكتشاف المجلدات المخفية", en: "Directory brute force" } },
-  { command: "dirb http://target.com /usr/share/wordlists/dirb/big.txt", description: { ar: "استخدام قائمة كبيرة", en: "Use big wordlist" } },
-  { command: "dirb http://target.com -a 'Mozilla/5.0'", description: { ar: "تغيير User-Agent", en: "Custom User-Agent" } },
-  { command: "dirb http://target.com -o output.txt", description: { ar: "حفظ النتائج في ملف", en: "Save results to file" } },
-  { command: "dirb http://target.com -X .php,.html", description: { ar: "البحث عن ملفات محددة", en: "Search specific extensions" } },
+  // File Operations
+  { command: "cat filename", description: { ar: "عرض محتوى ملف", en: "Display file content" }, icon: <FileText className="w-4 h-4" />, category: "files" },
+  { command: "head -n 10 filename", description: { ar: "عرض أول 10 أسطر", en: "Show first 10 lines" }, icon: <FileText className="w-4 h-4" />, category: "files" },
+  { command: "tail -n 10 filename", description: { ar: "عرض آخر 10 أسطر", en: "Show last 10 lines" }, icon: <FileText className="w-4 h-4" />, category: "files" },
+  { command: "less filename", description: { ar: "قراءة ملف مع التمرير", en: "View file with scrolling" }, icon: <Eye className="w-4 h-4" />, category: "files" },
+  { command: "nano filename", description: { ar: "تحرير ملف بمحرر nano", en: "Edit file with nano" }, icon: <Edit className="w-4 h-4" />, category: "files" },
+  { command: "vim filename", description: { ar: "تحرير ملف بمحرر vim", en: "Edit file with vim" }, icon: <Edit className="w-4 h-4" />, category: "files" },
+  { command: "touch filename", description: { ar: "إنشاء ملف جديد", en: "Create new file" }, icon: <FileText className="w-4 h-4" />, category: "files" },
+  { command: "cp source dest", description: { ar: "نسخ ملف أو مجلد", en: "Copy file or directory" }, icon: <Copy className="w-4 h-4" />, category: "files" },
+  { command: "mv source dest", description: { ar: "نقل أو إعادة تسمية", en: "Move or rename" }, icon: <ArrowRight className="w-4 h-4" />, category: "files" },
+  { command: "rm filename", description: { ar: "حذف ملف", en: "Remove file" }, icon: <Trash2 className="w-4 h-4" />, category: "files" },
+  { command: "rm -rf directory", description: { ar: "حذف مجلد بمحتوياته", en: "Remove directory recursively" }, icon: <Trash2 className="w-4 h-4" />, category: "files" },
+  { command: "mkdir dirname", description: { ar: "إنشاء مجلد جديد", en: "Create new directory" }, icon: <FolderOpen className="w-4 h-4" />, category: "files" },
   
-  // SQLMap Commands (5)
-  { command: "sqlmap -u 'http://target.com/page?id=1'", description: { ar: "فحص SQL Injection", en: "SQL Injection test" } },
-  { command: "sqlmap -u 'URL' --dbs", description: { ar: "استخراج قواعد البيانات", en: "Extract databases" } },
-  { command: "sqlmap -u 'URL' -D db --tables", description: { ar: "استخراج الجداول", en: "Extract tables" } },
-  { command: "sqlmap -u 'URL' -D db -T users --dump", description: { ar: "تفريغ بيانات الجدول", en: "Dump table data" } },
-  { command: "sqlmap -u 'URL' --os-shell", description: { ar: "الحصول على Shell", en: "Get OS shell" } },
+  // User & Permissions
+  { command: "sudo su", description: { ar: "الدخول كمستخدم root", en: "Switch to root user" }, icon: <Shield className="w-4 h-4" />, category: "permissions" },
+  { command: "sudo command", description: { ar: "تنفيذ أمر كـ root", en: "Execute as root" }, icon: <Key className="w-4 h-4" />, category: "permissions" },
+  { command: "whoami", description: { ar: "عرض اسم المستخدم الحالي", en: "Display current username" }, icon: <User className="w-4 h-4" />, category: "permissions" },
+  { command: "chmod 755 file", description: { ar: "تغيير صلاحيات الملف", en: "Change file permissions" }, icon: <Shield className="w-4 h-4" />, category: "permissions" },
+  { command: "chown user:group file", description: { ar: "تغيير مالك الملف", en: "Change file owner" }, icon: <User className="w-4 h-4" />, category: "permissions" },
+  { command: "passwd", description: { ar: "تغيير كلمة المرور", en: "Change password" }, icon: <Key className="w-4 h-4" />, category: "permissions" },
   
-  // WhatWeb Commands (3)
-  { command: "whatweb target.com", description: { ar: "اكتشاف تقنيات الموقع", en: "Detect website technologies" } },
-  { command: "whatweb -a 3 target.com", description: { ar: "فحص عدواني", en: "Aggressive scan" } },
-  { command: "whatweb --log-json=output.json target.com", description: { ar: "حفظ بصيغة JSON", en: "Save as JSON" } },
+  // System Information
+  { command: "uname -a", description: { ar: "معلومات النظام الكاملة", en: "Full system information" }, icon: <Monitor className="w-4 h-4" />, category: "system" },
+  { command: "df -h", description: { ar: "مساحة الأقراص", en: "Disk space usage" }, icon: <HardDrive className="w-4 h-4" />, category: "system" },
+  { command: "free -h", description: { ar: "استخدام الذاكرة", en: "Memory usage" }, icon: <Cpu className="w-4 h-4" />, category: "system" },
+  { command: "top", description: { ar: "مراقبة العمليات", en: "Monitor processes" }, icon: <Monitor className="w-4 h-4" />, category: "system" },
+  { command: "htop", description: { ar: "مراقبة متقدمة للعمليات", en: "Advanced process monitor" }, icon: <Cpu className="w-4 h-4" />, category: "system" },
+  { command: "ps aux", description: { ar: "عرض كل العمليات", en: "List all processes" }, icon: <List className="w-4 h-4" />, category: "system" },
+  { command: "kill PID", description: { ar: "إنهاء عملية بالـ ID", en: "Kill process by ID" }, icon: <Power className="w-4 h-4" />, category: "system" },
+  { command: "killall name", description: { ar: "إنهاء عملية بالاسم", en: "Kill process by name" }, icon: <Power className="w-4 h-4" />, category: "system" },
   
-  // Wapiti Commands (3)
-  { command: "wapiti -u http://target.com", description: { ar: "فحص ثغرات الويب الشامل", en: "Full web vulnerability scan" } },
-  { command: "wapiti -u http://target.com -m sql,xss", description: { ar: "فحص SQL و XSS فقط", en: "SQL and XSS only" } },
-  { command: "wapiti -u http://target.com -o report", description: { ar: "إنشاء تقرير HTML", en: "Generate HTML report" } },
+  // History & Search
+  { command: "history", description: { ar: "عرض سجل الأوامر", en: "Show command history" }, icon: <Clock className="w-4 h-4" />, category: "history" },
+  { command: "history | grep keyword", description: { ar: "البحث في السجل", en: "Search in history" }, icon: <Search className="w-4 h-4" />, category: "history" },
+  { command: "find /path -name filename", description: { ar: "البحث عن ملف", en: "Find a file" }, icon: <Search className="w-4 h-4" />, category: "history" },
+  { command: "grep pattern file", description: { ar: "البحث داخل ملف", en: "Search in file" }, icon: <Search className="w-4 h-4" />, category: "history" },
+  { command: "locate filename", description: { ar: "بحث سريع عن ملف", en: "Quick file search" }, icon: <Zap className="w-4 h-4" />, category: "history" },
   
-  // Gobuster Commands (3)
-  { command: "gobuster dir -u http://target.com -w wordlist.txt", description: { ar: "اكتشاف المجلدات بسرعة", en: "Fast directory discovery" } },
-  { command: "gobuster dns -d target.com -w subdomains.txt", description: { ar: "اكتشاف النطاقات الفرعية", en: "Subdomain enumeration" } },
-  { command: "gobuster vhost -u http://target.com -w hosts.txt", description: { ar: "اكتشاف Virtual Hosts", en: "Virtual host discovery" } },
+  // Network
+  { command: "ifconfig", description: { ar: "عرض إعدادات الشبكة", en: "Network configuration" }, icon: <Network className="w-4 h-4" />, category: "network" },
+  { command: "ip addr", description: { ar: "عرض عناوين IP", en: "Show IP addresses" }, icon: <Network className="w-4 h-4" />, category: "network" },
+  { command: "ping host", description: { ar: "اختبار الاتصال", en: "Test connectivity" }, icon: <Network className="w-4 h-4" />, category: "network" },
+  { command: "netstat -tuln", description: { ar: "عرض المنافذ المفتوحة", en: "Show open ports" }, icon: <Network className="w-4 h-4" />, category: "network" },
+  { command: "wget URL", description: { ar: "تحميل ملف من الإنترنت", en: "Download file from URL" }, icon: <Download className="w-4 h-4" />, category: "network" },
+  { command: "curl URL", description: { ar: "جلب محتوى من رابط", en: "Fetch content from URL" }, icon: <Download className="w-4 h-4" />, category: "network" },
   
-  // SSLscan Commands (2)
-  { command: "sslscan target.com", description: { ar: "فحص شهادة SSL", en: "SSL certificate scan" } },
-  { command: "sslscan --show-certificate target.com", description: { ar: "عرض تفاصيل الشهادة", en: "Show certificate details" } },
+  // Package Management
+  { command: "apt update", description: { ar: "تحديث قائمة الحزم", en: "Update package list" }, icon: <RefreshCw className="w-4 h-4" />, category: "packages" },
+  { command: "apt upgrade", description: { ar: "ترقية الحزم المثبتة", en: "Upgrade installed packages" }, icon: <Upload className="w-4 h-4" />, category: "packages" },
+  { command: "apt install package", description: { ar: "تثبيت حزمة جديدة", en: "Install new package" }, icon: <Box className="w-4 h-4" />, category: "packages" },
+  { command: "apt remove package", description: { ar: "إزالة حزمة", en: "Remove package" }, icon: <Trash2 className="w-4 h-4" />, category: "packages" },
   
-  // Skipfish Commands (2)
-  { command: "skipfish -o output http://target.com", description: { ar: "فحص أمان تطبيق الويب", en: "Web app security scan" } },
-  { command: "skipfish -W wordlist.txt -o output http://target.com", description: { ar: "فحص مع قائمة مخصصة", en: "Scan with custom wordlist" } },
+  // Compression
+  { command: "tar -cvf archive.tar files", description: { ar: "إنشاء أرشيف tar", en: "Create tar archive" }, icon: <Archive className="w-4 h-4" />, category: "compression" },
+  { command: "tar -xvf archive.tar", description: { ar: "فك أرشيف tar", en: "Extract tar archive" }, icon: <Archive className="w-4 h-4" />, category: "compression" },
+  { command: "gzip filename", description: { ar: "ضغط ملف بـ gzip", en: "Compress with gzip" }, icon: <Archive className="w-4 h-4" />, category: "compression" },
+  { command: "unzip archive.zip", description: { ar: "فك ملف مضغوط", en: "Extract zip file" }, icon: <Archive className="w-4 h-4" />, category: "compression" },
   
-  // Recon-ng Commands (2)
-  { command: "recon-ng", description: { ar: "تشغيل أداة الاستطلاع", en: "Start recon framework" } },
-  { command: "recon-cli -w workspace -m recon/domains-hosts", description: { ar: "استطلاع النطاقات", en: "Domain reconnaissance" } },
+  // Other Useful
+  { command: "clear", description: { ar: "مسح الشاشة", en: "Clear terminal screen" }, icon: <Monitor className="w-4 h-4" />, category: "other" },
+  { command: "exit", description: { ar: "الخروج من الطرفية", en: "Exit terminal" }, icon: <Power className="w-4 h-4" />, category: "other" },
+  { command: "reboot", description: { ar: "إعادة تشغيل النظام", en: "Reboot system" }, icon: <RefreshCw className="w-4 h-4" />, category: "other" },
+  { command: "shutdown now", description: { ar: "إيقاف النظام", en: "Shutdown system" }, icon: <Power className="w-4 h-4" />, category: "other" },
+  { command: "man command", description: { ar: "عرض دليل الأمر", en: "Show command manual" }, icon: <FileText className="w-4 h-4" />, category: "other" },
+  { command: "echo text", description: { ar: "طباعة نص", en: "Print text" }, icon: <Command className="w-4 h-4" />, category: "other" },
+  { command: "date", description: { ar: "عرض التاريخ والوقت", en: "Show date and time" }, icon: <Clock className="w-4 h-4" />, category: "other" },
+  { command: "cal", description: { ar: "عرض التقويم", en: "Show calendar" }, icon: <Clock className="w-4 h-4" />, category: "other" },
+];
+
+const categories = [
+  { id: "all", label: { ar: "الكل", en: "All" } },
+  { id: "navigation", label: { ar: "التنقل", en: "Navigation" } },
+  { id: "listing", label: { ar: "العرض", en: "Listing" } },
+  { id: "files", label: { ar: "الملفات", en: "Files" } },
+  { id: "permissions", label: { ar: "الصلاحيات", en: "Permissions" } },
+  { id: "system", label: { ar: "النظام", en: "System" } },
+  { id: "history", label: { ar: "البحث", en: "Search" } },
+  { id: "network", label: { ar: "الشبكة", en: "Network" } },
+  { id: "packages", label: { ar: "الحزم", en: "Packages" } },
+  { id: "compression", label: { ar: "الضغط", en: "Compression" } },
+  { id: "other", label: { ar: "أخرى", en: "Other" } },
 ];
 
 const ScannerPage = () => {
-  const [url, setUrl] = useState("");
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [language, setLanguage] = useState<"ar" | "en">("ar");
+  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const copyCommand = (command: string) => {
     navigator.clipboard.writeText(command);
@@ -81,17 +119,19 @@ const ScannerPage = () => {
     setTimeout(() => setCopiedCommand(null), 2000);
   };
 
+  const filteredCommands = kaliCommands.filter((cmd) => {
+    const matchesCategory = activeCategory === "all" || cmd.category === activeCategory;
+    const matchesSearch = searchQuery === "" || 
+      cmd.command.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      cmd.description[language].toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   const t = {
-    title: language === "ar" ? "مكتشف الثغرات" : "Vulnerability Scanner",
-    subtitle: language === "ar" ? "40 أمر كالي لينكس لاكتشاف الثغرات" : "40 Kali Linux commands for vulnerability scanning",
-    placeholder: language === "ar" ? "أدخل رابط الموقع للفحص..." : "Enter website URL to scan...",
-    scan: language === "ar" ? "فحص" : "Scan",
-    warning: language === "ar" ? "تنبيه مهم" : "Important Warning",
-    warningText: language === "ar" 
-      ? "هذه الأداة للأغراض التعليمية فقط. استخدم هذه الأوامر فقط على المواقع التي تملك إذناً لفحصها." 
-      : "This tool is for educational purposes only. Use these commands only on websites you have permission to scan.",
-    commandsTitle: language === "ar" ? "أوامر كالي لينكس للفحص" : "Kali Linux Scanning Commands",
-    commandsCount: language === "ar" ? `${kaliCommands.length} أمر` : `${kaliCommands.length} commands`,
+    title: language === "ar" ? "أوامر كالي لينكس" : "Kali Linux Commands",
+    subtitle: language === "ar" ? "أهم الأوامر الأساسية لنظام كالي لينكس" : "Essential commands for Kali Linux",
+    searchPlaceholder: language === "ar" ? "ابحث عن أمر..." : "Search for a command...",
+    commandsCount: language === "ar" ? `${filteredCommands.length} أمر` : `${filteredCommands.length} commands`,
   };
 
   return (
@@ -103,7 +143,7 @@ const ScannerPage = () => {
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
               <div className="cyber-icon-box">
-                <Bug className="w-10 h-10 text-primary" />
+                <Terminal className="w-10 h-10 text-primary" />
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -122,58 +162,58 @@ const ScannerPage = () => {
             </p>
           </div>
 
-          {/* Scanner Interface */}
-          <div className="max-w-4xl mx-auto mb-12">
-            <div className="cyber-card p-8">
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder={t.placeholder}
-                  className="flex-1 px-4 py-3 rounded-xl bg-secondary border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
-                  dir="ltr"
-                />
-                <button className="cyber-button-primary flex items-center justify-center gap-2">
-                  <Search className="w-5 h-5" />
-                  {t.scan}
-                </button>
-              </div>
-
-              {/* Warning Notice */}
-              <div className="flex items-start gap-4 p-4 rounded-xl bg-destructive/10 border border-destructive/30">
-                <AlertTriangle className="w-6 h-6 text-destructive flex-shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-bold text-destructive mb-1">{t.warning}</h4>
-                  <p className="text-muted-foreground text-sm">{t.warningText}</p>
-                </div>
-              </div>
+          {/* Search Bar */}
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t.searchPlaceholder}
+                className="w-full pl-12 pr-4 py-3 rounded-xl bg-secondary border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                dir={language === "ar" ? "rtl" : "ltr"}
+              />
             </div>
           </div>
 
-          {/* Kali Commands Section */}
-          <div className="max-w-5xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-primary flex items-center gap-3">
-                <Terminal className="w-6 h-6" />
-                {t.commandsTitle}
-              </h2>
-              <span className="text-muted-foreground text-sm">{t.commandsCount}</span>
-            </div>
+          {/* Categories */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  activeCategory === cat.id
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50"
+                }`}
+              >
+                {language === "ar" ? cat.label.ar : cat.label.en}
+              </button>
+            ))}
+          </div>
 
+          {/* Commands Count */}
+          <div className="text-center mb-6">
+            <span className="text-muted-foreground text-sm">{t.commandsCount}</span>
+          </div>
+
+          {/* Commands Grid */}
+          <div className="max-w-5xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {kaliCommands.map((cmd, index) => (
+              {filteredCommands.map((cmd, index) => (
                 <div
                   key={index}
                   className="cyber-card p-4 hover:border-primary/50 transition-all group"
                 >
                   <div className="flex items-start gap-3">
-                    <span className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center font-bold text-sm flex-shrink-0">
-                      {index + 1}
+                    <span className="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center flex-shrink-0">
+                      {cmd.icon}
                     </span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <code className="text-primary text-sm font-mono bg-background/50 px-2 py-1 rounded break-all" dir="ltr">
+                        <code className="text-primary text-sm font-mono bg-background/50 px-2 py-1 rounded break-all flex-1" dir="ltr">
                           {cmd.command}
                         </code>
                         <button
