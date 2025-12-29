@@ -1,11 +1,12 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Brain, Send, User, Bot, Lock, Globe, Instagram } from "lucide-react";
+import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+  image?: string;
 }
 
 const sensitiveKeywords = [
@@ -35,7 +36,9 @@ const AIPage = () => {
   const [pendingMessage, setPendingMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // The secret password - not shown to users
   const SECRET_PASSWORD = "Qusay_kali";
@@ -53,9 +56,27 @@ const AIPage = () => {
     return sensitiveKeywords.some((keyword) => lowerText.includes(keyword.toLowerCase()));
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if ((!input.trim() && !selectedImage) || isLoading) return;
 
     const userMessage = input.trim();
 
@@ -67,16 +88,36 @@ const AIPage = () => {
       return;
     }
 
-    sendMessage(userMessage);
+    sendMessage(userMessage, selectedImage);
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
-  const sendMessage = async (userMessage: string) => {
+  const sendMessage = async (userMessage: string, image?: string | null) => {
     setInput("");
-    const newMessages: Message[] = [...messages, { role: "user", content: userMessage }];
+    const newMessage: Message = { role: "user", content: userMessage };
+    if (image) newMessage.image = image;
+    const newMessages: Message[] = [...messages, newMessage];
     setMessages(newMessages);
     setIsLoading(true);
 
     try {
+      // Build messages for API
+      const apiMessages = newMessages.map((m) => {
+        if (m.image) {
+          return {
+            role: m.role,
+            content: [
+              { type: "text", text: m.content || (language === "ar" ? "ما هذه الصورة؟" : "What is this image?") },
+              { type: "image_url", image_url: { url: m.image } }
+            ]
+          };
+        }
+        return { role: m.role, content: m.content };
+      });
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`,
         {
@@ -86,7 +127,7 @@ const AIPage = () => {
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
           body: JSON.stringify({
-            messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
+            messages: apiMessages,
             language,
           }),
         }
@@ -202,6 +243,7 @@ const AIPage = () => {
     cancel: language === "ar" ? "إلغاء" : "Cancel",
     confirm: language === "ar" ? "تأكيد" : "Confirm",
     contactInstagram: language === "ar" ? "تواصل على انستغرام" : "Contact on Instagram",
+    addImage: language === "ar" ? "أضف صورة" : "Add image",
   };
 
   return (
@@ -288,9 +330,18 @@ const AIPage = () => {
                           : "bg-secondary border border-border/50"
                       }`}
                     >
-                      <p className="text-foreground whitespace-pre-wrap leading-relaxed">
-                        {message.content}
-                      </p>
+                      {message.image && (
+                        <img 
+                          src={message.image} 
+                          alt="Uploaded" 
+                          className="max-w-full h-auto rounded-lg mb-3 max-h-64 object-contain"
+                        />
+                      )}
+                      {message.content && (
+                        <p className="text-foreground whitespace-pre-wrap leading-relaxed">
+                          {message.content}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))
@@ -314,7 +365,39 @@ const AIPage = () => {
 
             {/* Input Area */}
             <form onSubmit={handleSubmit} className="p-4 border-t border-border/30">
+              {/* Image Preview */}
+              {selectedImage && (
+                <div className="mb-3 relative inline-block">
+                  <img 
+                    src={selectedImage} 
+                    alt="Preview" 
+                    className="max-h-32 rounded-lg border border-border/50"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:opacity-80"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
               <div className="flex gap-3">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageSelect}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-4 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
+                  title={t.addImage}
+                >
+                  <Image className="w-5 h-5" />
+                </button>
                 <input
                   type="text"
                   value={input}
@@ -326,7 +409,7 @@ const AIPage = () => {
                 />
                 <button
                   type="submit"
-                  disabled={isLoading || !input.trim()}
+                  disabled={isLoading || (!input.trim() && !selectedImage)}
                   className="cyber-button-primary px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="w-5 h-5" />
