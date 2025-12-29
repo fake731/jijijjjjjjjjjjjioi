@@ -1,7 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Terminal, ChevronDown, ChevronUp, Copy, Check, Search, Globe } from "lucide-react";
+import { Terminal, ChevronDown, ChevronUp, Copy, Check, Search, Globe, Network, Shield, Globe2, Radio, Key, Zap, Database, FileCode, Wifi, Lock, Bug, Server, Scan, Eye, Hash, UserX, Code, Laptop, Fingerprint } from "lucide-react";
 import { useState, useMemo } from "react";
+import { LucideIcon } from "lucide-react";
 
 interface Command {
   command: string;
@@ -12,7 +13,30 @@ interface Tool {
   name: string;
   description: { ar: string; en: string };
   commands: Command[];
+  icon?: LucideIcon;
 }
+
+// Tool icons mapping
+const toolIcons: Record<string, LucideIcon> = {
+  "Nmap": Network,
+  "Metasploit": Shield,
+  "Burp Suite": Globe2,
+  "Wireshark": Radio,
+  "John the Ripper": Key,
+  "Hydra": Zap,
+  "SQLMap": Database,
+  "Aircrack-ng": Wifi,
+  "Nikto": Bug,
+  "Hashcat": Hash,
+  "Gobuster": Search,
+  "Netcat": Server,
+  "Enum4linux": Laptop,
+  "Dirb": Eye,
+  "Wfuzz": Code,
+  "theHarvester": Scan,
+  "Maltego": Fingerprint,
+  "Responder": UserX,
+};
 
 const tools: Tool[] = [
   {
@@ -576,7 +600,10 @@ const ToolsPage = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
-                      <Terminal className="w-6 h-6 text-primary" />
+                      {(() => {
+                        const IconComponent = toolIcons[tool.name] || Terminal;
+                        return <IconComponent className="w-6 h-6 text-primary" />;
+                      })()}
                     </div>
                     <div className={language === "ar" ? "text-right" : "text-left"}>
                       <h3 className="text-xl font-bold text-primary">{tool.name}</h3>

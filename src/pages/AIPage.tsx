@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Brain, Send, User, Bot, Lock, AlertTriangle, Globe } from "lucide-react";
+import { Brain, Send, User, Bot, Lock, Globe, Instagram } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 interface Message {
@@ -36,6 +36,9 @@ const AIPage = () => {
   const [passwordError, setPasswordError] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // The secret password - not shown to users
+  const SECRET_PASSWORD = "Qusay_kali";
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -155,7 +158,7 @@ const AIPage = () => {
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "Qusay_kali" || password === "qusay_kali") {
+    if (password === SECRET_PASSWORD || password.toLowerCase() === SECRET_PASSWORD.toLowerCase()) {
       setIsAuthenticated(true);
       setShowPasswordModal(false);
       setPasswordError("");
@@ -166,8 +169,8 @@ const AIPage = () => {
     } else {
       setPasswordError(
         language === "ar"
-          ? "كلمة السر غير صحيحة. كلمة السر هي: Qusay_kali"
-          : "Incorrect password. The password is: Qusay_kali"
+          ? "كلمة السر غير صحيحة. تواصل مع المطور على انستغرام للحصول عليها."
+          : "Incorrect password. Contact the developer on Instagram to get it."
       );
     }
     setPassword("");
@@ -185,19 +188,20 @@ const AIPage = () => {
     welcome: language === "ar" ? "مرحباً بك!" : "Welcome!",
     askAnything: language === "ar" ? "اسألني أي سؤال عن الأمن السيبراني" : "Ask me anything about cybersecurity",
     advancedTip: language === "ar" 
-      ? "للأسئلة المتقدمة، كلمة السر هي: Qusay_kali" 
-      : "For advanced questions, the password is: Qusay_kali",
+      ? "للأسئلة المتقدمة، تواصل مع المطور على انستغرام للحصول على كلمة السر" 
+      : "For advanced questions, contact the developer on Instagram to get the password",
     typePlaceholder: language === "ar" ? "اكتب سؤالك هنا..." : "Type your question here...",
     advancedRequest: language === "ar" ? "طلب متقدم" : "Advanced Request",
     advancedDesc: language === "ar" 
       ? "هذا السؤال يتطلب صلاحيات متقدمة. أدخل كلمة السر للمتابعة." 
       : "This question requires advanced permissions. Enter the password to continue.",
     passwordHint: language === "ar" 
-      ? "كلمة السر هي: Qusay_kali" 
-      : "The password is: Qusay_kali",
+      ? "للحصول على كلمة السر، تواصل مع المطور على انستغرام" 
+      : "To get the password, contact the developer on Instagram",
     enterPassword: language === "ar" ? "أدخل كلمة السر..." : "Enter password...",
     cancel: language === "ar" ? "إلغاء" : "Cancel",
     confirm: language === "ar" ? "تأكيد" : "Confirm",
+    contactInstagram: language === "ar" ? "تواصل على انستغرام" : "Contact on Instagram",
   };
 
   return (
@@ -243,7 +247,18 @@ const AIPage = () => {
                   <Bot className="w-16 h-16 mx-auto mb-4 opacity-50" />
                   <p className="text-lg mb-2">{t.welcome}</p>
                   <p className="text-sm">{t.askAnything}</p>
-                  <p className="text-xs mt-4 text-muted-foreground/70">💡 {t.advancedTip}</p>
+                  <div className="mt-6 flex flex-col items-center gap-3">
+                    <p className="text-xs text-muted-foreground/70 max-w-md">💡 {t.advancedTip}</p>
+                    <a
+                      href="https://www.instagram.com/qusay_kali"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"
+                    >
+                      <Instagram className="w-4 h-4" />
+                      {t.contactInstagram}
+                    </a>
+                  </div>
                 </div>
               ) : (
                 messages.map((message, index) => (
@@ -335,9 +350,17 @@ const AIPage = () => {
               <p className="text-muted-foreground text-sm">{t.advancedDesc}</p>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-primary/10 border border-primary/30 mb-6">
-              <AlertTriangle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-muted-foreground">{t.passwordHint}</p>
+            <div className="flex flex-col items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 mb-6">
+              <p className="text-sm text-muted-foreground text-center">{t.passwordHint}</p>
+              <a
+                href="https://www.instagram.com/qusay_kali"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                <Instagram className="w-4 h-4" />
+                @qusay_kali
+              </a>
             </div>
 
             <form onSubmit={handlePasswordSubmit}>
@@ -349,7 +372,7 @@ const AIPage = () => {
                 className="w-full px-4 py-3 rounded-xl bg-secondary border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all mb-4"
                 autoFocus
               />
-              {passwordError && <p className="text-destructive text-sm mb-4">{passwordError}</p>}
+              {passwordError && <p className="text-destructive text-sm mb-4 text-center">{passwordError}</p>}
               <div className="flex gap-3">
                 <button
                   type="button"
