@@ -1,12 +1,16 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X } from "lucide-react";
+import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
-  image?: string;
+  images?: string[];
+  file?: {
+    name: string;
+    content: string;
+  };
 }
 
 const sensitiveKeywords = [
@@ -26,6 +30,8 @@ const sensitiveKeywords = [
   "reconnaissance", "footprinting", "enumeration", "scanning", "exploitation",
 ];
 
+const MAX_IMAGES = 3;
+
 const AIPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -36,8 +42,10 @@ const AIPage = () => {
   const [pendingMessage, setPendingMessage] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedFile, setSelectedFile] = useState<{ name: string; content: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // The secret password - not shown to users
@@ -57,18 +65,82 @@ const AIPage = () => {
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+    const files = e.target.files;
+    if (!files) return;
+
+    const remainingSlots = MAX_IMAGES - selectedImages.length;
+    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+
+    filesToProcess.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSelectedImage(reader.result as string);
+        setSelectedImages((prev) => {
+          if (prev.length < MAX_IMAGES) {
+            return [...prev, reader.result as string];
+          }
+          return prev;
+        });
       };
       reader.readAsDataURL(file);
+    });
+
+    if (imageInputRef.current) {
+      imageInputRef.current.value = "";
     }
   };
 
-  const removeImage = () => {
-    setSelectedImage(null);
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file type - only allow text files
+    const allowedTypes = [
+      'text/plain',
+      'text/html',
+      'text/css',
+      'text/javascript',
+      'application/json',
+      'application/xml',
+      'text/xml',
+      'text/markdown',
+      'text/csv',
+    ];
+    
+    const allowedExtensions = ['.txt', '.html', '.css', '.js', '.ts', '.jsx', '.tsx', '.json', '.xml', '.md', '.csv', '.py', '.java', '.c', '.cpp', '.h', '.php', '.rb', '.go', '.rs', '.swift', '.kt', '.sh', '.bash', '.zsh', '.yaml', '.yml', '.toml', '.ini', '.cfg', '.conf', '.log', '.sql'];
+    
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    const isAllowedType = allowedTypes.includes(file.type) || allowedExtensions.includes(fileExtension);
+
+    if (!isAllowedType) {
+      alert(language === "ar" ? "يرجى اختيار ملف نصي فقط" : "Please select a text file only");
+      return;
+    }
+
+    if (file.size > 500000) { // 500KB limit
+      alert(language === "ar" ? "حجم الملف كبير جداً (الحد الأقصى 500KB)" : "File size too large (max 500KB)");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setSelectedFile({
+        name: file.name,
+        content: reader.result as string,
+      });
+    };
+    reader.readAsText(file);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -76,7 +148,7 @@ const AIPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if ((!input.trim() && !selectedImage) || isLoading) return;
+    if ((!input.trim() && selectedImages.length === 0 && !selectedFile) || isLoading) return;
 
     const userMessage = input.trim();
 
@@ -88,17 +160,20 @@ const AIPage = () => {
       return;
     }
 
-    sendMessage(userMessage, selectedImage);
-    setSelectedImage(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    sendMessage(userMessage, selectedImages, selectedFile);
+    setSelectedImages([]);
+    setSelectedFile(null);
   };
 
-  const sendMessage = async (userMessage: string, image?: string | null) => {
+  const sendMessage = async (
+    userMessage: string,
+    images?: string[],
+    file?: { name: string; content: string } | null
+  ) => {
     setInput("");
     const newMessage: Message = { role: "user", content: userMessage };
-    if (image) newMessage.image = image;
+    if (images && images.length > 0) newMessage.images = images;
+    if (file) newMessage.file = file;
     const newMessages: Message[] = [...messages, newMessage];
     setMessages(newMessages);
     setIsLoading(true);
@@ -106,16 +181,37 @@ const AIPage = () => {
     try {
       // Build messages for API
       const apiMessages = newMessages.map((m) => {
-        if (m.image) {
-          return {
-            role: m.role,
-            content: [
-              { type: "text", text: m.content || (language === "ar" ? "ما هذه الصورة؟" : "What is this image?") },
-              { type: "image_url", image_url: { url: m.image } }
-            ]
-          };
+        const contentParts: any[] = [];
+        
+        // Add text content
+        let textContent = m.content || "";
+        
+        // Add file content if present
+        if (m.file) {
+          textContent += `\n\n--- ${language === "ar" ? "محتوى الملف" : "File Content"}: ${m.file.name} ---\n${m.file.content}\n--- ${language === "ar" ? "نهاية الملف" : "End of File"} ---`;
         }
-        return { role: m.role, content: m.content };
+        
+        if (textContent || (m.images && m.images.length > 0)) {
+          contentParts.push({
+            type: "text",
+            text: textContent || (language === "ar" ? "ما هذه الصور؟" : "What are these images?"),
+          });
+        }
+
+        // Add images if present
+        if (m.images && m.images.length > 0) {
+          m.images.forEach((img) => {
+            contentParts.push({
+              type: "image_url",
+              image_url: { url: img },
+            });
+          });
+        }
+
+        if (contentParts.length > 1 || (m.images && m.images.length > 0)) {
+          return { role: m.role, content: contentParts };
+        }
+        return { role: m.role, content: textContent };
       });
 
       const response = await fetch(
@@ -243,7 +339,9 @@ const AIPage = () => {
     cancel: language === "ar" ? "إلغاء" : "Cancel",
     confirm: language === "ar" ? "تأكيد" : "Confirm",
     contactInstagram: language === "ar" ? "تواصل على انستغرام" : "Contact on Instagram",
-    addImage: language === "ar" ? "أضف صورة" : "Add image",
+    addImages: language === "ar" ? `أضف صور (${selectedImages.length}/${MAX_IMAGES})` : `Add images (${selectedImages.length}/${MAX_IMAGES})`,
+    addFile: language === "ar" ? "أضف ملف" : "Add file",
+    supportedFormats: language === "ar" ? "يدعم: صور (حتى 3) + ملفات نصية" : "Supports: Images (up to 3) + Text files",
   };
 
   return (
@@ -263,6 +361,7 @@ const AIPage = () => {
             </h1>
             <p className="text-muted-foreground">{t.subtitle}</p>
             <p className="text-xs text-primary/70 mt-1">{t.developer}</p>
+            <p className="text-xs text-muted-foreground/70 mt-2">{t.supportedFormats}</p>
             <div className="flex items-center justify-center gap-3 mt-4">
               {isAuthenticated && (
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-sm">
@@ -330,12 +429,25 @@ const AIPage = () => {
                           : "bg-secondary border border-border/50"
                       }`}
                     >
-                      {message.image && (
-                        <img 
-                          src={message.image} 
-                          alt="Uploaded" 
-                          className="max-w-full h-auto rounded-lg mb-3 max-h-64 object-contain"
-                        />
+                      {/* Display images */}
+                      {message.images && message.images.length > 0 && (
+                        <div className={`grid gap-2 mb-3 ${message.images.length === 1 ? 'grid-cols-1' : message.images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                          {message.images.map((img, imgIndex) => (
+                            <img
+                              key={imgIndex}
+                              src={img}
+                              alt={`Uploaded ${imgIndex + 1}`}
+                              className="w-full h-auto rounded-lg max-h-40 object-cover"
+                            />
+                          ))}
+                        </div>
+                      )}
+                      {/* Display file info */}
+                      {message.file && (
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background/50 border border-border/30 mb-3">
+                          <FileText className="w-4 h-4 text-primary" />
+                          <span className="text-sm text-foreground">{message.file.name}</span>
+                        </div>
                       )}
                       {message.content && (
                         <p className="text-foreground whitespace-pre-wrap leading-relaxed">
@@ -365,39 +477,79 @@ const AIPage = () => {
 
             {/* Input Area */}
             <form onSubmit={handleSubmit} className="p-4 border-t border-border/30">
-              {/* Image Preview */}
-              {selectedImage && (
-                <div className="mb-3 relative inline-block">
-                  <img 
-                    src={selectedImage} 
-                    alt="Preview" 
-                    className="max-h-32 rounded-lg border border-border/50"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:opacity-80"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+              {/* Previews */}
+              {(selectedImages.length > 0 || selectedFile) && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {/* Image Previews */}
+                  {selectedImages.map((img, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={img}
+                        alt={`Preview ${index + 1}`}
+                        className="h-20 w-20 object-cover rounded-lg border border-border/50"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:opacity-80"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  {/* File Preview */}
+                  {selectedFile && (
+                    <div className="relative flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary border border-border/50">
+                      <FileText className="w-5 h-5 text-primary" />
+                      <span className="text-sm text-foreground max-w-[150px] truncate">{selectedFile.name}</span>
+                      <button
+                        type="button"
+                        onClick={removeFile}
+                        className="w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:opacity-80"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
-              <div className="flex gap-3">
+              <div className="flex gap-2">
+                {/* Image Upload */}
+                <input
+                  type="file"
+                  ref={imageInputRef}
+                  onChange={handleImageSelect}
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={selectedImages.length >= MAX_IMAGES}
+                  className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={t.addImages}
+                >
+                  <Image className="w-5 h-5" />
+                </button>
+                {/* File Upload */}
                 <input
                   type="file"
                   ref={fileInputRef}
-                  onChange={handleImageSelect}
-                  accept="image/*"
+                  onChange={handleFileSelect}
+                  accept=".txt,.html,.css,.js,.ts,.jsx,.tsx,.json,.xml,.md,.csv,.py,.java,.c,.cpp,.h,.php,.rb,.go,.rs,.swift,.kt,.sh,.bash,.zsh,.yaml,.yml,.toml,.ini,.cfg,.conf,.log,.sql"
                   className="hidden"
                 />
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all"
-                  title={t.addImage}
+                  disabled={!!selectedFile}
+                  className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={t.addFile}
                 >
-                  <Image className="w-5 h-5" />
+                  <Paperclip className="w-5 h-5" />
                 </button>
+                {/* Text Input */}
                 <input
                   type="text"
                   value={input}
@@ -409,7 +561,7 @@ const AIPage = () => {
                 />
                 <button
                   type="submit"
-                  disabled={isLoading || (!input.trim() && !selectedImage)}
+                  disabled={isLoading || (!input.trim() && selectedImages.length === 0 && !selectedFile)}
                   className="cyber-button-primary px-6 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Send className="w-5 h-5" />
