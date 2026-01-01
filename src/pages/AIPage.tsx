@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
 
 interface Message {
   role: "user" | "assistant";
@@ -44,32 +44,33 @@ const AIPage = () => {
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<{ name: string; content: string } | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
 
-  // The secret password - not shown to users
   const SECRET_PASSWORD = "Qusay_kali";
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, scrollToBottom]);
 
   const isSensitiveQuery = (text: string): boolean => {
     const lowerText = text.toLowerCase();
     return sensitiveKeywords.some((keyword) => lowerText.includes(keyword.toLowerCase()));
   };
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
+  const processImageFiles = useCallback((files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    const imageFiles = fileArray.filter(file => file.type.startsWith('image/'));
     const remainingSlots = MAX_IMAGES - selectedImages.length;
-    const filesToProcess = Array.from(files).slice(0, remainingSlots);
+    const filesToProcess = imageFiles.slice(0, remainingSlots);
 
     filesToProcess.forEach((file) => {
       const reader = new FileReader();
@@ -83,31 +84,35 @@ const AIPage = () => {
       };
       reader.readAsDataURL(file);
     });
+  }, [selectedImages.length]);
 
-    if (imageInputRef.current) {
-      imageInputRef.current.value = "";
-    }
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    processImageFiles(files);
+    if (imageInputRef.current) imageInputRef.current.value = "";
+  };
+
+  const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    processImageFiles(files);
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    processTextFile(file);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
-    // Check file type - only allow text files
+  const processTextFile = (file: File) => {
     const allowedTypes = [
-      'text/plain',
-      'text/html',
-      'text/css',
-      'text/javascript',
-      'application/json',
-      'application/xml',
-      'text/xml',
-      'text/markdown',
-      'text/csv',
+      'text/plain', 'text/html', 'text/css', 'text/javascript',
+      'application/json', 'application/xml', 'text/xml', 'text/markdown', 'text/csv',
     ];
-    
     const allowedExtensions = ['.txt', '.html', '.css', '.js', '.ts', '.jsx', '.tsx', '.json', '.xml', '.md', '.csv', '.py', '.java', '.c', '.cpp', '.h', '.php', '.rb', '.go', '.rs', '.swift', '.kt', '.sh', '.bash', '.zsh', '.yaml', '.yml', '.toml', '.ini', '.cfg', '.conf', '.log', '.sql'];
-    
     const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
     const isAllowedType = allowedTypes.includes(file.type) || allowedExtensions.includes(fileExtension);
 
@@ -116,24 +121,64 @@ const AIPage = () => {
       return;
     }
 
-    if (file.size > 500000) { // 500KB limit
+    if (file.size > 500000) {
       alert(language === "ar" ? "حجم الملف كبير جداً (الحد الأقصى 500KB)" : "File size too large (max 500KB)");
       return;
     }
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      setSelectedFile({
-        name: file.name,
-        content: reader.result as string,
-      });
+      setSelectedFile({ name: file.name, content: reader.result as string });
     };
     reader.readAsText(file);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   };
+
+  // Drag and Drop handlers
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.currentTarget === dropZoneRef.current) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (!files.length) return;
+
+    const imageFiles: File[] = [];
+    let textFile: File | null = null;
+
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        imageFiles.push(file);
+      } else {
+        if (!textFile) textFile = file;
+      }
+    });
+
+    if (imageFiles.length > 0) {
+      processImageFiles(imageFiles);
+    }
+    if (textFile && !selectedFile) {
+      processTextFile(textFile);
+    }
+  }, [processImageFiles, selectedFile, language]);
 
   const removeImage = (index: number) => {
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
@@ -141,9 +186,7 @@ const AIPage = () => {
 
   const removeFile = () => {
     setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -152,7 +195,6 @@ const AIPage = () => {
 
     const userMessage = input.trim();
 
-    // Check if query is sensitive and user is not authenticated
     if (isSensitiveQuery(userMessage) && !isAuthenticated) {
       setPendingMessage(userMessage);
       setShowPasswordModal(true);
@@ -179,14 +221,10 @@ const AIPage = () => {
     setIsLoading(true);
 
     try {
-      // Build messages for API
       const apiMessages = newMessages.map((m) => {
         const contentParts: any[] = [];
-        
-        // Add text content
         let textContent = m.content || "";
         
-        // Add file content if present
         if (m.file) {
           textContent += `\n\n--- ${language === "ar" ? "محتوى الملف" : "File Content"}: ${m.file.name} ---\n${m.file.content}\n--- ${language === "ar" ? "نهاية الملف" : "End of File"} ---`;
         }
@@ -198,13 +236,9 @@ const AIPage = () => {
           });
         }
 
-        // Add images if present
         if (m.images && m.images.length > 0) {
           m.images.forEach((img) => {
-            contentParts.push({
-              type: "image_url",
-              image_url: { url: img },
-            });
+            contentParts.push({ type: "image_url", image_url: { url: img } });
           });
         }
 
@@ -222,10 +256,7 @@ const AIPage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({
-            messages: apiMessages,
-            language,
-          }),
+          body: JSON.stringify({ messages: apiMessages, language }),
         }
       );
 
@@ -241,7 +272,6 @@ const AIPage = () => {
       let assistantMessage = "";
       let buffer = "";
 
-      // Add empty assistant message
       setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
       while (true) {
@@ -249,8 +279,6 @@ const AIPage = () => {
         if (done) break;
 
         buffer += decoder.decode(value, { stream: true });
-
-        // Process complete lines
         const lines = buffer.split("\n");
         buffer = lines.pop() || "";
 
@@ -273,7 +301,7 @@ const AIPage = () => {
               });
             }
           } catch {
-            // Ignore parsing errors for incomplete JSON
+            // Ignore parsing errors
           }
         }
       }
@@ -318,7 +346,7 @@ const AIPage = () => {
   };
 
   const t = {
-    title: language === "ar" ? "Qusay AI" : "Qusay AI",
+    title: "Qusay AI",
     subtitle: language === "ar" ? "مساعدك الذكي في الأمن السيبراني" : "Your smart cybersecurity assistant",
     developer: language === "ar" ? "تطوير: Qusay_kali" : "Developed by: Qusay_kali",
     advancedMode: language === "ar" ? "وضع متقدم مفعّل" : "Advanced mode enabled",
@@ -339,9 +367,11 @@ const AIPage = () => {
     cancel: language === "ar" ? "إلغاء" : "Cancel",
     confirm: language === "ar" ? "تأكيد" : "Confirm",
     contactInstagram: language === "ar" ? "تواصل على انستغرام" : "Contact on Instagram",
-    addImages: language === "ar" ? `أضف صور (${selectedImages.length}/${MAX_IMAGES})` : `Add images (${selectedImages.length}/${MAX_IMAGES})`,
-    addFile: language === "ar" ? "أضف ملف" : "Add file",
-    supportedFormats: language === "ar" ? "يدعم: صور (حتى 3) + ملفات نصية" : "Supports: Images (up to 3) + Text files",
+    addImages: language === "ar" ? `صور (${selectedImages.length}/${MAX_IMAGES})` : `Images (${selectedImages.length}/${MAX_IMAGES})`,
+    addFile: language === "ar" ? "ملف" : "File",
+    camera: language === "ar" ? "كاميرا" : "Camera",
+    supportedFormats: language === "ar" ? "يدعم: صور (حتى 3) + ملفات نصية • اسحب وأفلت هنا" : "Supports: Images (up to 3) + Text files • Drag & drop here",
+    dropHere: language === "ar" ? "أفلت الملفات هنا" : "Drop files here",
   };
 
   return (
@@ -350,7 +380,7 @@ const AIPage = () => {
       <main className="flex-1 pt-24 pb-8 flex flex-col">
         <div className="container mx-auto px-4 flex-1 flex flex-col max-w-4xl">
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6">
             <div className="flex justify-center mb-4">
               <div className="cyber-icon-box w-16 h-16">
                 <Brain className="w-8 h-8 text-primary" />
@@ -361,7 +391,6 @@ const AIPage = () => {
             </h1>
             <p className="text-muted-foreground">{t.subtitle}</p>
             <p className="text-xs text-primary/70 mt-1">{t.developer}</p>
-            <p className="text-xs text-muted-foreground/70 mt-2">{t.supportedFormats}</p>
             <div className="flex items-center justify-center gap-3 mt-4">
               {isAuthenticated && (
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-sm">
@@ -379,8 +408,26 @@ const AIPage = () => {
             </div>
           </div>
 
-          {/* Chat Container */}
-          <div className="flex-1 cyber-card overflow-hidden flex flex-col">
+          {/* Chat Container with Drop Zone */}
+          <div 
+            ref={dropZoneRef}
+            className={`flex-1 cyber-card overflow-hidden flex flex-col relative transition-all duration-200 ${isDragging ? 'border-primary border-2 bg-primary/5' : ''}`}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            {/* Drag Overlay */}
+            {isDragging && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/90 backdrop-blur-sm">
+                <div className="text-center">
+                  <Upload className="w-16 h-16 text-primary mx-auto mb-4 animate-bounce" />
+                  <p className="text-xl font-bold text-primary">{t.dropHere}</p>
+                  <p className="text-sm text-muted-foreground mt-2">{t.supportedFormats}</p>
+                </div>
+              </div>
+            )}
+
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 ? (
@@ -388,6 +435,7 @@ const AIPage = () => {
                   <Bot className="w-16 h-16 mx-auto mb-4 opacity-50" />
                   <p className="text-lg mb-2">{t.welcome}</p>
                   <p className="text-sm">{t.askAnything}</p>
+                  <p className="text-xs text-muted-foreground/70 mt-4 max-w-md mx-auto">{t.supportedFormats}</p>
                   <div className="mt-6 flex flex-col items-center gap-3">
                     <p className="text-xs text-muted-foreground/70 max-w-md">💡 {t.advancedTip}</p>
                     <a
@@ -405,9 +453,7 @@ const AIPage = () => {
                 messages.map((message, index) => (
                   <div
                     key={index}
-                    className={`flex items-start gap-3 ${
-                      message.role === "user" ? "flex-row-reverse" : ""
-                    }`}
+                    className={`flex items-start gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
                   >
                     <div
                       className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
@@ -429,7 +475,6 @@ const AIPage = () => {
                           : "bg-secondary border border-border/50"
                       }`}
                     >
-                      {/* Display images */}
                       {message.images && message.images.length > 0 && (
                         <div className={`grid gap-2 mb-3 ${message.images.length === 1 ? 'grid-cols-1' : message.images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
                           {message.images.map((img, imgIndex) => (
@@ -442,7 +487,6 @@ const AIPage = () => {
                           ))}
                         </div>
                       )}
-                      {/* Display file info */}
                       {message.file && (
                         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-background/50 border border-border/30 mb-3">
                           <FileText className="w-4 h-4 text-primary" />
@@ -480,7 +524,6 @@ const AIPage = () => {
               {/* Previews */}
               {(selectedImages.length > 0 || selectedFile) && (
                 <div className="mb-3 flex flex-wrap gap-2">
-                  {/* Image Previews */}
                   {selectedImages.map((img, index) => (
                     <div key={index} className="relative">
                       <img
@@ -497,7 +540,6 @@ const AIPage = () => {
                       </button>
                     </div>
                   ))}
-                  {/* File Preview */}
                   {selectedFile && (
                     <div className="relative flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary border border-border/50">
                       <FileText className="w-5 h-5 text-primary" />
@@ -514,6 +556,24 @@ const AIPage = () => {
                 </div>
               )}
               <div className="flex gap-2">
+                {/* Camera Capture */}
+                <input
+                  type="file"
+                  ref={cameraInputRef}
+                  onChange={handleCameraCapture}
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => cameraInputRef.current?.click()}
+                  disabled={selectedImages.length >= MAX_IMAGES}
+                  className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  title={t.camera}
+                >
+                  <Camera className="w-5 h-5" />
+                </button>
                 {/* Image Upload */}
                 <input
                   type="file"
