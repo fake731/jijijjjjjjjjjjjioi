@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload } from "lucide-react";
+import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload, Copy } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 
 interface Message {
@@ -494,9 +494,35 @@ const AIPage = () => {
                         </div>
                       )}
                       {message.content && (
-                        <p className="text-foreground whitespace-pre-wrap leading-relaxed">
-                          {message.content}
-                        </p>
+                        <div className="text-foreground whitespace-pre-wrap leading-relaxed">
+                          {message.content.split(/(```[\s\S]*?```)/g).map((part, partIndex) => {
+                            if (part.startsWith("```") && part.endsWith("```")) {
+                              const lines = part.slice(3, -3).split('\n');
+                              const langLine = lines[0];
+                              const codeContent = lines.slice(1).join('\n').trim();
+                              return (
+                                <div key={partIndex} className="my-3 rounded-lg overflow-hidden border border-border/50 bg-background/50">
+                                  <div className="flex items-center justify-between px-4 py-2 bg-secondary/50 border-b border-border/30">
+                                    <span className="text-xs text-muted-foreground font-mono">{langLine || "code"}</span>
+                                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(codeContent);
+                                      }}
+                                      className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                    >
+                                      <Copy className="w-3 h-3" />
+                                      {language === "ar" ? "نسخ" : "Copy"}
+                                    </button>
+                                  </div>
+                                  <pre className="p-4 overflow-x-auto text-sm">
+                                    <code className="font-mono" dir="ltr">{codeContent}</code>
+                                  </pre>
+                                </div>
+                              );
+                            }
+                            return <span key={partIndex}>{part}</span>;
+                          })}
+                        </div>
                       )}
                     </div>
                   </div>
