@@ -9,7 +9,7 @@ const navItems = [
   { label: "ادوات كالي", path: "/tools" },
   { label: "السكربتات", path: "/scripts" },
   { label: "الذكاء الاصطناعي", path: "/ai" },
-  { label: "مكتشف الثغرات", path: "/scanner" },
+  { label: "أوامر كالي", path: "/scanner" },
   { label: "تنزيل كالي", path: "/download" },
 ];
 
