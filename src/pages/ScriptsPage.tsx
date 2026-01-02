@@ -1,14 +1,38 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Code, Copy, Check, Globe } from "lucide-react";
+import { Code, Copy, Check, Globe, Terminal, FileCode, Hash, Network, Search, Key, Shield, Mail, Link, Wifi, Eye, Lock, FileText, Bug, Database, Server, Skull, Cpu, HardDrive, AlertTriangle, Binary } from "lucide-react";
 import { useState } from "react";
+
+import { LucideIcon } from "lucide-react";
 
 interface Script {
   name: { ar: string; en: string };
   description: { ar: string; en: string };
   language: "Python" | "C++" | "Bash";
   code: string;
+  icon?: LucideIcon;
 }
+
+const getScriptIcon = (name: string): LucideIcon => {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes("port") || lowerName.includes("scan")) return Network;
+  if (lowerName.includes("hash") || lowerName.includes("crack")) return Hash;
+  if (lowerName.includes("password") || lowerName.includes("مرور")) return Key;
+  if (lowerName.includes("subdomain") || lowerName.includes("نطاق")) return Search;
+  if (lowerName.includes("network") || lowerName.includes("شبكة")) return Wifi;
+  if (lowerName.includes("keylogger")) return Eye;
+  if (lowerName.includes("email") || lowerName.includes("بريد")) return Mail;
+  if (lowerName.includes("url") || lowerName.includes("رابط")) return Link;
+  if (lowerName.includes("encrypt") || lowerName.includes("تشفير")) return Lock;
+  if (lowerName.includes("file") || lowerName.includes("ملف")) return FileText;
+  if (lowerName.includes("shell") || lowerName.includes("reverse")) return Terminal;
+  if (lowerName.includes("process") || lowerName.includes("عملي")) return Cpu;
+  if (lowerName.includes("firewall") || lowerName.includes("جدار")) return Shield;
+  if (lowerName.includes("system") || lowerName.includes("نظام")) return HardDrive;
+  if (lowerName.includes("log") || lowerName.includes("سجل")) return FileCode;
+  if (lowerName.includes("extract") || lowerName.includes("استخراج")) return Database;
+  return Code;
+};
 
 const scripts: Script[] = [
   // Python Scripts
@@ -862,16 +886,24 @@ const ScriptsPage = () => {
             {filteredScripts.map((script, index) => (
               <div key={index} className="cyber-card overflow-hidden">
                 <div className="p-6 border-b border-border/30">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-xl font-bold text-primary mb-1">
-                        {language === "ar" ? script.name.ar : script.name.en}
-                      </h3>
-                      <p className="text-muted-foreground text-sm">
-                        {language === "ar" ? script.description.ar : script.description.en}
-                      </p>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                        {(() => {
+                          const IconComponent = getScriptIcon(script.name.en);
+                          return <IconComponent className="w-6 h-6 text-primary" />;
+                        })()}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-primary mb-1">
+                          {language === "ar" ? script.name.ar : script.name.en}
+                        </h3>
+                        <p className="text-muted-foreground text-sm">
+                          {language === "ar" ? script.description.ar : script.description.en}
+                        </p>
+                      </div>
                     </div>
-                    <span className={`px-3 py-1 rounded-lg text-sm font-medium border ${getLanguageColor(script.language)}`}>
+                    <span className={`px-3 py-1 rounded-lg text-sm font-medium border flex-shrink-0 ${getLanguageColor(script.language)}`}>
                       {script.language}
                     </span>
                   </div>

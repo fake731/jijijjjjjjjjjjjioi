@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Terminal, ChevronDown, ChevronUp, Copy, Check, Search, Globe, Network, Shield, Globe2, Radio, Key, Zap, Database, FileCode, Wifi, Lock, Bug, Server, Scan, Eye, Hash, UserX, Code, Laptop, Fingerprint } from "lucide-react";
+import { Terminal, ChevronDown, ChevronUp, Copy, Check, Search, Globe, Network, Shield, Globe2, Radio, Key, Zap, Database, Wifi, Lock, Bug, Server, Scan, Eye, Hash, UserX, Code, Laptop, Fingerprint, Target, FileSearch, Settings, Crosshair, Skull, AlertTriangle, Layers, Binary, Unplug, HardDrive, Monitor, Cpu, Activity, ShieldAlert, Wrench, FileTerminal } from "lucide-react";
 import { useState, useMemo } from "react";
 import { LucideIcon } from "lucide-react";
 
@@ -19,23 +19,35 @@ interface Tool {
 // Tool icons mapping
 const toolIcons: Record<string, LucideIcon> = {
   "Nmap": Network,
-  "Metasploit": Shield,
+  "Metasploit": Skull,
   "Burp Suite": Globe2,
-  "Wireshark": Radio,
+  "Wireshark": Activity,
   "John the Ripper": Key,
   "Hydra": Zap,
   "SQLMap": Database,
   "Aircrack-ng": Wifi,
   "Nikto": Bug,
   "Hashcat": Hash,
-  "Gobuster": Search,
-  "Netcat": Server,
-  "Enum4linux": Laptop,
+  "Gobuster": FileSearch,
+  "Netcat": Unplug,
+  "Enum4linux": Monitor,
   "Dirb": Eye,
-  "Wfuzz": Code,
+  "Wfuzz": Crosshair,
   "theHarvester": Scan,
   "Maltego": Fingerprint,
-  "Responder": UserX,
+  "Responder": ShieldAlert,
+  "Recon-ng": Target,
+  "CrackMapExec": HardDrive,
+  "Sn1per": Crosshair,
+  "Wpscan": Shield,
+  "Ffuf": Binary,
+  "Feroxbuster": Layers,
+  "Crackmapexec": Cpu,
+  "Impacket": Wrench,
+  "BeEF": AlertTriangle,
+  "SET": Settings,
+  "Mimikatz": Lock,
+  "BloodHound": Scan,
 };
 
 const tools: Tool[] = [
