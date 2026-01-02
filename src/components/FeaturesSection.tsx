@@ -9,9 +9,9 @@ const features = [
     link: "/ai",
   },
   {
-    icon: Bug,
-    title: "مكتشف الثغرات",
-    description: "أداة فحص الثغرات الأمنية تجريبة",
+    icon: Terminal,
+    title: "أوامر كالي لينكس",
+    description: "+50 أمر أساسي لنظام كالي لينكس مع شرح كامل بالعربية والإنجليزية",
     link: "/scanner",
   },
   {
