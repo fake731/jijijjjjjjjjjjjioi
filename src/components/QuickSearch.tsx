@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, Terminal, Wrench, FileCode, X, ArrowRight } from "lucide-react";
+import { Search, Terminal, Wrench, FileCode, X, ArrowRight, BookOpen, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SearchItem {
   title: string;
   description: string;
-  type: "command" | "tool" | "script";
+  type: "command" | "tool" | "script" | "guide" | "download";
   link: string;
 }
 
@@ -49,6 +49,36 @@ const searchData: SearchItem[] = [
   { title: "Network Scanner", description: "ماسح الشبكة", type: "script", link: "/scripts" },
   { title: "Keylogger", description: "راصد لوحة المفاتيح", type: "script", link: "/scripts" },
   { title: "Backdoor", description: "باب خلفي بسيط", type: "script", link: "/scripts" },
+
+  // Guide Topics
+  { title: "أساسيات الأمن السيبراني", description: "المفاهيم الأساسية ومثلث CIA", type: "guide", link: "/guide" },
+  { title: "CIA Triad", description: "السرية والنزاهة والتوافر", type: "guide", link: "/guide" },
+  { title: "اختبار الاختراق", description: "Penetration Testing ومراحله", type: "guide", link: "/guide" },
+  { title: "هجمات SQL Injection", description: "حقن قواعد البيانات", type: "guide", link: "/guide" },
+  { title: "هجمات XSS", description: "Cross-Site Scripting", type: "guide", link: "/guide" },
+  { title: "هجمات التصيد", description: "Phishing والهندسة الاجتماعية", type: "guide", link: "/guide" },
+  { title: "أمن الشبكات", description: "Network Security", type: "guide", link: "/guide" },
+  { title: "التشفير", description: "Cryptography والتشفير", type: "guide", link: "/guide" },
+  { title: "OWASP Top 10", description: "أهم عشر ثغرات في تطبيقات الويب", type: "guide", link: "/guide" },
+  { title: "أمن السحاب", description: "Cloud Security", type: "guide", link: "/guide" },
+  { title: "التحقيق الجنائي الرقمي", description: "Digital Forensics", type: "guide", link: "/guide" },
+  { title: "البرمجة للأمن السيبراني", description: "Python و Bash و PowerShell", type: "guide", link: "/guide" },
+  { title: "إدارة المخاطر", description: "Risk Management", type: "guide", link: "/guide" },
+  { title: "أمن الهواتف", description: "Mobile Security", type: "guide", link: "/guide" },
+  { title: "Privilege Escalation", description: "رفع الصلاحيات", type: "guide", link: "/guide" },
+  
+  // Download Topics
+  { title: "تحميل كالي لينكس", description: "خطوات تنزيل كالي لينكس", type: "download", link: "/download" },
+  { title: "Kali Linux ISO", description: "تحميل ملف ISO الرسمي", type: "download", link: "/download" },
+  { title: "VirtualBox Installation", description: "تثبيت كالي على VirtualBox", type: "download", link: "/download" },
+  { title: "VMware Installation", description: "تثبيت كالي على VMware", type: "download", link: "/download" },
+  { title: "WSL Installation", description: "تثبيت كالي على Windows WSL", type: "download", link: "/download" },
+  { title: "Dual Boot", description: "تثبيت كالي بجانب Windows", type: "download", link: "/download" },
+  { title: "Live USB", description: "تشغيل كالي من USB", type: "download", link: "/download" },
+  { title: "Kali NetHunter", description: "كالي للهواتف الذكية", type: "download", link: "/download" },
+  { title: "Kali ARM", description: "كالي لأجهزة Raspberry Pi", type: "download", link: "/download" },
+  { title: "متطلبات النظام", description: "System Requirements", type: "download", link: "/download" },
+  { title: "Termux كالي", description: "تثبيت كالي على Termux", type: "download", link: "/download" },
 ];
 
 const QuickSearch = () => {
@@ -65,7 +95,7 @@ const QuickSearch = () => {
           item.title.toLowerCase().includes(query.toLowerCase()) ||
           item.description.includes(query)
       );
-      setResults(filtered.slice(0, 8));
+      setResults(filtered.slice(0, 10));
     } else {
       setResults([]);
     }
@@ -106,6 +136,10 @@ const QuickSearch = () => {
         return <Wrench className="w-4 h-4" />;
       case "script":
         return <FileCode className="w-4 h-4" />;
+      case "guide":
+        return <BookOpen className="w-4 h-4" />;
+      case "download":
+        return <Download className="w-4 h-4" />;
       default:
         return <Search className="w-4 h-4" />;
     }
@@ -119,6 +153,10 @@ const QuickSearch = () => {
         return "أداة";
       case "script":
         return "سكربت";
+      case "guide":
+        return "دليل";
+      case "download":
+        return "تحميل";
       default:
         return "";
     }
@@ -133,7 +171,7 @@ const QuickSearch = () => {
       >
         <Search className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
         <span className="text-muted-foreground text-sm flex-1 text-right">
-          ابحث عن أي أداة أو أمر أو سكربت...
+          ابحث عن أي أداة، أمر، سكربت، دليل أو خطوات التحميل...
         </span>
         <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 rounded bg-background/50 text-xs text-muted-foreground border border-border/50">
           <span>⌘</span>
@@ -163,7 +201,7 @@ const QuickSearch = () => {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="ابحث عن أي أداة أو أمر أو سكربت..."
+                  placeholder="ابحث عن أي أداة، أمر، سكربت، دليل أو خطوات التحميل..."
                   className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-lg"
                   dir="rtl"
                 />
@@ -242,6 +280,20 @@ const QuickSearch = () => {
                     >
                       <FileCode className="w-4 h-4 text-primary" />
                       <span>السكربتات</span>
+                    </button>
+                    <button
+                      onClick={() => navigate("/guide")}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
+                    >
+                      <BookOpen className="w-4 h-4 text-primary" />
+                      <span>الدليل الكامل</span>
+                    </button>
+                    <button
+                      onClick={() => navigate("/download")}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
+                    >
+                      <Download className="w-4 h-4 text-primary" />
+                      <span>التحميل</span>
                     </button>
                   </div>
                 </div>
