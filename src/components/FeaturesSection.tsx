@@ -1,4 +1,4 @@
-import { Brain, Bug, Terminal, Code, BookOpen, Download } from "lucide-react";
+import { Brain, Terminal, Wrench, Code, BookOpen, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const features = [
@@ -15,9 +15,9 @@ const features = [
     link: "/scanner",
   },
   {
-    icon: Terminal,
+    icon: Wrench,
     title: "أدوات كالي لينكس",
-    description: "+9 أداة احترافية مع شرح كامل للأوامر والاستخدامات المتقدمة",
+    description: "+25 أداة احترافية مع شرح كامل للأوامر والاستخدامات المتقدمة",
     link: "/tools",
   },
   {
