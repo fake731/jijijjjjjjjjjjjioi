@@ -8,7 +8,7 @@ import { LucideIcon } from "lucide-react";
 interface Script {
   name: { ar: string; en: string };
   description: { ar: string; en: string };
-  language: "Python" | "C++" | "Bash";
+  language: "Python" | "C++" | "Bash" | "JavaScript";
   code: string;
   icon?: LucideIcon;
 }
@@ -804,11 +804,405 @@ echo ""
 
 echo "[*] Start listener with: nc -lvnp $LPORT"`,
   },
+  // JavaScript Scripts
+  {
+    name: { ar: "ماسح المنافذ (Node.js)", en: "Port Scanner (Node.js)" },
+    description: { ar: "ماسح منافذ بسيط باستخدام Node.js", en: "Simple port scanner using Node.js" },
+    language: "JavaScript",
+    code: `const net = require('net');
+
+async function scanPort(host, port) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(1000);
+    
+    socket.on('connect', () => {
+      console.log(\`[+] Port \${port} is OPEN\`);
+      socket.destroy();
+      resolve(true);
+    });
+    
+    socket.on('timeout', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    
+    socket.on('error', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    
+    socket.connect(port, host);
+  });
+}
+
+async function scan(host, startPort = 1, endPort = 1024) {
+  console.log(\`\\nScanning \${host} from port \${startPort} to \${endPort}...\\n\`);
+  
+  for (let port = startPort; port <= endPort; port++) {
+    await scanPort(host, port);
+  }
+  
+  console.log('\\n[*] Scan complete');
+}
+
+// Usage: scan('127.0.0.1', 1, 100);
+scan(process.argv[2] || '127.0.0.1');`,
+  },
+  {
+    name: { ar: "مولد كلمات المرور (JS)", en: "Password Generator (JS)" },
+    description: { ar: "توليد كلمات مرور قوية", en: "Generate strong passwords" },
+    language: "JavaScript",
+    code: `const crypto = require('crypto');
+
+function generatePassword(length = 16, options = {}) {
+  const {
+    uppercase = true,
+    lowercase = true,
+    numbers = true,
+    symbols = true
+  } = options;
+  
+  let charset = '';
+  if (uppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (lowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+  if (numbers) charset += '0123456789';
+  if (symbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+  
+  if (!charset) return 'Error: No character set selected';
+  
+  const randomBytes = crypto.randomBytes(length);
+  let password = '';
+  
+  for (let i = 0; i < length; i++) {
+    password += charset[randomBytes[i] % charset.length];
+  }
+  
+  return password;
+}
+
+// Calculate password strength
+function checkStrength(password) {
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (password.length >= 12) score++;
+  if (/[a-z]/.test(password)) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^a-zA-Z0-9]/.test(password)) score++;
+  
+  const levels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+  return levels[Math.min(score, 5)];
+}
+
+// Generate 5 passwords
+console.log('Generated Passwords:\\n');
+for (let i = 0; i < 5; i++) {
+  const pwd = generatePassword(20);
+  console.log(\`  \${i + 1}. \${pwd} [\${checkStrength(pwd)}]\`);
+}`,
+  },
+  {
+    name: { ar: "كاسر الهاش (JS)", en: "Hash Cracker (JS)" },
+    description: { ar: "كسر هاشات MD5 و SHA", en: "Crack MD5 and SHA hashes" },
+    language: "JavaScript",
+    code: `const crypto = require('crypto');
+const fs = require('fs');
+const readline = require('readline');
+
+async function crackHash(targetHash, wordlistPath, hashType = 'md5') {
+  console.log(\`\\n[*] Attempting to crack \${hashType.toUpperCase()} hash...\`);
+  console.log(\`[*] Target: \${targetHash}\\n\`);
+  
+  const fileStream = fs.createReadStream(wordlistPath);
+  const rl = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity
+  });
+  
+  let attempts = 0;
+  
+  for await (const word of rl) {
+    attempts++;
+    const hash = crypto.createHash(hashType).update(word.trim()).digest('hex');
+    
+    if (hash === targetHash.toLowerCase()) {
+      console.log(\`[+] Password found: \${word}\`);
+      console.log(\`[+] Attempts: \${attempts}\`);
+      return word;
+    }
+    
+    if (attempts % 10000 === 0) {
+      process.stdout.write(\`\\r[*] Tried \${attempts} passwords...\`);
+    }
+  }
+  
+  console.log(\`\\n[-] Password not found after \${attempts} attempts\`);
+  return null;
+}
+
+// Example usage:
+// crackHash('5d41402abc4b2a76b9719d911017c592', 'wordlist.txt', 'md5');
+
+// Quick hash generator
+function hashString(text, algorithm = 'md5') {
+  return crypto.createHash(algorithm).update(text).digest('hex');
+}
+
+console.log('Hash Examples:');
+console.log(\`MD5:    \${hashString('hello', 'md5')}\`);
+console.log(\`SHA1:   \${hashString('hello', 'sha1')}\`);
+console.log(\`SHA256: \${hashString('hello', 'sha256')}\`);`,
+  },
+  {
+    name: { ar: "مستخرج الروابط", en: "Link Extractor" },
+    description: { ar: "استخراج جميع الروابط من صفحة ويب", en: "Extract all links from a webpage" },
+    language: "JavaScript",
+    code: `const https = require('https');
+const http = require('http');
+const { URL } = require('url');
+
+function extractLinks(targetUrl) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(targetUrl);
+    const client = url.protocol === 'https:' ? https : http;
+    
+    console.log(\`\\n[*] Fetching \${targetUrl}...\\n\`);
+    
+    client.get(targetUrl, (res) => {
+      let html = '';
+      
+      res.on('data', (chunk) => html += chunk);
+      res.on('end', () => {
+        // Extract all href links
+        const hrefRegex = /href=["']([^"']+)["']/gi;
+        const srcRegex = /src=["']([^"']+)["']/gi;
+        
+        const links = new Set();
+        let match;
+        
+        while ((match = hrefRegex.exec(html)) !== null) {
+          links.add(match[1]);
+        }
+        while ((match = srcRegex.exec(html)) !== null) {
+          links.add(match[1]);
+        }
+        
+        const result = Array.from(links);
+        
+        console.log(\`[+] Found \${result.length} links:\\n\`);
+        result.forEach((link, i) => {
+          console.log(\`  \${i + 1}. \${link}\`);
+        });
+        
+        resolve(result);
+      });
+    }).on('error', reject);
+  });
+}
+
+// Usage: extractLinks('https://example.com');
+const target = process.argv[2] || 'https://example.com';
+extractLinks(target).catch(console.error);`,
+  },
+  {
+    name: { ar: "فاحص HTTP Headers", en: "HTTP Headers Checker" },
+    description: { ar: "فحص رؤوس HTTP للموقع", en: "Check website HTTP headers" },
+    language: "JavaScript",
+    code: `const https = require('https');
+const http = require('http');
+const { URL } = require('url');
+
+function checkHeaders(targetUrl) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(targetUrl);
+    const client = url.protocol === 'https:' ? https : http;
+    
+    console.log(\`\\n[*] Checking headers for: \${targetUrl}\\n\`);
+    console.log('='.repeat(50));
+    
+    client.get(targetUrl, (res) => {
+      console.log(\`\\n[+] Status: \${res.statusCode} \${res.statusMessage}\\n\`);
+      console.log('[+] Response Headers:\\n');
+      
+      const securityHeaders = [
+        'content-security-policy',
+        'x-frame-options',
+        'x-xss-protection',
+        'x-content-type-options',
+        'strict-transport-security',
+        'referrer-policy'
+      ];
+      
+      Object.entries(res.headers).forEach(([key, value]) => {
+        const isSecurityHeader = securityHeaders.includes(key.toLowerCase());
+        const prefix = isSecurityHeader ? '[SECURITY]' : '          ';
+        console.log(\`\${prefix} \${key}: \${value}\`);
+      });
+      
+      // Check missing security headers
+      console.log('\\n[*] Security Header Analysis:\\n');
+      securityHeaders.forEach(header => {
+        const exists = res.headers[header];
+        const status = exists ? '[✓] Present' : '[✗] Missing';
+        console.log(\`  \${status}: \${header}\`);
+      });
+      
+      resolve(res.headers);
+    }).on('error', reject);
+  });
+}
+
+// Usage
+const target = process.argv[2] || 'https://example.com';
+checkHeaders(target).catch(console.error);`,
+  },
+  {
+    name: { ar: "مشفر Base64", en: "Base64 Encoder/Decoder" },
+    description: { ar: "تشفير وفك تشفير Base64", en: "Encode and decode Base64" },
+    language: "JavaScript",
+    code: `// Base64 Encoder/Decoder with multiple modes
+
+function encode(text) {
+  return Buffer.from(text).toString('base64');
+}
+
+function decode(base64) {
+  return Buffer.from(base64, 'base64').toString('utf8');
+}
+
+function encodeUrl(text) {
+  return Buffer.from(text).toString('base64url');
+}
+
+function decodeUrl(base64url) {
+  return Buffer.from(base64url, 'base64url').toString('utf8');
+}
+
+// Encode file to base64
+function encodeFile(filePath) {
+  const fs = require('fs');
+  const data = fs.readFileSync(filePath);
+  return data.toString('base64');
+}
+
+// Interactive mode
+const text = 'Hello, World! مرحبا بالعالم';
+
+console.log('='.repeat(50));
+console.log('       BASE64 ENCODER/DECODER');
+console.log('='.repeat(50));
+console.log(\`\\nOriginal: \${text}\`);
+console.log('\\n[Encoding]');
+
+const encoded = encode(text);
+console.log(\`  Standard: \${encoded}\`);
+
+const urlEncoded = encodeUrl(text);
+console.log(\`  URL-Safe: \${urlEncoded}\`);
+
+console.log('\\n[Decoding]');
+console.log(\`  Decoded:  \${decode(encoded)}\`);
+
+// XOR cipher for simple obfuscation
+function xorCipher(text, key) {
+  let result = '';
+  for (let i = 0; i < text.length; i++) {
+    result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+  }
+  return encode(result);
+}
+
+console.log('\\n[XOR + Base64]');
+const secret = xorCipher('secret message', 'key123');
+console.log(\`  Encrypted: \${secret}\`);`,
+  },
+  {
+    name: { ar: "منشئ Wordlist", en: "Wordlist Generator" },
+    description: { ar: "إنشاء قوائم كلمات مرور مخصصة", en: "Generate custom password wordlists" },
+    language: "JavaScript",
+    code: `const fs = require('fs');
+
+class WordlistGenerator {
+  constructor() {
+    this.words = new Set();
+  }
+  
+  // Add base words
+  addWords(words) {
+    words.forEach(w => this.words.add(w));
+  }
+  
+  // Add number variations
+  addNumbers(word) {
+    for (let i = 0; i <= 9999; i++) {
+      this.words.add(word + i);
+      this.words.add(i + word);
+    }
+  }
+  
+  // Add common substitutions
+  addLeetSpeak(word) {
+    const subs = { a: '@4', e: '3', i: '1!', o: '0', s: '$5', t: '7' };
+    let result = word;
+    
+    for (const [char, replacements] of Object.entries(subs)) {
+      for (const rep of replacements) {
+        this.words.add(word.replace(new RegExp(char, 'gi'), rep));
+      }
+    }
+  }
+  
+  // Add common suffixes
+  addCommonSuffixes(word) {
+    const suffixes = ['!', '!!', '123', '1234', '12345', '@', '#', 
+                      '2023', '2024', '2025', '_', '-'];
+    suffixes.forEach(s => {
+      this.words.add(word + s);
+      this.words.add(s + word);
+    });
+  }
+  
+  // Generate case variations
+  addCaseVariations(word) {
+    this.words.add(word.toLowerCase());
+    this.words.add(word.toUpperCase());
+    this.words.add(word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+  }
+  
+  // Generate full wordlist
+  generate(baseWords, options = {}) {
+    const { numbers = true, leet = true, suffixes = true, cases = true } = options;
+    
+    this.addWords(baseWords);
+    
+    baseWords.forEach(word => {
+      if (cases) this.addCaseVariations(word);
+      if (leet) this.addLeetSpeak(word);
+      if (suffixes) this.addCommonSuffixes(word);
+    });
+    
+    return Array.from(this.words);
+  }
+  
+  // Save to file
+  save(filename) {
+    fs.writeFileSync(filename, Array.from(this.words).join('\\n'));
+    console.log(\`[+] Saved \${this.words.size} passwords to \${filename}\`);
+  }
+}
+
+// Usage
+const gen = new WordlistGenerator();
+const words = gen.generate(['admin', 'password', 'test', 'user']);
+console.log(\`Generated \${words.length} passwords\`);
+console.log('Sample:', words.slice(0, 10));`,
+  },
 ];
 
 const ScriptsPage = () => {
   const [copied, setCopied] = useState<number | null>(null);
-  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "Bash">("all");
+  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "Bash" | "JavaScript">("all");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
 
   const copyToClipboard = (code: string, index: number) => {
@@ -826,6 +1220,7 @@ const ScriptsPage = () => {
       case "Python": return "bg-blue-500/20 text-blue-400 border-blue-500/30";
       case "C++": return "bg-purple-500/20 text-purple-400 border-purple-500/30";
       case "Bash": return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "JavaScript": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
       default: return "bg-primary/20 text-primary border-primary/30";
     }
   };
@@ -833,8 +1228,8 @@ const ScriptsPage = () => {
   const t = {
     title: language === "ar" ? "السكربتات الجاهزة" : "Ready-to-Use Scripts",
     subtitle: language === "ar" 
-      ? `${scripts.length} سكربت بلغات Python و C++ و Bash` 
-      : `${scripts.length} scripts in Python, C++, and Bash`,
+      ? `${scripts.length} سكربت بلغات Python و C++ و Bash و JavaScript` 
+      : `${scripts.length} scripts in Python, C++, Bash, and JavaScript`,
     all: language === "ar" ? "الكل" : "All",
   };
 
@@ -866,7 +1261,7 @@ const ScriptsPage = () => {
 
           {/* Filter Buttons */}
           <div className="flex justify-center gap-3 mb-10 flex-wrap">
-            {["all", "Python", "C++", "Bash"].map((lang) => (
+            {["all", "Python", "C++", "Bash", "JavaScript"].map((lang) => (
               <button
                 key={lang}
                 onClick={() => setFilter(lang as typeof filter)}
