@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Terminal, Copy, Check, Globe, FolderOpen, FileText, User, Settings, HardDrive, Network, Search, Trash2, Edit, Archive, Clock, Key, Shield, Monitor, Cpu, Database, Command, ArrowRight, Home, List, Eye, Download, Upload, Layers, Box, RefreshCw, Power, Zap } from "lucide-react";
+import { Terminal, Copy, Check, Globe, FolderOpen, FileText, User, Settings, HardDrive, Network, Search, Trash2, Edit, Archive, Clock, Key, Shield, Monitor, Cpu, Database, Command, ArrowRight, Home, List, Eye, Download, Upload, Layers, Box, RefreshCw, Power, Zap, Wifi, Bug, Server } from "lucide-react";
 import { useState } from "react";
 
 interface KaliCommand {
@@ -162,6 +162,48 @@ const kaliCommands: KaliCommand[] = [
   { command: "watch -n 1 command", description: { ar: "تنفيذ أمر كل ثانية", en: "Execute command every second" }, icon: <Eye className="w-5 h-5" />, category: "other" },
   { command: "screen", description: { ar: "جلسة طرفية مستمرة", en: "Persistent terminal session" }, icon: <Monitor className="w-5 h-5" />, category: "other" },
   { command: "tmux", description: { ar: "مدير جلسات متقدم", en: "Advanced session manager" }, icon: <Monitor className="w-5 h-5" />, category: "other" },
+  
+  // Security Commands
+  { command: "nikto -h target", description: { ar: "فحص أمان الويب", en: "Web security scan" }, icon: <Shield className="w-5 h-5" />, category: "security" },
+  { command: "nmap -sV target", description: { ar: "فحص الخدمات", en: "Service scan" }, icon: <Network className="w-5 h-5" />, category: "security" },
+  { command: "nmap -sS -p- target", description: { ar: "فحص كل المنافذ", en: "Full port scan" }, icon: <Network className="w-5 h-5" />, category: "security" },
+  { command: "hydra -l admin -P pass.txt ssh://target", description: { ar: "هجوم SSH", en: "SSH brute force" }, icon: <Key className="w-5 h-5" />, category: "security" },
+  { command: "sqlmap -u 'URL?id=1'", description: { ar: "فحص SQL Injection", en: "SQL injection scan" }, icon: <Database className="w-5 h-5" />, category: "security" },
+  { command: "dirb http://target /usr/share/wordlists/dirb/common.txt", description: { ar: "اكتشاف المجلدات", en: "Directory discovery" }, icon: <FolderOpen className="w-5 h-5" />, category: "security" },
+  { command: "gobuster dir -u http://target -w wordlist.txt", description: { ar: "Fuzzing المجلدات", en: "Directory fuzzing" }, icon: <Search className="w-5 h-5" />, category: "security" },
+  { command: "john --wordlist=rockyou.txt hash.txt", description: { ar: "كسر الهاش", en: "Crack hash" }, icon: <Key className="w-5 h-5" />, category: "security" },
+  { command: "hashcat -m 0 hash.txt wordlist.txt", description: { ar: "كسر هاش GPU", en: "GPU hash cracking" }, icon: <Cpu className="w-5 h-5" />, category: "security" },
+  { command: "msfconsole", description: { ar: "تشغيل Metasploit", en: "Start Metasploit" }, icon: <Terminal className="w-5 h-5" />, category: "security" },
+  { command: "airmon-ng start wlan0", description: { ar: "تفعيل وضع المراقبة", en: "Enable monitor mode" }, icon: <Wifi className="w-5 h-5" />, category: "security" },
+  { command: "airodump-ng wlan0mon", description: { ar: "مسح شبكات WiFi", en: "Scan WiFi networks" }, icon: <Wifi className="w-5 h-5" />, category: "security" },
+  { command: "wpscan --url http://target", description: { ar: "فحص WordPress", en: "WordPress scan" }, icon: <Globe className="w-5 h-5" />, category: "security" },
+  { command: "enum4linux -a target", description: { ar: "استطلاع SMB", en: "SMB enumeration" }, icon: <Server className="w-5 h-5" />, category: "security" },
+  { command: "smbclient -L //target", description: { ar: "قائمة مشاركات SMB", en: "List SMB shares" }, icon: <HardDrive className="w-5 h-5" />, category: "security" },
+  { command: "crackmapexec smb target -u user -p pass", description: { ar: "فحص SMB", en: "SMB check" }, icon: <Shield className="w-5 h-5" />, category: "security" },
+  { command: "responder -I eth0", description: { ar: "التقاط NTLM", en: "Capture NTLM" }, icon: <Eye className="w-5 h-5" />, category: "security" },
+  { command: "tcpdump -i eth0 -w capture.pcap", description: { ar: "التقاط الحزم", en: "Capture packets" }, icon: <Network className="w-5 h-5" />, category: "security" },
+  { command: "netdiscover -i eth0", description: { ar: "اكتشاف الشبكة", en: "Network discovery" }, icon: <Network className="w-5 h-5" />, category: "security" },
+  { command: "arp-scan -l", description: { ar: "فحص ARP", en: "ARP scan" }, icon: <Network className="w-5 h-5" />, category: "security" },
+  { command: "whatweb http://target", description: { ar: "بصمات تقنيات الويب", en: "Web tech fingerprint" }, icon: <Globe className="w-5 h-5" />, category: "security" },
+  { command: "theHarvester -d domain.com -b all", description: { ar: "جمع المعلومات", en: "Info gathering" }, icon: <Search className="w-5 h-5" />, category: "security" },
+  { command: "sublist3r -d domain.com", description: { ar: "اكتشاف النطاقات الفرعية", en: "Subdomain discovery" }, icon: <Globe className="w-5 h-5" />, category: "security" },
+  { command: "nuclei -u https://target", description: { ar: "فحص الثغرات", en: "Vulnerability scan" }, icon: <Bug className="w-5 h-5" />, category: "security" },
+  { command: "masscan -p1-65535 target --rate=10000", description: { ar: "فحص سريع للمنافذ", en: "Fast port scan" }, icon: <Zap className="w-5 h-5" />, category: "security" },
+  { command: "ffuf -u http://target/FUZZ -w wordlist.txt", description: { ar: "Fuzzing الويب", en: "Web fuzzing" }, icon: <Search className="w-5 h-5" />, category: "security" },
+  { command: "./linpeas.sh", description: { ar: "تصعيد صلاحيات Linux", en: "Linux privilege escalation" }, icon: <Shield className="w-5 h-5" />, category: "security" },
+  { command: "searchsploit keyword", description: { ar: "بحث عن ثغرات", en: "Search exploits" }, icon: <Bug className="w-5 h-5" />, category: "security" },
+  
+  // Git Commands
+  { command: "git clone URL", description: { ar: "استنساخ مستودع", en: "Clone repository" }, icon: <Download className="w-5 h-5" />, category: "git" },
+  { command: "git pull", description: { ar: "تحديث المستودع", en: "Update repository" }, icon: <RefreshCw className="w-5 h-5" />, category: "git" },
+  { command: "git status", description: { ar: "حالة التغييرات", en: "Check status" }, icon: <Eye className="w-5 h-5" />, category: "git" },
+  { command: "git add .", description: { ar: "إضافة كل الملفات", en: "Add all files" }, icon: <Upload className="w-5 h-5" />, category: "git" },
+  { command: "git commit -m 'message'", description: { ar: "حفظ التغييرات", en: "Commit changes" }, icon: <FileText className="w-5 h-5" />, category: "git" },
+  { command: "git push", description: { ar: "رفع التغييرات", en: "Push changes" }, icon: <Upload className="w-5 h-5" />, category: "git" },
+  { command: "git branch", description: { ar: "عرض الفروع", en: "List branches" }, icon: <Layers className="w-5 h-5" />, category: "git" },
+  { command: "git checkout branch", description: { ar: "التبديل للفرع", en: "Switch branch" }, icon: <ArrowRight className="w-5 h-5" />, category: "git" },
+  { command: "git log --oneline", description: { ar: "سجل مختصر", en: "Short log" }, icon: <Clock className="w-5 h-5" />, category: "git" },
+  { command: "git diff", description: { ar: "عرض التغييرات", en: "Show changes" }, icon: <Eye className="w-5 h-5" />, category: "git" },
 ];
 
 const categories = [
@@ -175,6 +217,8 @@ const categories = [
   { id: "network", label: { ar: "الشبكة", en: "Network" } },
   { id: "packages", label: { ar: "الحزم", en: "Packages" } },
   { id: "compression", label: { ar: "الضغط", en: "Compression" } },
+  { id: "security", label: { ar: "الأمان", en: "Security" } },
+  { id: "git", label: { ar: "Git", en: "Git" } },
   { id: "other", label: { ar: "أخرى", en: "Other" } },
 ];
 
