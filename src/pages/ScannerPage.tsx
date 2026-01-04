@@ -276,15 +276,15 @@ const ScannerPage = () => {
               {filteredCommands.map((cmd, index) => (
                 <div
                   key={index}
-                  className="cyber-card p-4 hover:border-primary/50 transition-all group"
+                  className="cyber-card p-5 hover:border-primary/50 transition-all group"
                 >
-                  <div className="flex items-start gap-3">
-                    <span className="w-10 h-10 rounded-lg bg-primary/20 text-primary flex items-center justify-center flex-shrink-0">
+                  <div className="flex items-start gap-4">
+                    <span className="w-14 h-14 rounded-xl bg-primary/20 text-primary flex items-center justify-center flex-shrink-0">
                       {cmd.icon}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <code className="text-primary text-sm font-mono bg-background/50 px-2 py-1 rounded break-all flex-1" dir="ltr">
+                      <div className="flex items-center gap-2 mb-3">
+                        <code className="text-primary text-base font-mono bg-background/50 px-3 py-2 rounded-lg break-all flex-1" dir="ltr">
                           {cmd.command}
                         </code>
                         <button
@@ -298,7 +298,7 @@ const ScannerPage = () => {
                           )}
                         </button>
                       </div>
-                      <p className="text-muted-foreground text-sm">
+                      <p className="text-muted-foreground text-base">
                         {language === "ar" ? cmd.description.ar : cmd.description.en}
                       </p>
                     </div>

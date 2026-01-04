@@ -767,21 +767,21 @@ const ToolsPage = () => {
                   className="w-full p-5 flex items-center justify-between hover:bg-primary/5 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
+                    <div className="w-16 h-16 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center">
                       {(() => {
                         const IconComponent = toolIcons[tool.name] || Terminal;
-                        return <IconComponent className="w-6 h-6 text-primary" />;
+                        return <IconComponent className="w-8 h-8 text-primary" />;
                       })()}
                     </div>
                     <div className={language === "ar" ? "text-right" : "text-left"}>
-                      <h3 className="text-xl font-bold text-primary">{tool.name}</h3>
-                      <p className="text-muted-foreground text-sm">
+                      <h3 className="text-2xl font-bold text-primary">{tool.name}</h3>
+                      <p className="text-muted-foreground text-base mt-1">
                         {language === "ar" ? tool.description.ar : tool.description.en}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-muted-foreground text-sm">{tool.commands.length} {t.commands}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="px-3 py-1 rounded-lg bg-primary/10 text-primary text-sm font-medium">{tool.commands.length} {t.commands}</span>
                     {expandedTool === index ? (
                       <ChevronUp className="w-6 h-6 text-primary" />
                     ) : (
