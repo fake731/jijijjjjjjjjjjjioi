@@ -1357,46 +1357,46 @@ const GuidePage = () => {
           </div>
 
           {/* Tips Section */}
-          <div className="max-w-5xl mx-auto mt-12">
-            <div className="cyber-card p-8">
-              <h3 className="text-2xl font-bold text-primary mb-6 text-center">نصائح ذهبية للمبتدئين</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 rounded-xl bg-secondary/30 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
-                    <BookOpen className="w-8 h-8 text-primary" />
+          <div className="max-w-6xl mx-auto mt-16">
+            <div className="cyber-card p-10">
+              <h3 className="text-3xl font-bold text-primary mb-8 text-center">نصائح ذهبية للمبتدئين</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
+                    <BookOpen className="w-10 h-10 text-primary" />
                   </div>
-                  <h4 className="text-lg font-bold text-foreground mb-2">تعلم الأساسيات</h4>
-                  <p className="text-muted-foreground text-sm">ابدأ بتعلم الشبكات، لينكس، والبرمجة قبل التعمق في الأمن السيبراني</p>
+                  <h4 className="text-xl font-bold text-foreground mb-3">تعلم الأساسيات</h4>
+                  <p className="text-muted-foreground text-base leading-relaxed">ابدأ بتعلم الشبكات، لينكس، والبرمجة قبل التعمق في الأمن السيبراني</p>
                 </div>
-                <div className="p-6 rounded-xl bg-secondary/30 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
-                    <Target className="w-8 h-8 text-primary" />
+                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
+                    <Target className="w-10 h-10 text-primary" />
                   </div>
-                  <h4 className="text-lg font-bold text-foreground mb-2">تدرب باستمرار</h4>
-                  <p className="text-muted-foreground text-sm">استخدم منصات مثل HackTheBox و TryHackMe للتدريب العملي يومياً</p>
+                  <h4 className="text-xl font-bold text-foreground mb-3">تدرب باستمرار</h4>
+                  <p className="text-muted-foreground text-base leading-relaxed">استخدم منصات مثل HackTheBox و TryHackMe للتدريب العملي يومياً</p>
                 </div>
-                <div className="p-6 rounded-xl bg-secondary/30 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
-                    <Shield className="w-8 h-8 text-primary" />
+                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
+                    <Shield className="w-10 h-10 text-primary" />
                   </div>
-                  <h4 className="text-lg font-bold text-foreground mb-2">كن أخلاقياً</h4>
-                  <p className="text-muted-foreground text-sm">استخدم معرفتك لحماية الأنظمة واحترم القوانين دائماً</p>
+                  <h4 className="text-xl font-bold text-foreground mb-3">كن أخلاقياً</h4>
+                  <p className="text-muted-foreground text-base leading-relaxed">استخدم معرفتك لحماية الأنظمة واحترم القوانين دائماً</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                <div className="p-6 rounded-xl bg-secondary/30 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
-                    <Users className="w-8 h-8 text-primary" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
+                    <Users className="w-10 h-10 text-primary" />
                   </div>
-                  <h4 className="text-lg font-bold text-foreground mb-2">انضم للمجتمعات</h4>
-                  <p className="text-muted-foreground text-sm">شارك في المجتمعات وتواصل مع المحترفين لتسريع تعلمك</p>
+                  <h4 className="text-xl font-bold text-foreground mb-3">انضم للمجتمعات</h4>
+                  <p className="text-muted-foreground text-base leading-relaxed">شارك في المجتمعات وتواصل مع المحترفين لتسريع تعلمك</p>
                 </div>
-                <div className="p-6 rounded-xl bg-secondary/30 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-4">
-                    <Zap className="w-8 h-8 text-primary" />
+                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
+                    <Zap className="w-10 h-10 text-primary" />
                   </div>
-                  <h4 className="text-lg font-bold text-foreground mb-2">لا تتوقف</h4>
-                  <p className="text-muted-foreground text-sm">هذا المجال يتطور باستمرار - التعلم المستمر هو مفتاح النجاح</p>
+                  <h4 className="text-xl font-bold text-foreground mb-3">لا تتوقف</h4>
+                  <p className="text-muted-foreground text-base leading-relaxed">هذا المجال يتطور باستمرار - التعلم المستمر هو مفتاح النجاح</p>
                 </div>
               </div>
             </div>
