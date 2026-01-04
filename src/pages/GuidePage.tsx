@@ -1287,13 +1287,13 @@ const GuidePage = () => {
                   onClick={() => toggleTopic(index)}
                   className="w-full p-6 flex items-center justify-between hover:bg-primary/5 transition-colors"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center">
-                      <topic.icon className="w-7 h-7 text-primary" />
+                  <div className="flex items-center gap-5">
+                    <div className="w-18 h-18 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center" style={{ width: '72px', height: '72px' }}>
+                      <topic.icon className="w-9 h-9 text-primary" />
                     </div>
                     <div className="text-right">
-                      <h2 className="text-xl md:text-2xl font-bold text-primary">{topic.title}</h2>
-                      <p className="text-muted-foreground text-sm mt-1">{topic.description}</p>
+                      <h2 className="text-2xl md:text-3xl font-bold text-primary">{topic.title}</h2>
+                      <p className="text-muted-foreground text-base mt-2">{topic.description}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -1319,11 +1319,11 @@ const GuidePage = () => {
                             onClick={() => toggleSubTopic(subTopicId)}
                             className="w-full p-4 flex items-center justify-between hover:bg-secondary/50 transition-colors"
                           >
-                            <div className="flex items-center gap-3">
-                              <span className="w-8 h-8 rounded-lg bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">
+                            <div className="flex items-center gap-4">
+                              <span className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold text-base">
                                 {subIndex + 1}
                               </span>
-                              <h3 className="text-lg font-semibold text-foreground">{subTopic.title}</h3>
+                              <h3 className="text-xl font-semibold text-foreground">{subTopic.title}</h3>
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="hidden sm:block text-xs text-muted-foreground">
@@ -1338,11 +1338,11 @@ const GuidePage = () => {
                           </button>
 
                           {expandedSubTopic === subTopicId && (
-                            <div className="px-4 pb-4 space-y-2 animate-fade-in">
+                            <div className="px-5 pb-5 space-y-3 animate-fade-in">
                               {subTopic.content.map((item, itemIndex) => (
-                                <div key={itemIndex} className="flex items-start gap-3 p-3 rounded-lg bg-background/50">
-                                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                                  <p className="text-muted-foreground leading-relaxed">{item}</p>
+                                <div key={itemIndex} className="flex items-start gap-4 p-4 rounded-xl bg-background/50">
+                                  <CheckCircle className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
+                                  <p className="text-foreground text-base leading-relaxed">{item}</p>
                                 </div>
                               ))}
                             </div>

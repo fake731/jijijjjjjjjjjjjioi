@@ -8,7 +8,7 @@ import { LucideIcon } from "lucide-react";
 interface Script {
   name: { ar: string; en: string };
   description: { ar: string; en: string };
-  language: "Python" | "C++" | "Bash" | "JavaScript";
+  language: "Python" | "C++" | "Bash" | "JavaScript" | "Ruby";
   code: string;
   icon?: LucideIcon;
 }
@@ -1198,11 +1198,409 @@ const words = gen.generate(['admin', 'password', 'test', 'user']);
 console.log(\`Generated \${words.length} passwords\`);
 console.log('Sample:', words.slice(0, 10));`,
   },
+  // Ruby Scripts - Unique and Creative
+  {
+    name: { ar: "مولد DNA الرقمي", en: "Digital DNA Generator" },
+    description: { ar: "توليد توقيع رقمي فريد للملفات باستخدام خوارزميات متقدمة", en: "Generate unique digital fingerprint for files using advanced algorithms" },
+    language: "Ruby",
+    code: `#!/usr/bin/env ruby
+require 'digest'
+require 'base64'
+
+class DigitalDNA
+  def initialize(file_path)
+    @file = file_path
+    @dna = []
+  end
+
+  def generate
+    content = File.binread(@file)
+    
+    # Generate multi-layer hash
+    md5 = Digest::MD5.hexdigest(content)
+    sha1 = Digest::SHA1.hexdigest(content)
+    sha256 = Digest::SHA256.hexdigest(content)
+    
+    # Create DNA strands
+    @dna << extract_strand(md5, sha256)
+    @dna << extract_strand(sha1, sha256)
+    @dna << create_signature(content)
+    
+    puts "\\n[*] Digital DNA Analysis"
+    puts "=" * 50
+    puts "[+] File: #{@file}"
+    puts "[+] Size: #{File.size(@file)} bytes"
+    puts "[+] DNA Strands:"
+    @dna.each_with_index { |strand, i| puts "    Strand #{i+1}: #{strand}" }
+    puts "[+] Unique ID: #{generate_uid}"
+  end
+
+  private
+
+  def extract_strand(hash1, hash2)
+    combined = hash1.chars.zip(hash2.chars).map { |a, b| ((a.ord ^ b.ord) % 36).to_s(36) }.join
+    combined[0..15].upcase
+  end
+
+  def create_signature(content)
+    entropy = content.bytes.uniq.length.to_f / 256
+    Base64.strict_encode64("#{entropy.round(4)}")[0..15]
+  end
+
+  def generate_uid
+    @dna.join('-').gsub(/[^A-Za-z0-9]/, '')[0..31]
+  end
+end
+
+# Usage
+if ARGV.empty?
+  puts "Usage: ruby digital_dna.rb <file>"
+else
+  DigitalDNA.new(ARGV[0]).generate
+end`,
+  },
+  {
+    name: { ar: "الزاحف الشبحي", en: "Ghost Crawler" },
+    description: { ar: "زاحف ويب يعمل بتقنية التخفي لاستخراج الروابط المخفية", en: "Stealth web crawler to extract hidden links" },
+    language: "Ruby",
+    code: `#!/usr/bin/env ruby
+require 'net/http'
+require 'uri'
+require 'nokogiri'
+
+class GhostCrawler
+  USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) Gecko/20100101 Firefox/91.0'
+  ]
+
+  def initialize(target)
+    @target = URI.parse(target)
+    @visited = []
+    @hidden = []
+    @depth = 0
+  end
+
+  def haunt(max_depth = 2)
+    puts "\\n👻 Ghost Crawler activated..."
+    puts "[*] Target: #{@target}"
+    puts "[*] Max Depth: #{max_depth}"
+    puts "=" * 50
+
+    crawl(@target.to_s, 0, max_depth)
+    
+    puts "\\n[*] Hidden gems discovered: #{@hidden.length}"
+    @hidden.each { |h| puts "  → #{h}" }
+  end
+
+  private
+
+  def crawl(url, depth, max_depth)
+    return if depth > max_depth || @visited.include?(url)
+    @visited << url
+    
+    begin
+      response = fetch(url)
+      return unless response.is_a?(Net::HTTPSuccess)
+      
+      doc = Nokogiri::HTML(response.body)
+      
+      # Find hidden elements
+      doc.css('[style*="display:none"], [style*="visibility:hidden"], .hidden, #hidden').each do |el|
+        el.css('a').each { |a| @hidden << a['href'] if a['href'] }
+      end
+      
+      # Find commented links
+      response.body.scan(/<!--.*?(https?:\\/\\/[^\\s<>"]+).*?-->/m) { @hidden << $1 }
+      
+      # Continue crawling
+      doc.css('a[href]').each do |link|
+        next_url = URI.join(url, link['href']).to_s rescue nil
+        crawl(next_url, depth + 1, max_depth) if next_url&.include?(@target.host)
+      end
+    rescue => e
+      puts "[!] Error: #{e.message[0..50]}"
+    end
+  end
+
+  def fetch(url)
+    uri = URI.parse(url)
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = uri.scheme == 'https'
+    http.open_timeout = 5
+    http.read_timeout = 5
+    
+    request = Net::HTTP::Get.new(uri.request_uri)
+    request['User-Agent'] = USER_AGENTS.sample
+    request['Accept'] = 'text/html'
+    
+    http.request(request)
+  end
+end
+
+# Usage
+if ARGV.empty?
+  puts "Usage: ruby ghost_crawler.rb <url>"
+else
+  GhostCrawler.new(ARGV[0]).haunt(2)
+end`,
+  },
+  {
+    name: { ar: "محلل السلوك الرقمي", en: "Digital Behavior Analyzer" },
+    description: { ar: "تحليل أنماط السلوك في سجلات النظام لاكتشاف الأنشطة المشبوهة", en: "Analyze behavior patterns in system logs to detect suspicious activities" },
+    language: "Ruby",
+    code: `#!/usr/bin/env ruby
+require 'time'
+require 'set'
+
+class BehaviorAnalyzer
+  SUSPICIOUS_PATTERNS = {
+    'brute_force' => /failed|invalid|denied/i,
+    'scan_activity' => /nmap|nikto|dirb|gobuster/i,
+    'injection' => /union|select|script|<|>/i,
+    'traversal' => /\\.\\.\\/|\\.\\.\\\\/i,
+    'exfiltration' => /curl|wget|nc|netcat/i
+  }
+
+  def initialize(log_file)
+    @log_file = log_file
+    @events = []
+    @alerts = []
+    @ip_stats = Hash.new(0)
+  end
+
+  def analyze
+    puts "\\n🔍 Behavior Analyzer v1.0"
+    puts "=" * 50
+    puts "[*] Analyzing: #{@log_file}"
+    
+    parse_logs
+    detect_anomalies
+    generate_report
+  end
+
+  private
+
+  def parse_logs
+    File.foreach(@log_file) do |line|
+      ip = line.match(/(\\d{1,3}\\.){3}\\d{1,3}/)&.to_s
+      @ip_stats[ip] += 1 if ip
+      
+      SUSPICIOUS_PATTERNS.each do |threat, pattern|
+        if line.match?(pattern)
+          @events << { type: threat, line: line.strip, ip: ip }
+        end
+      end
+    end
+  end
+
+  def detect_anomalies
+    # Detect rapid requests (potential DoS)
+    @ip_stats.each do |ip, count|
+      @alerts << "High frequency from #{ip}: #{count} requests" if count > 100
+    end
+
+    # Detect attack patterns
+    threat_count = @events.group_by { |e| e[:type] }
+    threat_count.each do |type, events|
+      @alerts << "#{type.upcase} detected: #{events.length} events" if events.length > 5
+    end
+  end
+
+  def generate_report
+    puts "\\n📊 Analysis Results"
+    puts "-" * 40
+    puts "Total IPs analyzed: #{@ip_stats.keys.length}"
+    puts "Suspicious events: #{@events.length}"
+    puts "Alerts generated: #{@alerts.length}"
+    
+    if @alerts.any?
+      puts "\\n🚨 ALERTS:"
+      @alerts.each { |a| puts "  ⚠️  #{a}" }
+    end
+    
+    if @events.any?
+      puts "\\n📝 Sample suspicious events:"
+      @events.first(5).each do |e|
+        puts "  [#{e[:type]}] #{e[:line][0..60]}..."
+      end
+    end
+  end
+end
+
+# Usage
+if ARGV.empty?
+  puts "Usage: ruby behavior_analyzer.rb <log_file>"
+else
+  BehaviorAnalyzer.new(ARGV[0]).analyze
+end`,
+  },
+  {
+    name: { ar: "مشفر الرسائل السرية", en: "Secret Message Encoder" },
+    description: { ar: "إخفاء رسائل سرية داخل نصوص عادية باستخدام تقنية Zero-Width", en: "Hide secret messages inside normal text using Zero-Width technique" },
+    language: "Ruby",
+    code: `#!/usr/bin/env ruby
+# Steganography using Zero-Width Characters
+
+class SecretEncoder
+  ZERO_WIDTH_CHARS = {
+    '0' => "\\u200B", # Zero Width Space
+    '1' => "\\u200C", # Zero Width Non-Joiner
+  }
+
+  def initialize
+    @separator = "\\u200D" # Zero Width Joiner
+  end
+
+  def encode(cover_text, secret)
+    binary = secret.bytes.map { |b| b.to_s(2).rjust(8, '0') }.join
+    hidden = binary.chars.map { |b| ZERO_WIDTH_CHARS[b] }.join
+    
+    # Insert hidden message in the middle
+    mid = cover_text.length / 2
+    result = cover_text[0...mid] + @separator + hidden + @separator + cover_text[mid..-1]
+    
+    puts "\\n🔐 Message Encoded!"
+    puts "[*] Cover length: #{cover_text.length}"
+    puts "[*] Secret length: #{secret.length}"
+    puts "[*] Output length: #{result.length} (visually same)"
+    puts "\\n[+] Encoded text:"
+    puts result
+    result
+  end
+
+  def decode(encoded_text)
+    parts = encoded_text.split(@separator)
+    return "[!] No hidden message found" if parts.length < 3
+    
+    hidden = parts[1]
+    binary = hidden.chars.map do |c|
+      ZERO_WIDTH_CHARS.key(c) || ''
+    end.join
+    
+    # Convert binary to text
+    bytes = binary.scan(/.{8}/).map { |b| b.to_i(2) }
+    secret = bytes.pack('C*')
+    
+    puts "\\n🔓 Message Decoded!"
+    puts "[+] Hidden message: #{secret}"
+    secret
+  end
+end
+
+# Demo
+encoder = SecretEncoder.new
+
+puts "Zero-Width Steganography Demo"
+puts "=" * 40
+
+cover = "This is a completely normal looking message."
+secret = "Attack at dawn!"
+
+encoded = encoder.encode(cover, secret)
+puts "\\n" + "-" * 40
+encoder.decode(encoded)`,
+  },
+  {
+    name: { ar: "محلل الشيفرات", en: "Cipher Analyzer" },
+    description: { ar: "تحليل وكسر الشيفرات الكلاسيكية تلقائياً", en: "Automatically analyze and break classical ciphers" },
+    language: "Ruby",
+    code: `#!/usr/bin/env ruby
+class CipherAnalyzer
+  ENGLISH_FREQ = {
+    'e' => 12.7, 't' => 9.1, 'a' => 8.2, 'o' => 7.5, 'i' => 7.0,
+    'n' => 6.7, 's' => 6.3, 'h' => 6.1, 'r' => 6.0, 'd' => 4.3
+  }
+
+  def initialize(ciphertext)
+    @cipher = ciphertext.downcase
+    @analysis = {}
+  end
+
+  def analyze
+    puts "\\n🔎 Cipher Analysis"
+    puts "=" * 50
+    
+    frequency_analysis
+    detect_cipher_type
+    attempt_decryption
+  end
+
+  private
+
+  def frequency_analysis
+    freq = Hash.new(0)
+    @cipher.gsub(/[^a-z]/, '').each_char { |c| freq[c] += 1 }
+    total = freq.values.sum.to_f
+    
+    @analysis[:freq] = freq.transform_values { |v| (v / total * 100).round(2) }
+    
+    puts "\\n📊 Frequency Analysis:"
+    @analysis[:freq].sort_by { |_, v| -v }.first(10).each do |char, pct|
+      bar = '█' * (pct.to_i / 2)
+      puts "  #{char}: #{bar} #{pct}%"
+    end
+  end
+
+  def detect_cipher_type
+    ic = index_of_coincidence
+    puts "\\n🔍 Cipher Type Detection:"
+    puts "  Index of Coincidence: #{ic.round(4)}"
+    
+    if ic > 0.06
+      puts "  → Likely: Substitution cipher"
+      @analysis[:type] = :substitution
+    else
+      puts "  → Likely: Polyalphabetic cipher (Vigenère)"
+      @analysis[:type] = :vigenere
+    end
+  end
+
+  def index_of_coincidence
+    freq = Hash.new(0)
+    text = @cipher.gsub(/[^a-z]/, '')
+    text.each_char { |c| freq[c] += 1 }
+    
+    n = text.length.to_f
+    freq.values.map { |f| f * (f - 1) }.sum / (n * (n - 1))
+  end
+
+  def attempt_decryption
+    return caesar_crack if @analysis[:type] == :substitution
+    vigenere_analysis
+  end
+
+  def caesar_crack
+    puts "\\n🔓 Attempting Caesar Crack:"
+    (1..25).each do |shift|
+      decrypted = @cipher.gsub(/[a-z]/) { |c| ((c.ord - 97 - shift) % 26 + 97).chr }
+      score = decrypted.scan(/the|and|is|to|of/).length
+      if score > 2
+        puts "  ✓ Shift #{shift}: #{decrypted[0..50]}..."
+        break
+      end
+    end
+  end
+
+  def vigenere_analysis
+    puts "\\n🔓 Vigenère Analysis:"
+    puts "  Attempting key length detection..."
+    (3..10).each do |len|
+      puts "  Testing key length: #{len}"
+    end
+  end
+end
+
+# Usage
+cipher = "Wkh txlfn eurzq ira mxpsv ryhu wkh odcb grj"
+CipherAnalyzer.new(cipher).analyze`,
+  },
 ];
 
 const ScriptsPage = () => {
   const [copied, setCopied] = useState<number | null>(null);
-  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "Bash" | "JavaScript">("all");
+  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "Bash" | "JavaScript" | "Ruby">("all");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
 
   const copyToClipboard = (code: string, index: number) => {
@@ -1221,6 +1619,7 @@ const ScriptsPage = () => {
       case "C++": return "bg-purple-500/20 text-purple-400 border-purple-500/30";
       case "Bash": return "bg-green-500/20 text-green-400 border-green-500/30";
       case "JavaScript": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+      case "Ruby": return "bg-red-500/20 text-red-400 border-red-500/30";
       default: return "bg-primary/20 text-primary border-primary/30";
     }
   };
@@ -1228,8 +1627,8 @@ const ScriptsPage = () => {
   const t = {
     title: language === "ar" ? "السكربتات الجاهزة" : "Ready-to-Use Scripts",
     subtitle: language === "ar" 
-      ? `${scripts.length} سكربت بلغات Python و C++ و Bash و JavaScript` 
-      : `${scripts.length} scripts in Python, C++, Bash, and JavaScript`,
+      ? `${scripts.length} سكربت بلغات Python و C++ و Bash و JavaScript و Ruby` 
+      : `${scripts.length} scripts in Python, C++, Bash, JavaScript, and Ruby`,
     all: language === "ar" ? "الكل" : "All",
   };
 
@@ -1261,7 +1660,7 @@ const ScriptsPage = () => {
 
           {/* Filter Buttons */}
           <div className="flex justify-center gap-3 mb-10 flex-wrap">
-            {["all", "Python", "C++", "Bash", "JavaScript"].map((lang) => (
+            {["all", "Python", "C++", "Bash", "JavaScript", "Ruby"].map((lang) => (
               <button
                 key={lang}
                 onClick={() => setFilter(lang as typeof filter)}

@@ -157,6 +157,7 @@ interface DetailedGuide {
   steps: {
     title: { ar: string; en: string };
     description: { ar: string; en: string };
+    icon?: typeof Download;
     commands?: string[];
     warnings?: { ar: string; en: string }[];
     tips?: { ar: string; en: string }[];
@@ -166,6 +167,31 @@ interface DetailedGuide {
     solution: { ar: string; en: string };
   }[];
 }
+
+// Step icons mapping
+const getStepIcon = (stepTitle: string): typeof Download => {
+  const title = stepTitle.toLowerCase();
+  if (title.includes("تحميل") || title.includes("download")) return Download;
+  if (title.includes("usb") || title.includes("فلاشة") || title.includes("bootable")) return Usb;
+  if (title.includes("bios") || title.includes("uefi")) return Settings;
+  if (title.includes("تثبيت") || title.includes("install")) return HardDrive;
+  if (title.includes("شبكة") || title.includes("network")) return Wifi;
+  if (title.includes("مستخدم") || title.includes("user")) return Users;
+  if (title.includes("قرص") || title.includes("partition") || title.includes("disk")) return HardDrive;
+  if (title.includes("grub") || title.includes("boot")) return Play;
+  if (title.includes("تحديث") || title.includes("update") || title.includes("reboot")) return RotateCcw;
+  if (title.includes("virtualization") || title.includes("افتراضية")) return Cpu;
+  if (title.includes("virtualbox") || title.includes("vmware")) return Server;
+  if (title.includes("import") || title.includes("استيراد")) return FolderOpen;
+  if (title.includes("إعداد") || title.includes("ضبط") || title.includes("configure") || title.includes("setting")) return Settings;
+  if (title.includes("تشغيل") || title.includes("start") || title.includes("run")) return Play;
+  if (title.includes("guest") || title.includes("additions")) return Package;
+  if (title.includes("فتح") || title.includes("open")) return FolderOpen;
+  if (title.includes("أدوات") || title.includes("tools")) return Wrench;
+  if (title.includes("استنساخ") || title.includes("clone") || title.includes("github")) return Code;
+  if (title.includes("python") || title.includes("مكتبات")) return Code;
+  return Terminal;
+};
 
 const detailedGuides: Record<string, DetailedGuide> = {
   desktop: {
@@ -847,11 +873,16 @@ const DownloadPage = () => {
                           {t.steps}
                         </h4>
                         <div className="space-y-6">
-                          {guide.steps.map((step, idx) => (
+                          {guide.steps.map((step, idx) => {
+                            const StepIcon = getStepIcon(language === "ar" ? step.title.ar : step.title.en);
+                            return (
                             <div key={idx} className="flex gap-4">
-                              <span className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0">
-                                {idx + 1}
-                              </span>
+                              <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                                <span className="w-12 h-12 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold">
+                                  <StepIcon className="w-6 h-6" />
+                                </span>
+                                <span className="text-xs text-muted-foreground font-bold">{idx + 1}</span>
+                              </div>
                               <div className="flex-1 space-y-3">
                                 <div>
                                   <h5 className="font-bold text-foreground">
@@ -900,7 +931,8 @@ const DownloadPage = () => {
                                 )}
                               </div>
                             </div>
-                          ))}
+                          );
+                          })}
                         </div>
                       </div>
 
