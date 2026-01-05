@@ -8,7 +8,7 @@ import { LucideIcon } from "lucide-react";
 interface Script {
   name: { ar: string; en: string };
   description: { ar: string; en: string };
-  language: "Python" | "C++" | "C" | "Bash" | "JavaScript" | "Assembly";
+  language: "Python" | "C++" | "C" | "Bash" | "JavaScript" | "Assembly" | "Java" | "C#";
   code: string;
   icon?: LucideIcon;
 }
@@ -1978,8 +1978,931 @@ int main() {
         printf("\\n");
     }
     
-    close(sock);
+  close(sock);
     return 0;
+}`,
+  },
+  // Java Scripts - أفكار جديدة ومميزة
+  {
+    name: { ar: "محلل الـ Class Files", en: "Java Bytecode Analyzer" },
+    description: { ar: "تحليل ملفات .class واستخراج المعلومات المخفية", en: "Analyze .class files and extract hidden information" },
+    language: "Java",
+    code: `import java.io.*;
+import java.util.*;
+
+public class BytecodeAnalyzer {
+    
+    public static void analyzeClassFile(String path) throws IOException {
+        DataInputStream dis = new DataInputStream(
+            new FileInputStream(path));
+        
+        // Magic number (CAFEBABE)
+        int magic = dis.readInt();
+        if (magic != 0xCAFEBABE) {
+            System.out.println("[!] Not a valid Java class file!");
+            return;
+        }
+        
+        int minorVersion = dis.readUnsignedShort();
+        int majorVersion = dis.readUnsignedShort();
+        
+        System.out.println("=== Java Class Analysis ===");
+        System.out.println("[+] Magic: 0xCAFEBABE (Valid)");
+        System.out.println("[+] Java Version: " + getJavaVersion(majorVersion));
+        System.out.println("[+] Minor: " + minorVersion + ", Major: " + majorVersion);
+        
+        // Constant Pool
+        int constantPoolCount = dis.readUnsignedShort();
+        System.out.println("[+] Constant Pool Size: " + (constantPoolCount - 1));
+        
+        // Extract strings from constant pool
+        List<String> strings = extractStrings(path);
+        System.out.println("\\n[*] Found " + strings.size() + " strings:");
+        for (String s : strings) {
+            if (s.length() > 3 && s.length() < 100) {
+                System.out.println("    -> " + s);
+            }
+        }
+        
+        dis.close();
+    }
+    
+    static String getJavaVersion(int major) {
+        return switch (major) {
+            case 52 -> "Java 8";
+            case 55 -> "Java 11";
+            case 61 -> "Java 17";
+            case 65 -> "Java 21";
+            default -> "Java " + (major - 44);
+        };
+    }
+    
+    static List<String> extractStrings(String path) throws IOException {
+        // Simple string extraction using regex-like scanning
+        List<String> result = new ArrayList<>();
+        byte[] data = java.nio.file.Files.readAllBytes(
+            java.nio.file.Paths.get(path));
+        
+        StringBuilder current = new StringBuilder();
+        for (byte b : data) {
+            if (b >= 32 && b <= 126) {
+                current.append((char) b);
+            } else {
+                if (current.length() > 4) {
+                    result.add(current.toString());
+                }
+                current = new StringBuilder();
+            }
+        }
+        return result;
+    }
+    
+    public static void main(String[] args) throws Exception {
+        if (args.length == 0) {
+            System.out.println("Usage: java BytecodeAnalyzer <file.class>");
+            return;
+        }
+        analyzeClassFile(args[0]);
+    }
+}`,
+  },
+  {
+    name: { ar: "كاشف الـ Memory Leaks", en: "Memory Leak Hunter" },
+    description: { ar: "تتبع الكائنات في الذاكرة وكشف التسريبات", en: "Track objects in memory and detect leaks" },
+    language: "Java",
+    code: `import java.lang.ref.*;
+import java.util.*;
+import java.util.concurrent.*;
+
+public class MemoryLeakHunter {
+    
+    private static Map<String, WeakReference<Object>> trackedObjects = 
+        new ConcurrentHashMap<>();
+    private static Map<String, String> allocationSites = new HashMap<>();
+    private static ReferenceQueue<Object> refQueue = new ReferenceQueue<>();
+    
+    public static void track(Object obj, String tag) {
+        String id = tag + "_" + System.identityHashCode(obj);
+        trackedObjects.put(id, new WeakReference<>(obj, refQueue));
+        allocationSites.put(id, getStackTrace());
+        System.out.println("[TRACK] " + id + " - " + obj.getClass().getSimpleName());
+    }
+    
+    private static String getStackTrace() {
+        StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 3; i < Math.min(stack.length, 6); i++) {
+            sb.append("  at ").append(stack[i]).append("\\n");
+        }
+        return sb.toString();
+    }
+    
+    public static void analyze() {
+        System.gc();
+        try { Thread.sleep(100); } catch (Exception e) {}
+        
+        System.out.println("\\n=== Memory Leak Analysis ===");
+        
+        int leaked = 0;
+        int collected = 0;
+        
+        for (Map.Entry<String, WeakReference<Object>> entry : 
+             trackedObjects.entrySet()) {
+            if (entry.getValue().get() != null) {
+                leaked++;
+                System.out.println("[!] POTENTIAL LEAK: " + entry.getKey());
+                System.out.println(allocationSites.get(entry.getKey()));
+            } else {
+                collected++;
+            }
+        }
+        
+        System.out.println("\\n[*] Summary:");
+        System.out.println("    Tracked: " + trackedObjects.size());
+        System.out.println("    Collected: " + collected);
+        System.out.println("    Potential Leaks: " + leaked);
+        
+        if (leaked > 0) {
+            System.out.println("\\n[!] WARNING: Memory leaks detected!");
+        } else {
+            System.out.println("\\n[+] No memory leaks detected");
+        }
+    }
+    
+    // Demo usage
+    public static void main(String[] args) {
+        List<byte[]> leakyList = new ArrayList<>();
+        
+        for (int i = 0; i < 5; i++) {
+            byte[] data = new byte[1024];
+            track(data, "buffer");
+            leakyList.add(data); // This causes a leak!
+        }
+        
+        for (int i = 0; i < 5; i++) {
+            byte[] temp = new byte[1024];
+            track(temp, "temp");
+            // temp goes out of scope - no leak
+        }
+        
+        analyze();
+    }
+}`,
+  },
+  {
+    name: { ar: "مولد الـ Payload الديناميكي", en: "Dynamic Payload Generator" },
+    description: { ar: "توليد وتحميل كود Java أثناء التشغيل", en: "Generate and load Java code at runtime" },
+    language: "Java",
+    code: `import javax.tools.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.lang.reflect.*;
+
+public class DynamicPayloadGenerator {
+    
+    public static Class<?> compileAndLoad(String className, String code) 
+            throws Exception {
+        
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = 
+            new DiagnosticCollector<>();
+        
+        // In-memory source
+        JavaFileObject source = new SimpleJavaFileObject(
+            URI.create("string:///" + className + ".java"),
+            JavaFileObject.Kind.SOURCE) {
+            @Override
+            public CharSequence getCharContent(boolean ignore) {
+                return code;
+            }
+        };
+        
+        // In-memory class storage
+        Map<String, byte[]> classBytes = new HashMap<>();
+        JavaFileManager fileManager = new ForwardingJavaFileManager<>(
+            compiler.getStandardFileManager(null, null, null)) {
+            @Override
+            public JavaFileObject getJavaFileForOutput(Location loc, 
+                    String name, JavaFileObject.Kind kind, FileObject s) {
+                return new SimpleJavaFileObject(
+                    URI.create("mem:///" + name + ".class"), kind) {
+                    @Override
+                    public OutputStream openOutputStream() {
+                        return new ByteArrayOutputStream() {
+                            @Override
+                            public void close() throws IOException {
+                                classBytes.put(name, toByteArray());
+                            }
+                        };
+                    }
+                };
+            }
+        };
+        
+        compiler.getTask(null, fileManager, diagnostics, null, null, 
+            List.of(source)).call();
+        
+        // Custom classloader
+        ClassLoader loader = new ClassLoader() {
+            @Override
+            protected Class<?> findClass(String name) {
+                byte[] bytes = classBytes.get(name);
+                return defineClass(name, bytes, 0, bytes.length);
+            }
+        };
+        
+        return loader.loadClass(className);
+    }
+    
+    public static void main(String[] args) throws Exception {
+        System.out.println("[*] Dynamic Payload Generator");
+        System.out.println("[*] Generating runtime code...\\n");
+        
+        String payload = \"\"\"
+            public class RuntimePayload {
+                public static String execute(String input) {
+                    StringBuilder result = new StringBuilder();
+                    result.append("[*] System: " + System.getProperty("os.name"));
+                    result.append("\\\\n[*] User: " + System.getProperty("user.name"));
+                    result.append("\\\\n[*] Input: " + input);
+                    result.append("\\\\n[*] Hash: " + input.hashCode());
+                    return result.toString();
+                }
+            }
+            \"\"\";
+        
+        Class<?> clazz = compileAndLoad("RuntimePayload", payload);
+        Method method = clazz.getMethod("execute", String.class);
+        
+        String result = (String) method.invoke(null, "test_data");
+        System.out.println(result);
+    }
+}`,
+  },
+  {
+    name: { ar: "محاكي الـ Sandbox", en: "Security Sandbox Simulator" },
+    description: { ar: "تشغيل كود Java في بيئة معزولة", en: "Run Java code in isolated environment" },
+    language: "Java",
+    code: `import java.security.*;
+import java.io.*;
+import java.util.concurrent.*;
+
+public class SandboxSimulator {
+    
+    static class RestrictedSecurityManager extends SecurityManager {
+        private Set<String> allowedActions = Set.of("getProperty");
+        
+        @Override
+        public void checkPermission(Permission perm) {
+            String action = perm.getActions();
+            String name = perm.getName();
+            
+            // Log all permission requests
+            System.out.println("[SANDBOX] Check: " + perm.getClass().getSimpleName() 
+                + " - " + name + " (" + action + ")");
+            
+            // Block dangerous operations
+            if (perm instanceof FilePermission) {
+                throw new SecurityException("File access blocked: " + name);
+            }
+            if (perm instanceof RuntimePermission) {
+                if (name.contains("exec") || name.contains("exit")) {
+                    throw new SecurityException("Runtime blocked: " + name);
+                }
+            }
+            if (perm instanceof java.net.SocketPermission) {
+                throw new SecurityException("Network access blocked: " + name);
+            }
+        }
+        
+        @Override
+        public void checkExit(int status) {
+            throw new SecurityException("System.exit() is blocked!");
+        }
+    }
+    
+    public static void runInSandbox(Runnable code, int timeoutMs) {
+        System.out.println("=== Sandbox Execution ===\\n");
+        
+        SecurityManager oldSm = System.getSecurityManager();
+        System.setSecurityManager(new RestrictedSecurityManager());
+        
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<?> future = executor.submit(() -> {
+            try {
+                code.run();
+            } catch (SecurityException e) {
+                System.out.println("[BLOCKED] " + e.getMessage());
+            }
+        });
+        
+        try {
+            future.get(timeoutMs, TimeUnit.MILLISECONDS);
+            System.out.println("\\n[+] Execution completed");
+        } catch (TimeoutException e) {
+            future.cancel(true);
+            System.out.println("\\n[!] Execution timeout!");
+        } catch (Exception e) {
+            System.out.println("\\n[!] Error: " + e.getMessage());
+        }
+        
+        executor.shutdownNow();
+        System.setSecurityManager(oldSm);
+    }
+    
+    public static void main(String[] args) {
+        // Test various operations in sandbox
+        runInSandbox(() -> {
+            System.out.println("[*] Getting system property...");
+            System.out.println("    OS: " + System.getProperty("os.name"));
+            
+            System.out.println("\\n[*] Trying to read file...");
+            try {
+                new FileInputStream("/etc/passwd");
+            } catch (Exception e) {}
+            
+            System.out.println("\\n[*] Trying to execute command...");
+            try {
+                Runtime.getRuntime().exec("whoami");
+            } catch (Exception e) {}
+            
+        }, 5000);
+    }
+}`,
+  },
+  {
+    name: { ar: "محلل Thread Dumps", en: "Thread Dump Analyzer" },
+    description: { ar: "تحليل حالة الـ Threads وكشف الـ Deadlocks", en: "Analyze thread states and detect deadlocks" },
+    language: "Java",
+    code: `import java.lang.management.*;
+import java.util.*;
+
+public class ThreadDumpAnalyzer {
+    
+    public static void analyzeThreads() {
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        
+        System.out.println("=== Thread Dump Analysis ===\\n");
+        
+        // Get all threads
+        long[] threadIds = threadMXBean.getAllThreadIds();
+        ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadIds, 10);
+        
+        Map<Thread.State, Integer> stateCount = new EnumMap<>(Thread.State.class);
+        List<ThreadInfo> blockedThreads = new ArrayList<>();
+        
+        System.out.println("[*] Active Threads: " + threadIds.length + "\\n");
+        
+        for (ThreadInfo info : threadInfos) {
+            if (info == null) continue;
+            
+            Thread.State state = info.getThreadState();
+            stateCount.merge(state, 1, Integer::sum);
+            
+            if (state == Thread.State.BLOCKED) {
+                blockedThreads.add(info);
+            }
+            
+            // Print thread details
+            System.out.println("Thread: " + info.getThreadName());
+            System.out.println("  State: " + state);
+            System.out.println("  CPU Time: " + 
+                threadMXBean.getThreadCpuTime(info.getThreadId()) / 1_000_000 + "ms");
+            
+            if (info.getLockName() != null) {
+                System.out.println("  Waiting on: " + info.getLockName());
+                System.out.println("  Lock Owner: " + info.getLockOwnerName());
+            }
+            
+            // Stack trace (top 3 frames)
+            StackTraceElement[] stack = info.getStackTrace();
+            if (stack.length > 0) {
+                System.out.println("  Stack:");
+                for (int i = 0; i < Math.min(3, stack.length); i++) {
+                    System.out.println("    at " + stack[i]);
+                }
+            }
+            System.out.println();
+        }
+        
+        // Summary
+        System.out.println("=== State Summary ===");
+        stateCount.forEach((state, count) -> 
+            System.out.println("  " + state + ": " + count));
+        
+        // Deadlock detection
+        System.out.println("\\n=== Deadlock Detection ===");
+        long[] deadlocked = threadMXBean.findDeadlockedThreads();
+        if (deadlocked != null && deadlocked.length > 0) {
+            System.out.println("[!] DEADLOCK DETECTED!");
+            ThreadInfo[] deadlockedInfos = threadMXBean.getThreadInfo(deadlocked);
+            for (ThreadInfo info : deadlockedInfos) {
+                System.out.println("  Thread: " + info.getThreadName());
+                System.out.println("  Blocked by: " + info.getLockOwnerName());
+            }
+        } else {
+            System.out.println("[+] No deadlocks detected");
+        }
+    }
+    
+    public static void main(String[] args) throws Exception {
+        // Create some threads for demo
+        Object lock1 = new Object();
+        Object lock2 = new Object();
+        
+        new Thread(() -> {
+            synchronized (lock1) {
+                try { Thread.sleep(100); } catch (Exception e) {}
+                synchronized (lock2) {}
+            }
+        }, "Worker-1").start();
+        
+        new Thread(() -> {
+            synchronized (lock2) {
+                try { Thread.sleep(100); } catch (Exception e) {}
+                synchronized (lock1) {}
+            }
+        }, "Worker-2").start();
+        
+        Thread.sleep(200);
+        analyzeThreads();
+    }
+}`,
+  },
+  // C# Scripts - أفكار جديدة ومميزة
+  {
+    name: { ar: "حاقن الـ DLL", en: "DLL Injection Simulator" },
+    description: { ar: "محاكاة عملية حقن DLL في العمليات", en: "Simulate DLL injection into processes" },
+    language: "C#",
+    code: `using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text;
+
+class DLLInjector
+{
+    [DllImport("kernel32.dll")]
+    static extern IntPtr OpenProcess(int access, bool inherit, int pid);
+    
+    [DllImport("kernel32.dll")]
+    static extern IntPtr VirtualAllocEx(IntPtr proc, IntPtr addr, 
+        uint size, uint type, uint protect);
+    
+    [DllImport("kernel32.dll")]
+    static extern bool WriteProcessMemory(IntPtr proc, IntPtr addr,
+        byte[] buffer, uint size, out int written);
+    
+    [DllImport("kernel32.dll")]
+    static extern IntPtr GetProcAddress(IntPtr module, string procName);
+    
+    [DllImport("kernel32.dll")]
+    static extern IntPtr GetModuleHandle(string moduleName);
+    
+    [DllImport("kernel32.dll")]
+    static extern IntPtr CreateRemoteThread(IntPtr proc, IntPtr attr,
+        uint stackSize, IntPtr startAddr, IntPtr param, uint flags, IntPtr tid);
+    
+    const int PROCESS_ALL = 0x1F0FFF;
+    const uint MEM_COMMIT = 0x1000;
+    const uint PAGE_READWRITE = 0x04;
+    
+    public static void SimulateInjection(int processId, string dllPath)
+    {
+        Console.WriteLine("=== DLL Injection Simulator ===\\n");
+        Console.WriteLine("[*] Target PID: " + processId);
+        Console.WriteLine("[*] DLL Path: " + dllPath);
+        
+        try
+        {
+            Process proc = Process.GetProcessById(processId);
+            Console.WriteLine("[+] Process found: " + proc.ProcessName);
+            
+            Console.WriteLine("\\n[1] Opening process handle...");
+            Console.WriteLine("    -> OpenProcess(PROCESS_ALL_ACCESS, " + processId + ")");
+            
+            Console.WriteLine("\\n[2] Allocating memory in target...");
+            int pathLen = Encoding.Unicode.GetByteCount(dllPath);
+            Console.WriteLine("    -> VirtualAllocEx(size=" + pathLen + ")");
+            
+            Console.WriteLine("\\n[3] Writing DLL path to memory...");
+            Console.WriteLine("    -> WriteProcessMemory(dllPath)");
+            
+            Console.WriteLine("\\n[4] Getting LoadLibraryW address...");
+            IntPtr loadLibAddr = GetProcAddress(
+                GetModuleHandle("kernel32.dll"), "LoadLibraryW");
+            Console.WriteLine("    -> LoadLibraryW @ 0x" + loadLibAddr.ToString("X"));
+            
+            Console.WriteLine("\\n[5] Creating remote thread...");
+            Console.WriteLine("    -> CreateRemoteThread(LoadLibraryW, dllPath)");
+            
+            Console.WriteLine("\\n[!] Simulation complete (no actual injection)");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[!] Error: " + ex.Message);
+        }
+    }
+    
+    static void Main(string[] args)
+    {
+        int pid = Process.GetCurrentProcess().Id;
+        SimulateInjection(pid, "C:\\\\test.dll");
+    }
+}`,
+  },
+  {
+    name: { ar: "محلل الـ PE Files", en: "PE File Analyzer" },
+    description: { ar: "تحليل ملفات Windows التنفيذية", en: "Analyze Windows executable files" },
+    language: "C#",
+    code: `using System;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+
+class PEAnalyzer
+{
+    public static void Analyze(string filePath)
+    {
+        Console.WriteLine("=== PE File Analyzer ===\\n");
+        
+        using (var reader = new BinaryReader(File.OpenRead(filePath)))
+        {
+            ushort magic = reader.ReadUInt16();
+            if (magic != 0x5A4D)
+            {
+                Console.WriteLine("[!] Not a valid PE file!");
+                return;
+            }
+            Console.WriteLine("[+] DOS Magic: MZ (Valid)");
+            
+            reader.BaseStream.Seek(0x3C, SeekOrigin.Begin);
+            int peOffset = reader.ReadInt32();
+            Console.WriteLine("[+] PE Header Offset: 0x" + peOffset.ToString("X"));
+            
+            reader.BaseStream.Seek(peOffset, SeekOrigin.Begin);
+            uint peSignature = reader.ReadUInt32();
+            if (peSignature != 0x4550)
+            {
+                Console.WriteLine("[!] Invalid PE signature!");
+                return;
+            }
+            Console.WriteLine("[+] PE Signature: Valid");
+            
+            ushort machine = reader.ReadUInt16();
+            Console.WriteLine("[+] Machine: " + GetMachineType(machine));
+            
+            ushort sections = reader.ReadUInt16();
+            Console.WriteLine("[+] Sections: " + sections);
+            
+            uint timestamp = reader.ReadUInt32();
+            DateTime compiled = new DateTime(1970, 1, 1).AddSeconds(timestamp);
+            Console.WriteLine("[+] Compiled: " + compiled.ToString("yyyy-MM-dd HH:mm:ss"));
+            
+            reader.ReadUInt32();
+            reader.ReadUInt32();
+            ushort optHeaderSize = reader.ReadUInt16();
+            ushort characteristics = reader.ReadUInt16();
+            
+            Console.WriteLine("\\n[*] Characteristics:");
+            if ((characteristics & 0x0002) != 0) Console.WriteLine("    - Executable");
+            if ((characteristics & 0x0020) != 0) Console.WriteLine("    - Large Address Aware");
+            if ((characteristics & 0x2000) != 0) Console.WriteLine("    - DLL");
+            
+            ushort optMagic = reader.ReadUInt16();
+            bool is64bit = optMagic == 0x20B;
+            Console.WriteLine("\\n[+] Architecture: " + (is64bit ? "64-bit" : "32-bit"));
+            
+            Console.WriteLine("\\n[*] Detecting suspicious imports...");
+            string content = File.ReadAllText(filePath, Encoding.ASCII);
+            string[] susImports = { "VirtualAlloc", "CreateRemoteThread", 
+                "WriteProcessMemory", "LoadLibrary", "GetProcAddress" };
+            
+            foreach (var import in susImports)
+            {
+                if (content.Contains(import))
+                    Console.WriteLine("    [!] " + import);
+            }
+        }
+    }
+    
+    static string GetMachineType(ushort machine)
+    {
+        if (machine == 0x14c) return "x86 (i386)";
+        if (machine == 0x8664) return "x64 (AMD64)";
+        if (machine == 0xAA64) return "ARM64";
+        return "Unknown (0x" + machine.ToString("X") + ")";
+    }
+    
+    static void Main(string[] args)
+    {
+        string file = args.Length > 0 ? args[0] : 
+            Environment.GetCommandLineArgs()[0];
+        Analyze(file);
+    }
+}`,
+  },
+  {
+    name: { ar: "مراقب Registry", en: "Registry Monitor" },
+    description: { ar: "مراقبة تغييرات الـ Registry في الوقت الحقيقي", en: "Monitor Registry changes in real-time" },
+    language: "C#",
+    code: `using System;
+using System.Collections.Generic;
+using Microsoft.Win32;
+using System.Security.Cryptography;
+using System.Text;
+
+class RegistryMonitor
+{
+    static Dictionary<string, string> snapshots = new Dictionary<string, string>();
+    static string[] monitoredKeys = {
+        "SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run",
+        "SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\RunOnce",
+        "SOFTWARE\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Winlogon",
+        "SYSTEM\\\\CurrentControlSet\\\\Services"
+    };
+    
+    public static void TakeSnapshot()
+    {
+        Console.WriteLine("[*] Taking registry snapshot...\\n");
+        snapshots.Clear();
+        
+        foreach (var keyPath in monitoredKeys)
+        {
+            try
+            {
+                var key = Registry.LocalMachine.OpenSubKey(keyPath);
+                if (key == null) continue;
+                
+                foreach (var valueName in key.GetValueNames())
+                {
+                    var value = key.GetValue(valueName).ToString();
+                    var hash = ComputeHash(value);
+                    snapshots[keyPath + "\\\\" + valueName] = hash;
+                }
+                Console.WriteLine("[+] " + keyPath + " (" + key.ValueCount + " values)");
+                key.Close();
+            }
+            catch { }
+        }
+        Console.WriteLine("\\n[*] Snapshot complete: " + snapshots.Count + " values");
+    }
+    
+    public static void CheckChanges()
+    {
+        Console.WriteLine("\\n=== Checking for Changes ===\\n");
+        int changes = 0;
+        
+        foreach (var keyPath in monitoredKeys)
+        {
+            try
+            {
+                var key = Registry.LocalMachine.OpenSubKey(keyPath);
+                if (key == null) continue;
+                
+                foreach (var valueName in key.GetValueNames())
+                {
+                    var fullPath = keyPath + "\\\\" + valueName;
+                    var value = key.GetValue(valueName).ToString();
+                    var hash = ComputeHash(value);
+                    
+                    if (!snapshots.ContainsKey(fullPath))
+                    {
+                        Console.WriteLine("[+] NEW: " + fullPath);
+                        changes++;
+                    }
+                    else if (snapshots[fullPath] != hash)
+                    {
+                        Console.WriteLine("[!] MODIFIED: " + fullPath);
+                        changes++;
+                    }
+                }
+                key.Close();
+            }
+            catch { }
+        }
+        
+        if (changes == 0)
+            Console.WriteLine("[+] No changes detected");
+        else
+            Console.WriteLine("\\n[!] Total changes: " + changes);
+    }
+    
+    static string ComputeHash(string input)
+    {
+        var md5 = MD5.Create();
+        var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+        return BitConverter.ToString(hash).Replace("-", "");
+    }
+    
+    static void Main()
+    {
+        Console.WriteLine("=== Registry Monitor ===\\n");
+        TakeSnapshot();
+        
+        Console.WriteLine("\\n[*] Monitoring... (Press Enter to check)");
+        Console.ReadLine();
+        
+        CheckChanges();
+    }
+}`,
+  },
+  {
+    name: { ar: "استخراج بيانات الـ Clipboard", en: "Clipboard Data Extractor" },
+    description: { ar: "استخراج وتحليل محتوى الحافظة", en: "Extract and analyze clipboard contents" },
+    language: "C#",
+    code: `using System;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Collections.Specialized;
+using System.Text.RegularExpressions;
+
+class ClipboardExtractor
+{
+    [STAThread]
+    static void Main()
+    {
+        Console.WriteLine("=== Clipboard Data Extractor ===\\n");
+        
+        while (true)
+        {
+            Console.WriteLine("[*] Press Enter to analyze clipboard (Q to quit)");
+            var input = Console.ReadLine();
+            if (input.ToUpper() == "Q") break;
+            
+            AnalyzeClipboard();
+        }
+    }
+    
+    static void AnalyzeClipboard()
+    {
+        Console.WriteLine("\\n--- Clipboard Analysis ---\\n");
+        
+        try
+        {
+            IDataObject data = Clipboard.GetDataObject();
+            if (data == null)
+            {
+                Console.WriteLine("[!] Clipboard is empty");
+                return;
+            }
+            
+            Console.WriteLine("[*] Available formats:");
+            foreach (var format in data.GetFormats())
+            {
+                Console.WriteLine("    - " + format);
+            }
+            Console.WriteLine();
+            
+            if (Clipboard.ContainsText())
+            {
+                string text = Clipboard.GetText();
+                Console.WriteLine("[+] TEXT DATA:");
+                Console.WriteLine("    Length: " + text.Length + " chars");
+                Console.WriteLine("    Lines: " + text.Split('\\n').Length);
+                Console.WriteLine("    Preview: " + Truncate(text, 100));
+                
+                DetectSensitiveData(text);
+            }
+            
+            if (Clipboard.ContainsImage())
+            {
+                Image img = Clipboard.GetImage();
+                Console.WriteLine("\\n[+] IMAGE DATA:");
+                Console.WriteLine("    Size: " + img.Width + "x" + img.Height);
+                Console.WriteLine("    Format: " + img.RawFormat);
+            }
+            
+            if (Clipboard.ContainsFileDropList())
+            {
+                StringCollection files = Clipboard.GetFileDropList();
+                Console.WriteLine("\\n[+] FILE LIST:");
+                foreach (string file in files)
+                {
+                    var info = new FileInfo(file);
+                    Console.WriteLine("    - " + info.Name);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("[!] Error: " + ex.Message);
+        }
+    }
+    
+    static void DetectSensitiveData(string text)
+    {
+        Console.WriteLine("\\n[*] Sensitive Data Scan:");
+        
+        if (Regex.IsMatch(text, "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}"))
+            Console.WriteLine("    [!] Email addresses detected");
+        
+        if (Regex.IsMatch(text, "\\\\b\\\\d{4}[- ]?\\\\d{4}[- ]?\\\\d{4}[- ]?\\\\d{4}\\\\b"))
+            Console.WriteLine("    [!] Possible credit card number");
+        
+        if (text.ToLower().Contains("password"))
+            Console.WriteLine("    [!] Password-related text detected");
+    }
+    
+    static string Truncate(string text, int max)
+    {
+        if (text.Length > max)
+            return text.Substring(0, max).Replace("\\n", " ") + "...";
+        return text.Replace("\\n", " ");
+    }
+}`,
+  },
+  {
+    name: { ar: "تشفير AES متقدم", en: "Advanced AES Encryption" },
+    description: { ar: "تشفير وفك تشفير الملفات باستخدام AES-256", en: "Encrypt and decrypt files using AES-256" },
+    language: "C#",
+    code: `using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+
+class AdvancedAES
+{
+    private const int KeySize = 256;
+    private const int BlockSize = 128;
+    private const int Iterations = 100000;
+    
+    public static byte[] DeriveKey(string password, byte[] salt)
+    {
+        var pbkdf2 = new Rfc2898DeriveBytes(
+            password, salt, Iterations, HashAlgorithmName.SHA256);
+        return pbkdf2.GetBytes(KeySize / 8);
+    }
+    
+    public static byte[] Encrypt(byte[] data, string password, 
+        out byte[] salt, out byte[] iv)
+    {
+        salt = new byte[32];
+        iv = new byte[BlockSize / 8];
+        
+        var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(salt);
+        rng.GetBytes(iv);
+        
+        byte[] key = DeriveKey(password, salt);
+        
+        var aes = Aes.Create();
+        aes.KeySize = KeySize;
+        aes.BlockSize = BlockSize;
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
+        aes.Key = key;
+        aes.IV = iv;
+        
+        var encryptor = aes.CreateEncryptor();
+        var ms = new MemoryStream();
+        var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write);
+        
+        cs.Write(data, 0, data.Length);
+        cs.FlushFinalBlock();
+        
+        return ms.ToArray();
+    }
+    
+    public static byte[] Decrypt(byte[] encrypted, string password, 
+        byte[] salt, byte[] iv)
+    {
+        byte[] key = DeriveKey(password, salt);
+        
+        var aes = Aes.Create();
+        aes.KeySize = KeySize;
+        aes.BlockSize = BlockSize;
+        aes.Mode = CipherMode.CBC;
+        aes.Padding = PaddingMode.PKCS7;
+        aes.Key = key;
+        aes.IV = iv;
+        
+        var decryptor = aes.CreateDecryptor();
+        var ms = new MemoryStream(encrypted);
+        var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
+        var result = new MemoryStream();
+        
+        cs.CopyTo(result);
+        return result.ToArray();
+    }
+    
+    static void Main(string[] args)
+    {
+        Console.WriteLine("=== AES-256 File Encryption ===\\n");
+        
+        string testData = "This is secret data to encrypt!";
+        string password = "SuperSecretP@ssw0rd!";
+        
+        byte[] salt, iv;
+        byte[] enc = Encrypt(Encoding.UTF8.GetBytes(testData), password, out salt, out iv);
+        Console.WriteLine("[+] Original: " + testData);
+        Console.WriteLine("[+] Encrypted: " + Convert.ToBase64String(enc));
+        
+        byte[] dec = Decrypt(enc, password, salt, iv);
+        Console.WriteLine("[+] Decrypted: " + Encoding.UTF8.GetString(dec));
+    }
 }`,
   },
 ];
@@ -1987,7 +2910,7 @@ int main() {
 
 const ScriptsPage = () => {
   const [copied, setCopied] = useState<number | null>(null);
-  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "C" | "Bash" | "JavaScript" | "Assembly">("all");
+  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "C" | "Bash" | "JavaScript" | "Assembly" | "Java" | "C#">("all");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
 
   const copyToClipboard = (code: string, index: number) => {
@@ -2008,6 +2931,8 @@ const ScriptsPage = () => {
       case "Bash": return "bg-green-500/20 text-green-400 border-green-500/30";
       case "JavaScript": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
       case "Assembly": return "bg-red-500/20 text-red-400 border-red-500/30";
+      case "Java": return "bg-orange-500/20 text-orange-400 border-orange-500/30";
+      case "C#": return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
       default: return "bg-primary/20 text-primary border-primary/30";
     }
   };
@@ -2015,8 +2940,8 @@ const ScriptsPage = () => {
   const t = {
     title: language === "ar" ? "السكربتات الجاهزة" : "Ready-to-Use Scripts",
     subtitle: language === "ar" 
-      ? `${scripts.length} سكربت بلغات Python و C++ و C و Bash و JavaScript و Assembly` 
-      : `${scripts.length} scripts in Python, C++, C, Bash, JavaScript, and Assembly`,
+      ? `${scripts.length} سكربت بلغات Python و C++ و C و Bash و JavaScript و Assembly و Java و C#` 
+      : `${scripts.length} scripts in Python, C++, C, Bash, JavaScript, Assembly, Java, and C#`,
     all: language === "ar" ? "الكل" : "All",
   };
 
@@ -2048,7 +2973,7 @@ const ScriptsPage = () => {
 
           {/* Filter Buttons */}
           <div className="flex justify-center gap-3 mb-10 flex-wrap">
-            {["all", "Python", "C++", "C", "Bash", "JavaScript", "Assembly"].map((lang) => (
+            {["all", "Python", "C++", "C", "Bash", "JavaScript", "Assembly", "Java", "C#"].map((lang) => (
               <button
                 key={lang}
                 onClick={() => setFilter(lang as typeof filter)}
