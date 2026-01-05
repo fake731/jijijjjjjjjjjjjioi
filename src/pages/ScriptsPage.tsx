@@ -8,7 +8,7 @@ import { LucideIcon } from "lucide-react";
 interface Script {
   name: { ar: string; en: string };
   description: { ar: string; en: string };
-  language: "Python" | "C++" | "Bash" | "JavaScript" | "Assembly";
+  language: "Python" | "C++" | "C" | "Bash" | "JavaScript" | "Assembly";
   code: string;
   icon?: LucideIcon;
 }
@@ -1596,11 +1596,398 @@ exit_clean:
     xor rdi, rdi
     syscall`,
   },
+  // C Language Scripts
+  {
+    name: { ar: "ماسح المنافذ (C)", en: "Port Scanner (C)" },
+    description: { ar: "ماسح منافذ سريع ومنخفض المستوى", en: "Fast low-level port scanner" },
+    language: "C",
+    code: `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+
+#define TIMEOUT_SEC 1
+
+int scan_port(const char *ip, int port) {
+    int sock;
+    struct sockaddr_in addr;
+    struct timeval timeout;
+    
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) return -1;
+    
+    // Set timeout
+    timeout.tv_sec = TIMEOUT_SEC;
+    timeout.tv_usec = 0;
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+    
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
+    inet_pton(AF_INET, ip, &addr.sin_addr);
+    
+    int result = connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+    close(sock);
+    
+    return (result == 0) ? 1 : 0;
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: %s <target_ip>\\n", argv[0]);
+        return 1;
+    }
+    
+    printf("\\n[*] Scanning %s...\\n\\n", argv[1]);
+    
+    for (int port = 1; port <= 1024; port++) {
+        if (scan_port(argv[1], port)) {
+            printf("[+] Port %d is OPEN\\n", port);
+        }
+    }
+    
+    printf("\\n[*] Scan complete\\n");
+    return 0;
+}`,
+  },
+  {
+    name: { ar: "مستخرج العمليات", en: "Process Extractor" },
+    description: { ar: "استخراج معلومات العمليات من النظام", en: "Extract process information from system" },
+    language: "C",
+    code: `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
+#include <ctype.h>
+
+typedef struct {
+    int pid;
+    char name[256];
+    char state;
+    int ppid;
+    long memory_kb;
+} ProcessInfo;
+
+int is_numeric(const char *str) {
+    while (*str) {
+        if (!isdigit(*str)) return 0;
+        str++;
+    }
+    return 1;
+}
+
+int get_process_info(int pid, ProcessInfo *info) {
+    char path[64];
+    char line[512];
+    FILE *fp;
+    
+    info->pid = pid;
+    
+    snprintf(path, sizeof(path), "/proc/%d/stat", pid);
+    fp = fopen(path, "r");
+    if (!fp) return -1;
+    
+    if (fgets(line, sizeof(line), fp)) {
+        sscanf(line, "%d (%[^)]) %c %d",
+               &info->pid, info->name, &info->state, &info->ppid);
+    }
+    fclose(fp);
+    
+    // Get memory info
+    snprintf(path, sizeof(path), "/proc/%d/statm", pid);
+    fp = fopen(path, "r");
+    if (fp) {
+        long pages;
+        fscanf(fp, "%ld", &pages);
+        info->memory_kb = pages * 4; // Assuming 4KB page size
+        fclose(fp);
+    }
+    
+    return 0;
+}
+
+int main() {
+    DIR *dir;
+    struct dirent *entry;
+    ProcessInfo info;
+    
+    printf("\\n%-8s %-20s %-6s %-8s %s\\n", 
+           "PID", "NAME", "STATE", "PPID", "MEMORY(KB)");
+    printf("%-8s %-20s %-6s %-8s %s\\n",
+           "---", "----", "-----", "----", "----------");
+    
+    dir = opendir("/proc");
+    if (!dir) {
+        perror("Cannot open /proc");
+        return 1;
+    }
+    
+    while ((entry = readdir(dir)) != NULL) {
+        if (is_numeric(entry->d_name)) {
+            int pid = atoi(entry->d_name);
+            if (get_process_info(pid, &info) == 0) {
+                printf("%-8d %-20s %-6c %-8d %ld\\n",
+                       info.pid, info.name, info.state, 
+                       info.ppid, info.memory_kb);
+            }
+        }
+    }
+    
+    closedir(dir);
+    return 0;
+}`,
+  },
+  {
+    name: { ar: "كاشف الاتصالات الشبكية", en: "Network Connection Detector" },
+    description: { ar: "كشف جميع الاتصالات النشطة", en: "Detect all active network connections" },
+    language: "C",
+    code: `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <arpa/inet.h>
+
+typedef struct {
+    char local_addr[64];
+    int local_port;
+    char remote_addr[64];
+    int remote_port;
+    char state[16];
+} Connection;
+
+void hex_to_ip(const char *hex, char *ip) {
+    unsigned int a, b, c, d;
+    sscanf(hex, "%2X%2X%2X%2X", &d, &c, &b, &a);
+    sprintf(ip, "%u.%u.%u.%u", a, b, c, d);
+}
+
+const char* get_state_name(int state) {
+    static const char *states[] = {
+        "", "ESTABLISHED", "SYN_SENT", "SYN_RECV",
+        "FIN_WAIT1", "FIN_WAIT2", "TIME_WAIT", "CLOSE",
+        "CLOSE_WAIT", "LAST_ACK", "LISTEN", "CLOSING"
+    };
+    if (state >= 1 && state <= 11) return states[state];
+    return "UNKNOWN";
+}
+
+void parse_connections(const char *file, const char *proto) {
+    FILE *fp = fopen(file, "r");
+    if (!fp) return;
+    
+    char line[512];
+    fgets(line, sizeof(line), fp); // Skip header
+    
+    while (fgets(line, sizeof(line), fp)) {
+        char local_hex[16], remote_hex[16];
+        int local_port, remote_port, state;
+        
+        sscanf(line, "%*d: %8[^:]:%X %8[^:]:%X %X",
+               local_hex, &local_port, remote_hex, &remote_port, &state);
+        
+        char local_ip[32], remote_ip[32];
+        hex_to_ip(local_hex, local_ip);
+        hex_to_ip(remote_hex, remote_ip);
+        
+        printf("%-5s %-22s %-22s %s\\n",
+               proto,
+               local_ip, 
+               remote_ip,
+               get_state_name(state));
+    }
+    
+    fclose(fp);
+}
+
+int main() {
+    printf("\\n%-5s %-22s %-22s %s\\n", 
+           "PROTO", "LOCAL", "REMOTE", "STATE");
+    printf("%-5s %-22s %-22s %s\\n",
+           "-----", "-----", "------", "-----");
+    
+    parse_connections("/proc/net/tcp", "TCP");
+    parse_connections("/proc/net/udp", "UDP");
+    
+    return 0;
+}`,
+  },
+  {
+    name: { ar: "مراقب الملفات", en: "File Monitor" },
+    description: { ar: "مراقبة التغييرات في الملفات", en: "Monitor file changes in real-time" },
+    language: "C",
+    code: `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/inotify.h>
+#include <unistd.h>
+#include <time.h>
+
+#define EVENT_SIZE (sizeof(struct inotify_event))
+#define BUF_LEN (1024 * (EVENT_SIZE + 16))
+
+const char* get_event_type(uint32_t mask) {
+    if (mask & IN_CREATE) return "CREATED";
+    if (mask & IN_DELETE) return "DELETED";
+    if (mask & IN_MODIFY) return "MODIFIED";
+    if (mask & IN_MOVED_FROM) return "MOVED_FROM";
+    if (mask & IN_MOVED_TO) return "MOVED_TO";
+    if (mask & IN_ACCESS) return "ACCESSED";
+    if (mask & IN_OPEN) return "OPENED";
+    if (mask & IN_CLOSE) return "CLOSED";
+    return "UNKNOWN";
+}
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        printf("Usage: %s <directory>\\n", argv[0]);
+        return 1;
+    }
+    
+    int fd = inotify_init();
+    if (fd < 0) {
+        perror("inotify_init");
+        return 1;
+    }
+    
+    int wd = inotify_add_watch(fd, argv[1], 
+        IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO);
+    
+    if (wd < 0) {
+        perror("inotify_add_watch");
+        return 1;
+    }
+    
+    printf("[*] Monitoring: %s\\n", argv[1]);
+    printf("[*] Press Ctrl+C to stop\\n\\n");
+    
+    char buffer[BUF_LEN];
+    
+    while (1) {
+        int length = read(fd, buffer, BUF_LEN);
+        if (length < 0) break;
+        
+        int i = 0;
+        while (i < length) {
+            struct inotify_event *event = (struct inotify_event*)&buffer[i];
+            
+            if (event->len) {
+                time_t now = time(NULL);
+                struct tm *t = localtime(&now);
+                
+                printf("[%02d:%02d:%02d] %-12s %s%s\\n",
+                       t->tm_hour, t->tm_min, t->tm_sec,
+                       get_event_type(event->mask),
+                       event->name,
+                       (event->mask & IN_ISDIR) ? "/" : "");
+            }
+            
+            i += EVENT_SIZE + event->len;
+        }
+    }
+    
+    inotify_rm_watch(fd, wd);
+    close(fd);
+    
+    return 0;
+}`,
+  },
+  {
+    name: { ar: "مُحلل حزم الشبكة", en: "Network Packet Analyzer" },
+    description: { ar: "التقاط وتحليل حزم الشبكة", en: "Capture and analyze network packets" },
+    language: "C",
+    code: `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+void print_ip_header(struct iphdr *ip) {
+    struct in_addr src, dst;
+    src.s_addr = ip->saddr;
+    dst.s_addr = ip->daddr;
+    
+    printf("  IP: %s -> %s", inet_ntoa(src), inet_ntoa(dst));
+    printf(" | TTL: %d | Proto: ", ip->ttl);
+    
+    switch (ip->protocol) {
+        case IPPROTO_TCP: printf("TCP"); break;
+        case IPPROTO_UDP: printf("UDP"); break;
+        case IPPROTO_ICMP: printf("ICMP"); break;
+        default: printf("%d", ip->protocol);
+    }
+    printf("\\n");
+}
+
+void print_tcp_header(struct tcphdr *tcp) {
+    printf("  TCP: Port %d -> %d | ", 
+           ntohs(tcp->source), ntohs(tcp->dest));
+    
+    if (tcp->syn) printf("SYN ");
+    if (tcp->ack) printf("ACK ");
+    if (tcp->fin) printf("FIN ");
+    if (tcp->rst) printf("RST ");
+    if (tcp->psh) printf("PSH ");
+    printf("| Seq: %u\\n", ntohl(tcp->seq));
+}
+
+void print_udp_header(struct udphdr *udp) {
+    printf("  UDP: Port %d -> %d | Len: %d\\n",
+           ntohs(udp->source), ntohs(udp->dest), ntohs(udp->len));
+}
+
+int main() {
+    int sock;
+    unsigned char buffer[65536];
+    struct sockaddr saddr;
+    socklen_t saddr_len = sizeof(saddr);
+    
+    sock = socket(AF_INET, SOCK_RAW, IPPROTO_TCP);
+    if (sock < 0) {
+        perror("Socket creation failed (need root)");
+        return 1;
+    }
+    
+    printf("[*] Packet sniffer started...\\n");
+    printf("[*] Press Ctrl+C to stop\\n\\n");
+    
+    int count = 0;
+    while (count < 100) {
+        int data_size = recvfrom(sock, buffer, sizeof(buffer), 0, 
+                                  &saddr, &saddr_len);
+        if (data_size < 0) continue;
+        
+        struct iphdr *ip = (struct iphdr*)buffer;
+        
+        printf("[Packet #%d]\\n", ++count);
+        print_ip_header(ip);
+        
+        if (ip->protocol == IPPROTO_TCP) {
+            struct tcphdr *tcp = (struct tcphdr*)(buffer + ip->ihl * 4);
+            print_tcp_header(tcp);
+        } else if (ip->protocol == IPPROTO_UDP) {
+            struct udphdr *udp = (struct udphdr*)(buffer + ip->ihl * 4);
+            print_udp_header(udp);
+        }
+        printf("\\n");
+    }
+    
+    close(sock);
+    return 0;
+}`,
+  },
 ];
+
 
 const ScriptsPage = () => {
   const [copied, setCopied] = useState<number | null>(null);
-  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "Bash" | "JavaScript" | "Assembly">("all");
+  const [filter, setFilter] = useState<"all" | "Python" | "C++" | "C" | "Bash" | "JavaScript" | "Assembly">("all");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
 
   const copyToClipboard = (code: string, index: number) => {
@@ -1617,6 +2004,7 @@ const ScriptsPage = () => {
     switch (lang) {
       case "Python": return "bg-blue-500/20 text-blue-400 border-blue-500/30";
       case "C++": return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+      case "C": return "bg-cyan-500/20 text-cyan-400 border-cyan-500/30";
       case "Bash": return "bg-green-500/20 text-green-400 border-green-500/30";
       case "JavaScript": return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
       case "Assembly": return "bg-red-500/20 text-red-400 border-red-500/30";
@@ -1627,8 +2015,8 @@ const ScriptsPage = () => {
   const t = {
     title: language === "ar" ? "السكربتات الجاهزة" : "Ready-to-Use Scripts",
     subtitle: language === "ar" 
-      ? `${scripts.length} سكربت بلغات Python و C++ و Bash و JavaScript و Assembly` 
-      : `${scripts.length} scripts in Python, C++, Bash, JavaScript, and Assembly`,
+      ? `${scripts.length} سكربت بلغات Python و C++ و C و Bash و JavaScript و Assembly` 
+      : `${scripts.length} scripts in Python, C++, C, Bash, JavaScript, and Assembly`,
     all: language === "ar" ? "الكل" : "All",
   };
 
@@ -1660,7 +2048,7 @@ const ScriptsPage = () => {
 
           {/* Filter Buttons */}
           <div className="flex justify-center gap-3 mb-10 flex-wrap">
-            {["all", "Python", "C++", "Bash", "JavaScript", "Assembly"].map((lang) => (
+            {["all", "Python", "C++", "C", "Bash", "JavaScript", "Assembly"].map((lang) => (
               <button
                 key={lang}
                 onClick={() => setFilter(lang as typeof filter)}

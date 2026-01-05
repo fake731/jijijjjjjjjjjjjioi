@@ -153,6 +153,7 @@ const downloads: DownloadOption[] = [
 interface DetailedGuide {
   title: { ar: string; en: string };
   description: { ar: string; en: string };
+  icon: typeof Download;
   requirements: { ar: string[]; en: string[] };
   steps: {
     title: { ar: string; en: string };
@@ -200,6 +201,7 @@ const detailedGuides: Record<string, DetailedGuide> = {
       ar: "دليل مفصل خطوة بخطوة لتثبيت كالي لينكس على جهاز الكمبيوتر كنظام أساسي أو بجانب Windows",
       en: "Detailed step-by-step guide to install Kali Linux as primary OS or dual boot with Windows"
     },
+    icon: Monitor,
     requirements: {
       ar: [
         "معالج 64-bit (AMD64/x86-64)",
@@ -333,6 +335,7 @@ const detailedGuides: Record<string, DetailedGuide> = {
       ar: "الطريقة الأسهل والأكثر أماناً لتشغيل كالي لينكس بجانب نظامك الحالي",
       en: "The easiest and safest way to run Kali Linux alongside your current OS"
     },
+    icon: HardDrive,
     requirements: {
       ar: [
         "VirtualBox أو VMware (مجاني)",
@@ -428,6 +431,7 @@ const detailedGuides: Record<string, DetailedGuide> = {
       ar: "استخدام iSH Shell لتشغيل بيئة لينكس على iOS بدون Jailbreak",
       en: "Using iSH Shell to run Linux environment on iOS without Jailbreak"
     },
+    icon: TabletSmartphone,
     requirements: {
       ar: [
         "iPhone/iPad يعمل بـ iOS 11 أو أحدث",
@@ -509,6 +513,7 @@ const detailedGuides: Record<string, DetailedGuide> = {
       ar: "تحويل هاتف الأندرويد إلى منصة اختبار اختراق كاملة",
       en: "Turn your Android phone into a full penetration testing platform"
     },
+    icon: Terminal,
     requirements: {
       ar: [
         "هاتف Android 7.0 أو أحدث",
@@ -648,6 +653,7 @@ const detailedGuides: Record<string, DetailedGuide> = {
       ar: "منصة كالي لينكس المحمولة للهواتف الذكية مع دعم كامل لأدوات الاختراق",
       en: "Mobile Kali Linux platform for smartphones with full hacking tools support"
     },
+    icon: Smartphone,
     requirements: {
       ar: [
         "هاتف Android 7.0 أو أحدث",
@@ -827,19 +833,26 @@ const DownloadPage = () => {
           <div className="max-w-5xl mx-auto mt-16">
             <h2 className="text-3xl font-bold text-primary mb-8 text-center">{t.installGuides}</h2>
             <div className="space-y-4">
-              {Object.entries(detailedGuides).map(([key, guide]) => (
+              {Object.entries(detailedGuides).map(([key, guide]) => {
+                const GuideIcon = guide.icon;
+                return (
                 <div key={key} className="cyber-card overflow-hidden">
                   <button
                     onClick={() => setExpandedGuide(expandedGuide === key ? null : key)}
                     className="w-full p-5 flex items-center justify-between hover:bg-primary/5 transition-colors"
                   >
-                    <div className="text-left">
-                      <h3 className="text-xl font-bold text-primary">
-                        {language === "ar" ? guide.title.ar : guide.title.en}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {language === "ar" ? guide.description.ar : guide.description.en}
-                      </p>
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <GuideIcon className="w-7 h-7 text-primary" />
+                      </div>
+                      <div className="text-left">
+                        <h3 className="text-xl font-bold text-primary">
+                          {language === "ar" ? guide.title.ar : guide.title.en}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {language === "ar" ? guide.description.ar : guide.description.en}
+                        </p>
+                      </div>
                     </div>
                     {expandedGuide === key ? (
                       <ChevronUp className="w-6 h-6 text-primary flex-shrink-0" />
@@ -966,7 +979,8 @@ const DownloadPage = () => {
                     </div>
                   )}
                 </div>
-              ))}
+              );
+              })}
             </div>
           </div>
         </div>
