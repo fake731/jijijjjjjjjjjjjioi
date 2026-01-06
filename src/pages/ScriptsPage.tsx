@@ -1,8 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Code, Copy, Check, Globe, Terminal, FileCode, Hash, Network, Search, Key, Shield, Mail, Link, Wifi, Eye, Lock, FileText, Bug, Database, Server, Skull, Cpu, HardDrive, AlertTriangle, Binary } from "lucide-react";
+import { Code, Copy, Check, Globe, Terminal, FileCode, Hash, Network, Search, Key, Shield, Mail, Link, Wifi, Eye, Lock, FileText, Bug, Database, Server, Skull, Cpu, HardDrive, AlertTriangle, Binary, Download } from "lucide-react";
 import { useState } from "react";
-
+import { usePdfExport } from "@/hooks/use-pdf-export";
 import { LucideIcon } from "lucide-react";
 
 interface Script {
@@ -2905,6 +2905,833 @@ class AdvancedAES
     }
 }`,
   },
+  // === سكربتات Python جديدة بأفكار مبتكرة ===
+  {
+    name: { ar: "محلل JWT Tokens", en: "JWT Token Analyzer" },
+    description: { ar: "تحليل وفحص رموز JWT للثغرات", en: "Analyze JWT tokens for vulnerabilities" },
+    language: "Python",
+    code: `import base64
+import json
+from datetime import datetime
+
+class JWTAnalyzer:
+    def __init__(self):
+        self.weak_algs = ['none', 'HS256']
+    
+    def decode_part(self, part):
+        padding = 4 - len(part) % 4
+        return base64.urlsafe_b64decode(part + "=" * padding).decode()
+    
+    def analyze(self, token):
+        parts = token.split('.')
+        header = json.loads(self.decode_part(parts[0]))
+        payload = json.loads(self.decode_part(parts[1]))
+        
+        issues = []
+        if header.get('alg', '').lower() in self.weak_algs:
+            issues.append({'severity': 'HIGH', 'issue': f"Weak algorithm: {header['alg']}"})
+        
+        if 'exp' not in payload:
+            issues.append({'severity': 'MEDIUM', 'issue': 'No expiration set'})
+        
+        return {'header': header, 'payload': payload, 'issues': issues}
+
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U"
+print(json.dumps(JWTAnalyzer().analyze(token), indent=2))`,
+  },
+  {
+    name: { ar: "كاشف تعدين العملات الخفي", en: "Cryptominer Detector" },
+    description: { ar: "اكتشاف عمليات تعدين مخفية", en: "Detect hidden mining processes" },
+    language: "Python",
+    code: `import psutil
+import re
+
+class MinerDetector:
+    SIGNATURES = ['xmrig', 'minerd', 'cpuminer', 'ethminer', 'stratum+tcp']
+    
+    def scan(self):
+        miners = []
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline', 'cpu_percent']):
+            try:
+                cmdline = ' '.join(proc.info['cmdline'] or []).lower()
+                for sig in self.SIGNATURES:
+                    if sig in cmdline:
+                        miners.append({
+                            'pid': proc.info['pid'],
+                            'name': proc.info['name'],
+                            'cpu': proc.cpu_percent(),
+                            'signature': sig
+                        })
+            except: pass
+        
+        # Check high CPU
+        for proc in psutil.process_iter(['pid', 'name', 'cpu_percent']):
+            try:
+                if proc.cpu_percent(interval=0.5) > 80:
+                    print(f"[!] High CPU: {proc.info['name']} ({proc.cpu_percent()}%)")
+            except: pass
+        
+        return miners
+
+result = MinerDetector().scan()
+print(f"[*] Found {len(result)} suspicious processes")`,
+  },
+  {
+    name: { ar: "فاحص SSRF", en: "SSRF Scanner" },
+    description: { ar: "اكتشاف ثغرات SSRF", en: "Detect SSRF vulnerabilities" },
+    language: "Python",
+    code: `import requests
+import urllib.parse
+
+class SSRFScanner:
+    PAYLOADS = [
+        "http://127.0.0.1", "http://localhost", "http://[::1]",
+        "http://169.254.169.254/latest/meta-data/",  # AWS
+        "http://metadata.google.internal/",  # GCP
+        "file:///etc/passwd"
+    ]
+    
+    def test(self, url, param):
+        results = []
+        for payload in self.PAYLOADS:
+            parsed = urllib.parse.urlparse(url)
+            query = {param: payload}
+            test_url = f"{parsed.scheme}://{parsed.netloc}{parsed.path}?{urllib.parse.urlencode(query)}"
+            
+            try:
+                r = requests.get(test_url, timeout=5)
+                if any(x in r.text.lower() for x in ['root:', 'ami-', 'instance-id']):
+                    results.append({'vulnerable': True, 'payload': payload})
+            except: pass
+        
+        return results
+
+scanner = SSRFScanner()
+print(scanner.test("https://example.com/fetch", "url"))`,
+  },
+  // === سكربتات C++ جديدة ===
+  {
+    name: { ar: "محلل PE Headers", en: "PE Header Analyzer" },
+    description: { ar: "تحليل رؤوس ملفات PE التنفيذية", en: "Analyze PE executable headers" },
+    language: "C++",
+    code: `#include <iostream>
+#include <fstream>
+#include <cstdint>
+
+struct DOSHeader {
+    uint16_t magic;      // MZ
+    uint16_t padding[29];
+    uint32_t peOffset;
+};
+
+struct PEHeader {
+    uint32_t signature;  // PE\\0\\0
+    uint16_t machine;
+    uint16_t numSections;
+    uint32_t timestamp;
+    uint32_t symbolTable;
+    uint32_t numSymbols;
+    uint16_t optHeaderSize;
+    uint16_t characteristics;
+};
+
+void analyzePE(const char* filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file) {
+        std::cerr << "Cannot open file" << std::endl;
+        return;
+    }
+    
+    DOSHeader dos;
+    file.read(reinterpret_cast<char*>(&dos), sizeof(dos));
+    
+    if (dos.magic != 0x5A4D) {
+        std::cout << "[-] Not a valid PE file" << std::endl;
+        return;
+    }
+    
+    file.seekg(dos.peOffset);
+    PEHeader pe;
+    file.read(reinterpret_cast<char*>(&pe), sizeof(pe));
+    
+    std::cout << "[+] Valid PE File" << std::endl;
+    std::cout << "[*] Machine: 0x" << std::hex << pe.machine << std::endl;
+    std::cout << "[*] Sections: " << std::dec << pe.numSections << std::endl;
+    std::cout << "[*] Characteristics: 0x" << std::hex << pe.characteristics << std::endl;
+    
+    if (pe.characteristics & 0x2000)
+        std::cout << "[!] DLL File" << std::endl;
+    if (pe.characteristics & 0x0002)
+        std::cout << "[+] Executable" << std::endl;
+}
+
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " <file.exe>" << std::endl;
+        return 1;
+    }
+    analyzePE(argv[1]);
+    return 0;
+}`,
+  },
+  {
+    name: { ar: "مراقب العمليات المباشر", en: "Live Process Monitor" },
+    description: { ar: "مراقبة العمليات الجديدة في الوقت الحقيقي", en: "Monitor new processes in real-time" },
+    language: "C++",
+    code: `#include <iostream>
+#include <windows.h>
+#include <tlhelp32.h>
+#include <set>
+#include <string>
+
+class ProcessMonitor {
+    std::set<DWORD> knownProcesses;
+    
+public:
+    void takeSnapshot() {
+        HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        PROCESSENTRY32 pe;
+        pe.dwSize = sizeof(pe);
+        
+        if (Process32First(snap, &pe)) {
+            do {
+                if (knownProcesses.find(pe.th32ProcessID) == knownProcesses.end()) {
+                    std::wcout << L"[NEW] PID: " << pe.th32ProcessID 
+                               << L" - " << pe.szExeFile << std::endl;
+                    knownProcesses.insert(pe.th32ProcessID);
+                }
+            } while (Process32Next(snap, &pe));
+        }
+        CloseHandle(snap);
+    }
+    
+    void monitor(int intervalMs = 1000) {
+        std::cout << "[*] Monitoring processes... Press Ctrl+C to stop" << std::endl;
+        
+        // Initial snapshot
+        HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        PROCESSENTRY32 pe;
+        pe.dwSize = sizeof(pe);
+        
+        if (Process32First(snap, &pe)) {
+            do {
+                knownProcesses.insert(pe.th32ProcessID);
+            } while (Process32Next(snap, &pe));
+        }
+        CloseHandle(snap);
+        
+        while (true) {
+            Sleep(intervalMs);
+            takeSnapshot();
+        }
+    }
+};
+
+int main() {
+    ProcessMonitor monitor;
+    monitor.monitor(500);
+    return 0;
+}`,
+  },
+  // === سكربتات Bash جديدة ===
+  {
+    name: { ar: "فاحص أمان Docker", en: "Docker Security Scanner" },
+    description: { ar: "فحص تكوينات Docker الأمنية", en: "Scan Docker security configurations" },
+    language: "Bash",
+    code: `#!/bin/bash
+echo "=== Docker Security Scanner ==="
+echo ""
+
+# Check if Docker is running as root
+if docker info 2>/dev/null | grep -q "Root"; then
+    echo "[!] Docker is running with root privileges"
+fi
+
+# List containers with privileged mode
+echo "[*] Checking privileged containers..."
+for container in $(docker ps -q 2>/dev/null); do
+    if docker inspect "$container" | grep -q '"Privileged": true'; then
+        name=$(docker inspect --format '{{.Name}}' "$container")
+        echo "  [!] PRIVILEGED: $name"
+    fi
+done
+
+# Check for containers with host network
+echo "[*] Checking host network mode..."
+for container in $(docker ps -q 2>/dev/null); do
+    if docker inspect "$container" | grep -q '"NetworkMode": "host"'; then
+        name=$(docker inspect --format '{{.Name}}' "$container")
+        echo "  [!] HOST NETWORK: $name"
+    fi
+done
+
+# Check for sensitive mounts
+echo "[*] Checking sensitive volume mounts..."
+docker ps -q 2>/dev/null | while read container; do
+    mounts=$(docker inspect --format '{{json .Mounts}}' "$container" 2>/dev/null)
+    if echo "$mounts" | grep -qE '"/etc"|"/var/run/docker.sock"|"/root"'; then
+        name=$(docker inspect --format '{{.Name}}' "$container")
+        echo "  [!] SENSITIVE MOUNT: $name"
+    fi
+done
+
+# Check Docker socket exposure
+if [ -S /var/run/docker.sock ]; then
+    perms=$(stat -c '%a' /var/run/docker.sock)
+    if [ "$perms" = "666" ]; then
+        echo "[!] Docker socket is world-readable!"
+    fi
+fi
+
+echo ""
+echo "[+] Scan complete"`,
+  },
+  {
+    name: { ar: "مستخرج أسرار Git", en: "Git Secrets Extractor" },
+    description: { ar: "البحث عن أسرار مسربة في Git", en: "Find leaked secrets in Git history" },
+    language: "Bash",
+    code: `#!/bin/bash
+echo "=== Git Secrets Scanner ==="
+
+PATTERNS=(
+    "password[[:space:]]*="
+    "api_key[[:space:]]*="
+    "secret[[:space:]]*="
+    "AWS_ACCESS_KEY"
+    "AKIA[A-Z0-9]{16}"
+    "ghp_[a-zA-Z0-9]{36}"
+    "sk-[a-zA-Z0-9]{48}"
+    "-----BEGIN.*PRIVATE KEY-----"
+)
+
+echo "[*] Scanning Git history..."
+
+for pattern in "\${PATTERNS[@]}"; do
+    echo ""
+    echo "[*] Pattern: $pattern"
+    
+    git log -p --all 2>/dev/null | grep -iE "$pattern" | head -5 | while read line; do
+        echo "  [!] Found: \${line:0:80}..."
+    done
+done
+
+# Check current files
+echo ""
+echo "[*] Scanning current files..."
+
+for pattern in "\${PATTERNS[@]}"; do
+    grep -rliE "$pattern" . --include="*.py" --include="*.js" --include="*.env" \
+        --include="*.yml" --include="*.json" 2>/dev/null | while read file; do
+        echo "  [!] $file contains potential secret"
+    done
+done
+
+# Check .env files
+if [ -f ".env" ]; then
+    echo ""
+    echo "[!] .env file found - checking if in .gitignore..."
+    if ! grep -q ".env" .gitignore 2>/dev/null; then
+        echo "  [!] .env is NOT in .gitignore!"
+    fi
+fi
+
+echo ""
+echo "[+] Scan complete"`,
+  },
+  // === سكربتات JavaScript جديدة ===
+  {
+    name: { ar: "محلل CSP", en: "CSP Analyzer" },
+    description: { ar: "تحليل سياسة أمان المحتوى", en: "Analyze Content Security Policy" },
+    language: "JavaScript",
+    code: `class CSPAnalyzer {
+    constructor() {
+        this.dangerousValues = ['unsafe-inline', 'unsafe-eval', '*', 'data:'];
+    }
+    
+    analyze(cspHeader) {
+        const directives = {};
+        const issues = [];
+        
+        cspHeader.split(';').forEach(part => {
+            const [directive, ...values] = part.trim().split(/\\s+/);
+            if (directive) directives[directive] = values;
+        });
+        
+        // Check for dangerous values
+        Object.entries(directives).forEach(([directive, values]) => {
+            values.forEach(value => {
+                if (this.dangerousValues.includes(value)) {
+                    issues.push({
+                        severity: 'HIGH',
+                        directive,
+                        issue: \`Dangerous value: \${value}\`
+                    });
+                }
+            });
+        });
+        
+        // Check missing directives
+        const recommended = ['default-src', 'script-src', 'style-src', 'object-src'];
+        recommended.forEach(dir => {
+            if (!directives[dir]) {
+                issues.push({
+                    severity: 'MEDIUM',
+                    directive: dir,
+                    issue: 'Missing recommended directive'
+                });
+            }
+        });
+        
+        return { directives, issues, score: Math.max(0, 100 - issues.length * 15) };
+    }
+}
+
+const csp = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src *";
+const result = new CSPAnalyzer().analyze(csp);
+console.log('Security Score:', result.score);
+console.log('Issues:', result.issues);`,
+  },
+  {
+    name: { ar: "كاشف XSS DOM", en: "DOM XSS Detector" },
+    description: { ar: "اكتشاف نقاط ضعف XSS في DOM", en: "Detect DOM-based XSS vulnerabilities" },
+    language: "JavaScript",
+    code: `class DOMXSSDetector {
+    constructor() {
+        this.sources = [
+            'location.hash', 'location.search', 'location.href',
+            'document.referrer', 'document.URL', 'window.name',
+            'document.cookie', 'localStorage', 'sessionStorage'
+        ];
+        this.sinks = [
+            'innerHTML', 'outerHTML', 'document.write', 'eval',
+            'setTimeout', 'setInterval', 'Function', 'src', 'href'
+        ];
+    }
+    
+    scanScript(code) {
+        const findings = [];
+        
+        this.sources.forEach(source => {
+            if (code.includes(source)) {
+                this.sinks.forEach(sink => {
+                    if (code.includes(sink)) {
+                        // Simple flow detection
+                        const sourceIdx = code.indexOf(source);
+                        const sinkIdx = code.indexOf(sink);
+                        
+                        if (sinkIdx > sourceIdx) {
+                            findings.push({
+                                type: 'Potential DOM XSS',
+                                source,
+                                sink,
+                                severity: 'HIGH'
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        
+        return findings;
+    }
+    
+    scanPage() {
+        const scripts = document.querySelectorAll('script');
+        const allFindings = [];
+        
+        scripts.forEach((script, i) => {
+            if (script.textContent) {
+                const findings = this.scanScript(script.textContent);
+                if (findings.length) {
+                    allFindings.push({ script: i, findings });
+                }
+            }
+        });
+        
+        return allFindings;
+    }
+}
+
+// Test code
+const testCode = \`
+    var data = location.hash.substring(1);
+    document.getElementById('output').innerHTML = data;
+\`;
+const detector = new DOMXSSDetector();
+console.log(detector.scanScript(testCode));`,
+  },
+  // === سكربتات Java جديدة ===
+  {
+    name: { ar: "محلل Bytecode", en: "Bytecode Analyzer" },
+    description: { ar: "تحليل Java Bytecode للكشف عن التلاعب", en: "Analyze Java Bytecode for tampering" },
+    language: "Java",
+    code: `import java.io.*;
+import java.util.*;
+
+public class BytecodeAnalyzer {
+    private static final int MAGIC = 0xCAFEBABE;
+    
+    public static void analyze(String classFile) throws IOException {
+        DataInputStream in = new DataInputStream(
+            new BufferedInputStream(new FileInputStream(classFile)));
+        
+        // Check magic number
+        int magic = in.readInt();
+        if (magic != MAGIC) {
+            System.out.println("[-] Invalid class file!");
+            return;
+        }
+        
+        int minor = in.readUnsignedShort();
+        int major = in.readUnsignedShort();
+        
+        System.out.println("[+] Valid Java Class File");
+        System.out.println("[*] Version: " + major + "." + minor);
+        System.out.println("[*] Java Version: " + getJavaVersion(major));
+        
+        // Read constant pool
+        int cpCount = in.readUnsignedShort();
+        System.out.println("[*] Constant Pool: " + (cpCount - 1) + " entries");
+        
+        // Suspicious patterns
+        List<String> suspicious = Arrays.asList(
+            "Runtime.exec", "ProcessBuilder", "ClassLoader",
+            "reflect", "Unsafe", "native"
+        );
+        
+        System.out.println("\\n[*] Scanning for suspicious patterns...");
+        // In real implementation, parse constant pool for strings
+        
+        in.close();
+    }
+    
+    private static String getJavaVersion(int major) {
+        Map<Integer, String> versions = new HashMap<>();
+        versions.put(52, "Java 8");
+        versions.put(55, "Java 11");
+        versions.put(61, "Java 17");
+        versions.put(65, "Java 21");
+        return versions.getOrDefault(major, "Unknown");
+    }
+    
+    public static void main(String[] args) throws IOException {
+        if (args.length < 1) {
+            System.out.println("Usage: java BytecodeAnalyzer <file.class>");
+            return;
+        }
+        analyze(args[0]);
+    }
+}`,
+  },
+  {
+    name: { ar: "مراقب SSL/TLS", en: "SSL/TLS Monitor" },
+    description: { ar: "فحص شهادات SSL والبروتوكولات", en: "Check SSL certificates and protocols" },
+    language: "Java",
+    code: `import javax.net.ssl.*;
+import java.security.cert.*;
+import java.util.*;
+
+public class SSLMonitor {
+    
+    public static Map<String, Object> analyze(String host, int port) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        List<String> issues = new ArrayList<>();
+        
+        SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        SSLSocket socket = (SSLSocket) factory.createSocket(host, port);
+        
+        socket.startHandshake();
+        
+        // Get session info
+        SSLSession session = socket.getSession();
+        result.put("protocol", session.getProtocol());
+        result.put("cipher", session.getCipherSuite());
+        
+        // Check protocol
+        if (session.getProtocol().contains("TLSv1.0") || 
+            session.getProtocol().contains("TLSv1.1")) {
+            issues.add("Deprecated TLS version: " + session.getProtocol());
+        }
+        
+        // Check cipher
+        if (session.getCipherSuite().contains("RC4") ||
+            session.getCipherSuite().contains("DES")) {
+            issues.add("Weak cipher: " + session.getCipherSuite());
+        }
+        
+        // Get certificate
+        Certificate[] certs = session.getPeerCertificates();
+        X509Certificate x509 = (X509Certificate) certs[0];
+        
+        result.put("subject", x509.getSubjectDN().getName());
+        result.put("issuer", x509.getIssuerDN().getName());
+        result.put("expires", x509.getNotAfter());
+        
+        // Check expiry
+        long daysLeft = (x509.getNotAfter().getTime() - System.currentTimeMillis()) 
+                        / (1000 * 60 * 60 * 24);
+        if (daysLeft < 30) {
+            issues.add("Certificate expires in " + daysLeft + " days!");
+        }
+        
+        result.put("issues", issues);
+        socket.close();
+        
+        return result;
+    }
+    
+    public static void main(String[] args) throws Exception {
+        String host = args.length > 0 ? args[0] : "google.com";
+        Map<String, Object> result = analyze(host, 443);
+        
+        System.out.println("[*] SSL/TLS Analysis for " + host);
+        System.out.println("[*] Protocol: " + result.get("protocol"));
+        System.out.println("[*] Cipher: " + result.get("cipher"));
+        System.out.println("[*] Expires: " + result.get("expires"));
+        
+        List<String> issues = (List<String>) result.get("issues");
+        if (!issues.isEmpty()) {
+            System.out.println("\\n[!] Issues found:");
+            issues.forEach(i -> System.out.println("  - " + i));
+        }
+    }
+}`,
+  },
+  // === سكربتات C# جديدة ===
+  {
+    name: { ar: "فاحص سجل Windows", en: "Windows Registry Scanner" },
+    description: { ar: "فحص السجل للبرامج الضارة", en: "Scan registry for malware persistence" },
+    language: "C#",
+    code: `using System;
+using Microsoft.Win32;
+using System.Collections.Generic;
+
+class RegistryScanner
+{
+    static string[] RunKeys = {
+        @"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+        @"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce",
+        @"SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Run"
+    };
+    
+    static List<string> SuspiciousPatterns = new List<string> {
+        "powershell", "cmd.exe", "wscript", "cscript",
+        "mshta", "regsvr32", "rundll32", "-enc", "-e ",
+        "downloadstring", "iex", "bypass"
+    };
+    
+    static void ScanKey(RegistryKey baseKey, string path)
+    {
+        try
+        {
+            using (var key = baseKey.OpenSubKey(path))
+            {
+                if (key == null) return;
+                
+                Console.WriteLine($"\\n[*] Scanning: {path}");
+                
+                foreach (var name in key.GetValueNames())
+                {
+                    var value = key.GetValue(name)?.ToString() ?? "";
+                    var suspicious = false;
+                    
+                    foreach (var pattern in SuspiciousPatterns)
+                    {
+                        if (value.ToLower().Contains(pattern))
+                        {
+                            suspicious = true;
+                            Console.WriteLine($"  [!] SUSPICIOUS: {name}");
+                            Console.WriteLine($"      Value: {value.Substring(0, Math.Min(80, value.Length))}...");
+                            Console.WriteLine($"      Pattern: {pattern}");
+                            break;
+                        }
+                    }
+                    
+                    if (!suspicious)
+                        Console.WriteLine($"  [+] {name}: {value.Substring(0, Math.Min(50, value.Length))}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[-] Error: {ex.Message}");
+        }
+    }
+    
+    static void Main()
+    {
+        Console.WriteLine("=== Windows Registry Security Scanner ===\\n");
+        
+        foreach (var path in RunKeys)
+        {
+            ScanKey(Registry.LocalMachine, path);
+            ScanKey(Registry.CurrentUser, path);
+        }
+        
+        Console.WriteLine("\\n[+] Scan complete");
+    }
+}`,
+  },
+  {
+    name: { ar: "محلل اتصالات الشبكة", en: "Network Connection Analyzer" },
+    description: { ar: "تحليل الاتصالات الشبكية النشطة", en: "Analyze active network connections" },
+    language: "C#",
+    code: `using System;
+using System.Net.NetworkInformation;
+using System.Linq;
+using System.Collections.Generic;
+
+class NetworkAnalyzer
+{
+    static int[] SuspiciousPorts = { 4444, 5555, 6666, 7777, 31337, 12345, 1337 };
+    
+    static void Main()
+    {
+        Console.WriteLine("=== Network Connection Analyzer ===\\n");
+        
+        var properties = IPGlobalProperties.GetIPGlobalProperties();
+        var connections = properties.GetActiveTcpConnections();
+        
+        var grouped = connections
+            .GroupBy(c => c.State)
+            .OrderByDescending(g => g.Count());
+        
+        Console.WriteLine($"[*] Total Connections: {connections.Length}\\n");
+        
+        foreach (var group in grouped)
+        {
+            Console.WriteLine($"[*] {group.Key}: {group.Count()}");
+        }
+        
+        // Check suspicious connections
+        var suspicious = connections
+            .Where(c => SuspiciousPorts.Contains(c.RemoteEndPoint.Port) ||
+                       SuspiciousPorts.Contains(c.LocalEndPoint.Port))
+            .ToList();
+        
+        if (suspicious.Any())
+        {
+            Console.WriteLine($"\\n[!] SUSPICIOUS CONNECTIONS:");
+            foreach (var conn in suspicious)
+            {
+                Console.WriteLine($"  {conn.LocalEndPoint} -> {conn.RemoteEndPoint} ({conn.State})");
+            }
+        }
+        
+        // Foreign connections
+        var foreign = connections
+            .Where(c => c.State == TcpState.Established &&
+                       !c.RemoteEndPoint.Address.ToString().StartsWith("192.168.") &&
+                       !c.RemoteEndPoint.Address.ToString().StartsWith("10.") &&
+                       !c.RemoteEndPoint.Address.ToString().StartsWith("127."))
+            .ToList();
+        
+        if (foreign.Any())
+        {
+            Console.WriteLine($"\\n[*] FOREIGN CONNECTIONS ({foreign.Count}):");
+            foreach (var conn in foreign.Take(10))
+            {
+                Console.WriteLine($"  -> {conn.RemoteEndPoint.Address}:{conn.RemoteEndPoint.Port}");
+            }
+        }
+        
+        Console.WriteLine("\\n[+] Analysis complete");
+    }
+}`,
+  },
+  // === سكربتات Assembly جديدة ===
+  {
+    name: { ar: "Shellcode مُشفر", en: "Encoded Shellcode" },
+    description: { ar: "Shellcode مع تشفير XOR للتهرب", en: "XOR encoded shellcode for evasion" },
+    language: "Assembly",
+    code: `; Encoded Shellcode with XOR Decoder
+; x86 Assembly - Educational Purpose Only
+
+section .text
+global _start
+
+_start:
+    jmp short get_encoded    ; Jump to get shellcode address
+
+decoder:
+    pop esi                  ; Get shellcode address
+    xor ecx, ecx             ; Clear ECX
+    mov cl, shellcode_len    ; Set counter
+
+decode_loop:
+    xor byte [esi], 0xAA     ; XOR decode with key 0xAA
+    inc esi                  ; Next byte
+    loop decode_loop         ; Continue until done
+    
+    jmp short encoded        ; Execute decoded shellcode
+
+get_encoded:
+    call decoder             ; Push shellcode address to stack
+
+encoded:
+    ; XOR encoded bytes would go here
+    ; Original: \\x31\\xc0\\x50\\x68...
+    ; Encoded:  \\x9b\\x6a\\xfa\\xc2...
+    
+    db 0x9b, 0x6a, 0xfa, 0xc2  ; Encoded example bytes
+    
+shellcode_len equ $ - encoded
+
+; To encode shellcode:
+; for byte in shellcode:
+;     encoded_byte = byte ^ 0xAA
+;
+; Compile: nasm -f elf32 shellcode.asm
+; Link: ld -m elf_i386 -o shellcode shellcode.o`,
+  },
+  {
+    name: { ar: "استدعاء API مباشر", en: "Direct API Caller" },
+    description: { ar: "استدعاء Windows API مباشرة", en: "Call Windows API directly" },
+    language: "Assembly",
+    code: `; Direct Windows API Call via Assembly
+; x86-64 Windows - Educational Purpose
+
+section .data
+    msg db 'Security Tool Active', 0
+    title db 'Status', 0
+
+section .text
+global _start
+extern MessageBoxA
+extern ExitProcess
+
+_start:
+    ; Shadow space for Windows x64 calling convention
+    sub rsp, 40
+    
+    ; MessageBoxA(NULL, message, title, MB_OK)
+    xor ecx, ecx             ; hWnd = NULL
+    lea rdx, [rel msg]       ; lpText
+    lea r8, [rel title]      ; lpCaption
+    xor r9d, r9d             ; uType = MB_OK (0)
+    call MessageBoxA
+    
+    ; ExitProcess(0)
+    xor ecx, ecx             ; Exit code 0
+    call ExitProcess
+    
+; Assembly Anti-Debug Techniques:
+;
+; 1. Check IsDebuggerPresent
+;    mov rax, gs:[60h]       ; Get PEB
+;    movzx eax, byte [rax+2] ; BeingDebugged flag
+;    test al, al
+;    jnz debugger_detected
+;
+; 2. Check NtGlobalFlag
+;    mov rax, gs:[60h]       ; PEB
+;    mov eax, [rax+BCh]      ; NtGlobalFlag
+;    and eax, 70h            ; Check debug flags
+;    jnz debugger_detected
+
+; Compile: nasm -f win64 api_call.asm
+; Link: link /ENTRY:_start /SUBSYSTEM:WINDOWS api_call.obj user32.lib kernel32.lib`,
+  },
 ];
 
 
@@ -2912,11 +3739,25 @@ const ScriptsPage = () => {
   const [copied, setCopied] = useState<number | null>(null);
   const [filter, setFilter] = useState<"all" | "Python" | "C++" | "C" | "Bash" | "JavaScript" | "Assembly" | "Java" | "C#">("all");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
+  const { exportToPdf } = usePdfExport();
 
   const copyToClipboard = (code: string, index: number) => {
     navigator.clipboard.writeText(code);
     setCopied(index);
     setTimeout(() => setCopied(null), 2000);
+  };
+
+  const handleExportPdf = () => {
+    const scriptsToExport = filter === "all" ? scripts : scripts.filter(s => s.language === filter);
+    const data = [{
+      title: language === "ar" ? "السكربتات الجاهزة" : "Ready-to-Use Scripts",
+      items: scriptsToExport.map(script => ({
+        name: `${language === "ar" ? script.name.ar : script.name.en} (${script.language})`,
+        description: language === "ar" ? script.description.ar : script.description.en,
+        code: script.code.substring(0, 500),
+      })),
+    }];
+    exportToPdf(data, "security-scripts.pdf", language === "ar" ? "السكربتات الجاهزة" : "Security Scripts");
   };
 
   const filteredScripts = filter === "all" 
@@ -2966,6 +3807,13 @@ const ScriptsPage = () => {
                 className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-colors"
               >
                 <Globe className="w-5 h-5 text-muted-foreground" />
+              </button>
+              <button
+                onClick={handleExportPdf}
+                className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-colors"
+                title={language === "ar" ? "تحميل PDF" : "Download PDF"}
+              >
+                <Download className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.subtitle}</p>
