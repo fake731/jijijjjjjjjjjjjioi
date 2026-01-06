@@ -1,9 +1,9 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Terminal, ChevronDown, ChevronUp, Copy, Check, Search, Globe, Network, Shield, Globe2, Radio, Key, Zap, Database, Wifi, Lock, Bug, Server, Scan, Eye, Hash, UserX, Code, Laptop, Fingerprint, Target, FileSearch, Settings, Crosshair, Skull, AlertTriangle, Layers, Binary, Unplug, HardDrive, Monitor, Cpu, Activity, ShieldAlert, Wrench, FileTerminal } from "lucide-react";
+import { Terminal, ChevronDown, ChevronUp, Copy, Check, Search, Globe, Network, Shield, Globe2, Radio, Key, Zap, Database, Wifi, Lock, Bug, Server, Scan, Eye, Hash, UserX, Code, Laptop, Fingerprint, Target, FileSearch, Settings, Crosshair, Skull, AlertTriangle, Layers, Binary, Unplug, HardDrive, Monitor, Cpu, Activity, ShieldAlert, Wrench, FileTerminal, Download, Camera, Dog, Fish, Ghost, Phone, Video, MessageSquare, Users, Magnet, Webhook } from "lucide-react";
 import { useState, useMemo } from "react";
 import { LucideIcon } from "lucide-react";
-
+import { usePdfExport } from "@/hooks/use-pdf-export";
 interface Command {
   command: string;
   description: { ar: string; en: string };
@@ -53,6 +53,16 @@ const toolIcons: Record<string, LucideIcon> = {
   "Subfinder": Search,
   "Masscan": Network,
   "LinPEAS": Terminal,
+  "CamPhish": Camera,
+  "HiddenEye": Eye,
+  "Seeker": Target,
+  "SocialFish": Fish,
+  "Hound": Dog,
+  "PhoneInfoga": Phone,
+  "Sherlock": Users,
+  "SpiderFoot": Webhook,
+  "ReconDog": Dog,
+  "Ghost Phisher": Ghost,
 };
 
 const tools: Tool[] = [
@@ -810,6 +820,166 @@ const tools: Tool[] = [
       { command: "./linpeas.sh -h", description: { ar: "المساعدة", en: "Help" } },
     ],
   },
+  {
+    name: "CamPhish",
+    description: { ar: "أداة لالتقاط صور من كاميرا الضحية عبر صفحات وهمية", en: "Capture photos from victim's camera via phishing pages" },
+    commands: [
+      { command: "git clone https://github.com/techchipnet/CamPhish", description: { ar: "تحميل الأداة", en: "Download tool" } },
+      { command: "cd CamPhish", description: { ar: "الدخول للمجلد", en: "Enter directory" } },
+      { command: "bash camphish.sh", description: { ar: "تشغيل الأداة", en: "Run tool" } },
+      { command: "apt install php curl", description: { ar: "تثبيت المتطلبات", en: "Install requirements" } },
+      { command: "Select template (1-4)", description: { ar: "اختيار قالب الصفحة", en: "Select page template" } },
+      { command: "Start Ngrok server", description: { ar: "تشغيل سيرفر Ngrok", en: "Start Ngrok server" } },
+      { command: "Copy phishing URL", description: { ar: "نسخ رابط التصيد", en: "Copy phishing URL" } },
+      { command: "Captured images → images/", description: { ar: "الصور الملتقطة في مجلد images", en: "Captured images in images folder" } },
+      { command: "python3 -m http.server 8080", description: { ar: "سيرفر بديل", en: "Alternative server" } },
+      { command: "cloudflared tunnel --url localhost:8080", description: { ar: "نفق Cloudflare", en: "Cloudflare tunnel" } },
+    ],
+  },
+  {
+    name: "HiddenEye",
+    description: { ar: "أداة تصيد متقدمة مع صفحات وهمية متعددة", en: "Advanced phishing tool with multiple fake pages" },
+    commands: [
+      { command: "git clone https://github.com/Jeenali-Shah/hiddeneye", description: { ar: "تحميل الأداة", en: "Download tool" } },
+      { command: "cd hiddeneye && pip3 install -r requirements.txt", description: { ar: "تثبيت المتطلبات", en: "Install requirements" } },
+      { command: "python3 HiddenEye.py", description: { ar: "تشغيل الأداة", en: "Run tool" } },
+      { command: "Select social media target", description: { ar: "اختيار منصة التصيد", en: "Select target platform" } },
+      { command: "Choose tunneling (Ngrok/Serveo)", description: { ar: "اختيار النفق", en: "Choose tunnel" } },
+      { command: "Custom phishing page builder", description: { ar: "إنشاء صفحة مخصصة", en: "Custom page builder" } },
+      { command: "Keylogger integration", description: { ar: "تكامل مع Keylogger", en: "Keylogger integration" } },
+      { command: "IP + Location capture", description: { ar: "التقاط IP والموقع", en: "Capture IP + Location" } },
+      { command: "logs/credentials.txt", description: { ar: "ملف البيانات الملتقطة", en: "Captured credentials file" } },
+      { command: "python3 HiddenEye.py --update", description: { ar: "تحديث الأداة", en: "Update tool" } },
+    ],
+  },
+  {
+    name: "Seeker",
+    description: { ar: "أداة لتتبع الموقع الجغرافي للهدف بدقة عالية", en: "High accuracy location tracking tool" },
+    commands: [
+      { command: "git clone https://github.com/thewhiteh4t/seeker", description: { ar: "تحميل الأداة", en: "Download tool" } },
+      { command: "cd seeker && chmod +x install.sh && ./install.sh", description: { ar: "تثبيت الأداة", en: "Install tool" } },
+      { command: "python3 seeker.py", description: { ar: "تشغيل الأداة", en: "Run tool" } },
+      { command: "Select template (NearYou/WhatsApp/Telegram)", description: { ar: "اختيار قالب", en: "Select template" } },
+      { command: "python3 seeker.py -t manual", description: { ar: "رابط مخصص", en: "Custom URL" } },
+      { command: "python3 seeker.py -k API_KEY", description: { ar: "استخدام API", en: "Use API key" } },
+      { command: "Captured data: IP, Location, Device", description: { ar: "البيانات: IP والموقع والجهاز", en: "Data: IP, Location, Device" } },
+      { command: "python3 seeker.py -h", description: { ar: "المساعدة", en: "Help" } },
+      { command: "db.txt → All captured data", description: { ar: "جميع البيانات المحفوظة", en: "All saved data" } },
+      { command: "Google Maps integration", description: { ar: "تكامل مع خرائط Google", en: "Google Maps integration" } },
+    ],
+  },
+  {
+    name: "SocialFish",
+    description: { ar: "منصة تصيد احترافية مع لوحة تحكم ويب", en: "Professional phishing platform with web dashboard" },
+    commands: [
+      { command: "git clone https://github.com/UndeadSec/SocialFish", description: { ar: "تحميل الأداة", en: "Download tool" } },
+      { command: "cd SocialFish && pip3 install -r requirements.txt", description: { ar: "تثبيت المتطلبات", en: "Install requirements" } },
+      { command: "python3 SocialFish.py", description: { ar: "تشغيل الأداة", en: "Run tool" } },
+      { command: "Access dashboard: http://localhost:5000", description: { ar: "الدخول للوحة التحكم", en: "Access dashboard" } },
+      { command: "Create new phishing campaign", description: { ar: "إنشاء حملة تصيد", en: "Create campaign" } },
+      { command: "Clone any website", description: { ar: "استنساخ أي موقع", en: "Clone any website" } },
+      { command: "Real-time credential capture", description: { ar: "التقاط فوري للبيانات", en: "Real-time capture" } },
+      { command: "Analytics dashboard", description: { ar: "لوحة إحصائيات", en: "Analytics dashboard" } },
+      { command: "Export captured data", description: { ar: "تصدير البيانات", en: "Export data" } },
+      { command: "python3 SocialFish.py --port 8080", description: { ar: "منفذ مخصص", en: "Custom port" } },
+    ],
+  },
+  {
+    name: "Hound",
+    description: { ar: "أداة للبحث عن معلومات الأهداف عبر الإنترنت", en: "OSINT tool to gather target information" },
+    commands: [
+      { command: "git clone https://github.com/techchipnet/Hound", description: { ar: "تحميل الأداة", en: "Download tool" } },
+      { command: "cd Hound && chmod +x hound.sh", description: { ar: "إعطاء الصلاحيات", en: "Set permissions" } },
+      { command: "bash hound.sh", description: { ar: "تشغيل الأداة", en: "Run tool" } },
+      { command: "Option 1: Track location", description: { ar: "تتبع الموقع", en: "Track location" } },
+      { command: "Option 2: Get device info", description: { ar: "معلومات الجهاز", en: "Device info" } },
+      { command: "Option 3: Get IP address", description: { ar: "عنوان IP", en: "IP address" } },
+      { command: "Option 4: Browser info", description: { ar: "معلومات المتصفح", en: "Browser info" } },
+      { command: "Ngrok integration", description: { ar: "تكامل مع Ngrok", en: "Ngrok integration" } },
+      { command: "results/ → Saved data", description: { ar: "البيانات المحفوظة", en: "Saved data" } },
+      { command: "bash hound.sh -h", description: { ar: "المساعدة", en: "Help" } },
+    ],
+  },
+  {
+    name: "PhoneInfoga",
+    description: { ar: "أداة استخبارات لأرقام الهواتف", en: "Phone number OSINT tool" },
+    commands: [
+      { command: "go install github.com/sundowndev/phoneinfoga/v2@latest", description: { ar: "تثبيت عبر Go", en: "Install via Go" } },
+      { command: "phoneinfoga scan -n +1234567890", description: { ar: "فحص رقم", en: "Scan number" } },
+      { command: "phoneinfoga serve", description: { ar: "تشغيل واجهة الويب", en: "Start web interface" } },
+      { command: "Access: http://localhost:5000", description: { ar: "فتح في المتصفح", en: "Open in browser" } },
+      { command: "phoneinfoga scan -n NUMBER --json", description: { ar: "نتائج JSON", en: "JSON output" } },
+      { command: "Get carrier information", description: { ar: "معلومات الناقل", en: "Carrier info" } },
+      { command: "Google dorks integration", description: { ar: "بحث Google متقدم", en: "Google dorks" } },
+      { command: "Social media lookup", description: { ar: "بحث مواقع التواصل", en: "Social media lookup" } },
+      { command: "Numverify API integration", description: { ar: "تكامل Numverify", en: "Numverify API" } },
+      { command: "phoneinfoga -h", description: { ar: "المساعدة", en: "Help" } },
+    ],
+  },
+  {
+    name: "Sherlock",
+    description: { ar: "البحث عن أسماء المستخدمين عبر مئات المنصات", en: "Hunt usernames across hundreds of platforms" },
+    commands: [
+      { command: "git clone https://github.com/sherlock-project/sherlock", description: { ar: "تحميل الأداة", en: "Download tool" } },
+      { command: "pip3 install -r requirements.txt", description: { ar: "تثبيت المتطلبات", en: "Install requirements" } },
+      { command: "python3 sherlock username", description: { ar: "بحث عن مستخدم", en: "Search username" } },
+      { command: "python3 sherlock user1 user2 user3", description: { ar: "بحث عدة مستخدمين", en: "Search multiple users" } },
+      { command: "python3 sherlock username --output results.txt", description: { ar: "حفظ النتائج", en: "Save results" } },
+      { command: "python3 sherlock username --csv", description: { ar: "تصدير CSV", en: "Export CSV" } },
+      { command: "python3 sherlock username --timeout 10", description: { ar: "وقت الانتظار", en: "Timeout" } },
+      { command: "python3 sherlock username --print-found", description: { ar: "طباعة الموجود فقط", en: "Print found only" } },
+      { command: "python3 sherlock username --site twitter", description: { ar: "موقع محدد", en: "Specific site" } },
+      { command: "python3 sherlock --help", description: { ar: "المساعدة", en: "Help" } },
+    ],
+  },
+  {
+    name: "SpiderFoot",
+    description: { ar: "منصة استخبارات شاملة مفتوحة المصدر", en: "Comprehensive open-source OSINT platform" },
+    commands: [
+      { command: "pip3 install spiderfoot", description: { ar: "تثبيت الأداة", en: "Install tool" } },
+      { command: "spiderfoot -l 127.0.0.1:5001", description: { ar: "تشغيل واجهة الويب", en: "Start web interface" } },
+      { command: "Access: http://127.0.0.1:5001", description: { ar: "فتح في المتصفح", en: "Open in browser" } },
+      { command: "Create new scan", description: { ar: "إنشاء فحص جديد", en: "Create new scan" } },
+      { command: "Target types: Domain, IP, Email, Phone", description: { ar: "أنواع الأهداف", en: "Target types" } },
+      { command: "Modules: 200+ reconnaissance modules", description: { ar: "أكثر من 200 وحدة استطلاع", en: "200+ recon modules" } },
+      { command: "Visualize results graph", description: { ar: "عرض النتائج برسم بياني", en: "Visualize results" } },
+      { command: "Export: CSV, JSON, GEXF", description: { ar: "تصدير البيانات", en: "Export data" } },
+      { command: "API integration", description: { ar: "تكامل API", en: "API integration" } },
+      { command: "spiderfoot -h", description: { ar: "المساعدة", en: "Help" } },
+    ],
+  },
+  {
+    name: "ReconDog",
+    description: { ar: "أداة استطلاع شاملة للمعلومات", en: "Comprehensive reconnaissance tool" },
+    commands: [
+      { command: "git clone https://github.com/s0md3v/ReconDog", description: { ar: "تحميل الأداة", en: "Download tool" } },
+      { command: "cd ReconDog && python3 dog.py", description: { ar: "تشغيل الأداة", en: "Run tool" } },
+      { command: "Option 1: Censys lookup", description: { ar: "بحث Censys", en: "Censys lookup" } },
+      { command: "Option 2: NS lookup", description: { ar: "بحث NS", en: "NS lookup" } },
+      { command: "Option 3: Port scan", description: { ar: "فحص المنافذ", en: "Port scan" } },
+      { command: "Option 4: Whois lookup", description: { ar: "بحث Whois", en: "Whois lookup" } },
+      { command: "Option 5: Zone transfer", description: { ar: "نقل المنطقة", en: "Zone transfer" } },
+      { command: "Option 6: HTTP headers", description: { ar: "رؤوس HTTP", en: "HTTP headers" } },
+      { command: "Option 7: Honeypot detection", description: { ar: "كشف Honeypot", en: "Honeypot detection" } },
+      { command: "python3 dog.py -h", description: { ar: "المساعدة", en: "Help" } },
+    ],
+  },
+  {
+    name: "Ghost Phisher",
+    description: { ar: "أداة هجمات لاسلكية وتصيد متقدمة", en: "Advanced wireless and phishing attack tool" },
+    commands: [
+      { command: "apt install ghost-phisher", description: { ar: "تثبيت من Kali", en: "Install from Kali" } },
+      { command: "ghost-phisher", description: { ar: "تشغيل الأداة", en: "Run tool" } },
+      { command: "Fake AP creation", description: { ar: "إنشاء نقطة وصول وهمية", en: "Create fake AP" } },
+      { command: "HTTP/HTTPS sniffing", description: { ar: "التقاط HTTP/HTTPS", en: "HTTP/HTTPS sniffing" } },
+      { command: "Session hijacking", description: { ar: "اختطاف الجلسات", en: "Session hijacking" } },
+      { command: "Credential harvesting", description: { ar: "جمع البيانات", en: "Credential harvesting" } },
+      { command: "DNS spoofing", description: { ar: "انتحال DNS", en: "DNS spoofing" } },
+      { command: "DHCP starvation", description: { ar: "هجوم DHCP", en: "DHCP starvation" } },
+      { command: "ARP spoofing", description: { ar: "انتحال ARP", en: "ARP spoofing" } },
+      { command: "Export logs", description: { ar: "تصدير السجلات", en: "Export logs" } },
+    ],
+  },
 ];
 
 const ToolsPage = () => {
@@ -817,11 +987,23 @@ const ToolsPage = () => {
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
+  const { exportToPdf } = usePdfExport();
 
   const copyCommand = (command: string) => {
     navigator.clipboard.writeText(command);
     setCopiedCommand(command);
     setTimeout(() => setCopiedCommand(null), 2000);
+  };
+
+  const handleExportPdf = () => {
+    const data = tools.map(tool => ({
+      title: tool.name,
+      items: tool.commands.map(cmd => ({
+        name: cmd.command,
+        description: language === "ar" ? cmd.description.ar : cmd.description.en,
+      })),
+    }));
+    exportToPdf(data, "kali-tools.pdf", language === "ar" ? "أدوات كالي لينكس" : "Kali Linux Tools");
   };
 
   const filteredTools = useMemo(() => {
@@ -873,6 +1055,13 @@ const ToolsPage = () => {
                 className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-colors"
               >
                 <Globe className="w-5 h-5 text-muted-foreground" />
+              </button>
+              <button
+                onClick={handleExportPdf}
+                className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-colors flex items-center gap-2"
+                title={language === "ar" ? "تحميل PDF" : "Download PDF"}
+              >
+                <Download className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.subtitle}</p>
