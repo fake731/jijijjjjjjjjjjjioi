@@ -2,7 +2,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Code, Copy, Check, Globe, Terminal, FileCode, Hash, Network, Search, Key, Shield, Mail, Link, Wifi, Eye, Lock, FileText, Bug, Database, Server, Skull, Cpu, HardDrive, AlertTriangle, Binary, Download } from "lucide-react";
 import { useState } from "react";
-import { usePdfExport } from "@/hooks/use-pdf-export";
 import { LucideIcon } from "lucide-react";
 
 interface Script {
@@ -3739,7 +3738,6 @@ const ScriptsPage = () => {
   const [copied, setCopied] = useState<number | null>(null);
   const [filter, setFilter] = useState<"all" | "Python" | "C++" | "C" | "Bash" | "JavaScript" | "Assembly" | "Java" | "C#">("all");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
-  const { exportToPdf } = usePdfExport();
 
   const copyToClipboard = (code: string, index: number) => {
     navigator.clipboard.writeText(code);
@@ -3747,17 +3745,40 @@ const ScriptsPage = () => {
     setTimeout(() => setCopied(null), 2000);
   };
 
-  const handleExportPdf = () => {
-    const scriptsToExport = filter === "all" ? scripts : scripts.filter(s => s.language === filter);
-    const data = [{
-      title: language === "ar" ? "السكربتات الجاهزة" : "Ready-to-Use Scripts",
-      items: scriptsToExport.map(script => ({
-        name: `${language === "ar" ? script.name.ar : script.name.en} (${script.language})`,
-        description: language === "ar" ? script.description.ar : script.description.en,
-        code: script.code.substring(0, 500),
-      })),
-    }];
-    exportToPdf(data, "security-scripts.pdf", language === "ar" ? "السكربتات الجاهزة" : "Security Scripts");
+  const getFileExtension = (lang: string) => {
+    switch (lang) {
+      case "Python": return ".py";
+      case "C++": return ".cpp";
+      case "C": return ".c";
+      case "Bash": return ".sh";
+      case "JavaScript": return ".js";
+      case "Assembly": return ".asm";
+      case "Java": return ".java";
+      case "C#": return ".cs";
+      default: return ".txt";
+    }
+  };
+
+  const downloadScript = (script: Script, index: number) => {
+    const watermark = `
+# ═══════════════════════════════════════════════════════════════
+# Script by: Qusay_kali
+# Instagram: @qusay_kali1
+# Website: https://qusaykali.netlify.app/
+# ═══════════════════════════════════════════════════════════════
+
+`;
+    const content = watermark + script.code;
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const fileName = `${script.name.en.replace(/\s+/g, "_")}${getFileExtension(script.language)}`;
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const filteredScripts = filter === "all" 
@@ -3808,13 +3829,6 @@ const ScriptsPage = () => {
               >
                 <Globe className="w-5 h-5 text-muted-foreground" />
               </button>
-              <button
-                onClick={handleExportPdf}
-                className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-colors"
-                title={language === "ar" ? "تحميل PDF" : "Download PDF"}
-              >
-                <Download className="w-5 h-5 text-muted-foreground" />
-              </button>
             </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.subtitle}</p>
           </div>
@@ -3864,16 +3878,26 @@ const ScriptsPage = () => {
                   </div>
                 </div>
                 <div className="relative">
-                  <button
-                    onClick={() => copyToClipboard(script.code, index)}
-                    className="absolute top-4 left-4 p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-all z-10"
-                  >
-                    {copied === index ? (
-                      <Check className="w-4 h-4 text-primary" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </button>
+                  <div className="absolute top-4 left-4 flex gap-2 z-10">
+                    <button
+                      onClick={() => copyToClipboard(script.code, index)}
+                      className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-all"
+                      title={language === "ar" ? "نسخ الكود" : "Copy code"}
+                    >
+                      {copied === index ? (
+                        <Check className="w-4 h-4 text-primary" />
+                      ) : (
+                        <Copy className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => downloadScript(script, index)}
+                      className="p-2 rounded-lg bg-primary/20 border border-primary/50 hover:bg-primary/30 transition-all"
+                      title={language === "ar" ? "تحميل السكربت" : "Download script"}
+                    >
+                      <Download className="w-4 h-4 text-primary" />
+                    </button>
+                  </div>
                   <pre className="p-6 pt-14 overflow-x-auto bg-background/50 text-sm">
                     <code className="text-foreground font-mono" dir="ltr">{script.code}</code>
                   </pre>

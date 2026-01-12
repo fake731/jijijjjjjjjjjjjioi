@@ -277,8 +277,8 @@ const AIPage = () => {
               role: "assistant",
               content:
                 language === "ar"
-                  ? "نفد رصيد الذكاء الاصطناعي حالياً. انتظر تجدد الرصيد المجاني أو أضف رصيد من الإعدادات: Settings → Workspace → Usage."
-                  : "AI credits are currently exhausted. Wait for the free daily reset or add credits in Settings → Workspace → Usage.",
+                  ? "تم توقيف الذكاء الاصطناعي مؤقتاً. الرجاء زيارة هذا الموقع الذي فيه ذكاء اصطناعي صالح: https://qusaykali.netlify.app/"
+                  : "AI is temporarily suspended. Please visit this website which has a working AI: https://qusaykali.netlify.app/",
             },
           ]);
           return;
