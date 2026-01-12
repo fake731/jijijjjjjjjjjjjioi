@@ -261,8 +261,44 @@ const AIPage = () => {
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to get response");
+        let errorMessage = "Failed to get response";
+
+        try {
+          const errorData = await response.json();
+          if (errorData?.error) errorMessage = errorData.error;
+        } catch {
+          // ignore non-JSON errors
+        }
+
+        if (response.status === 402) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content:
+                language === "ar"
+                  ? "نفد رصيد الذكاء الاصطناعي حالياً. انتظر تجدد الرصيد المجاني أو أضف رصيد من الإعدادات: Settings → Workspace → Usage."
+                  : "AI credits are currently exhausted. Wait for the free daily reset or add credits in Settings → Workspace → Usage.",
+            },
+          ]);
+          return;
+        }
+
+        if (response.status === 429) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content:
+                language === "ar"
+                  ? "تم تجاوز حد الطلبات حالياً. انتظر قليلاً ثم جرّب مرة أخرى."
+                  : "Rate limit exceeded. Please wait a moment and try again.",
+            },
+          ]);
+          return;
+        }
+
+        throw new Error(errorMessage);
       }
 
       const reader = response.body?.getReader();
@@ -311,9 +347,10 @@ const AIPage = () => {
         ...prev,
         {
           role: "assistant",
-          content: language === "ar" 
-            ? `❌ حدث خطأ: ${error instanceof Error ? error.message : "خطأ غير معروف"}. حاول مرة أخرى.`
-            : `❌ Error: ${error instanceof Error ? error.message : "Unknown error"}. Please try again.`,
+          content:
+            language === "ar"
+              ? `حدث خطأ: ${error instanceof Error ? error.message : "خطأ غير معروف"}.`
+              : `Error: ${error instanceof Error ? error.message : "Unknown error"}.`,
         },
       ]);
     } finally {
