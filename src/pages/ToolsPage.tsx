@@ -3,7 +3,7 @@ import Footer from "@/components/Footer";
 import { Terminal, ChevronDown, ChevronUp, Copy, Check, Search, Globe, Network, Shield, Globe2, Radio, Key, Zap, Database, Wifi, Lock, Bug, Server, Scan, Eye, Hash, UserX, Code, Laptop, Fingerprint, Target, FileSearch, Settings, Crosshair, Skull, AlertTriangle, Layers, Binary, Unplug, HardDrive, Monitor, Cpu, Activity, ShieldAlert, Wrench, FileTerminal, Download, Camera, Dog, Fish, Ghost, Phone, Video, MessageSquare, Users, Magnet, Webhook } from "lucide-react";
 import { useState, useMemo } from "react";
 import { LucideIcon } from "lucide-react";
-import { usePdfExport } from "@/hooks/use-pdf-export";
+
 interface Command {
   command: string;
   description: { ar: string; en: string };
@@ -66,6 +66,23 @@ const toolIcons: Record<string, LucideIcon> = {
   "Zphisher": Fish,
   "BlackEye": Eye,
   "Osintgram": Users,
+  "IPinfo": Globe,
+  "Curl": Terminal,
+  "Wget": Download,
+  "DNSRecon": Network,
+  "Whois": Search,
+  "Traceroute": Activity,
+  "Netstat": Monitor,
+  "ifconfig": Wifi,
+  "SSH": Lock,
+  "OpenSSL": Shield,
+  "Nslookup": Globe2,
+  "Dig": Search,
+  "Ping": Activity,
+  "ARP": Network,
+  "Route": Layers,
+  "TCPDump": Activity,
+  "IP": Wifi,
 };
 
 const tools: Tool[] = [
@@ -949,6 +966,198 @@ const tools: Tool[] = [
       { command: "python3 main.py target_username", description: { ar: "تشغيل الأداة على حساب معين", en: "Run tool on target account" } },
     ],
   },
+  // ============ أدوات الشبكات الأساسية القانونية ============
+  {
+    name: "IPinfo",
+    description: { ar: "أداة للحصول على معلومات IP العام والموقع الجغرافي", en: "Tool to get public IP info and geolocation" },
+    commands: [
+      { command: "curl ipinfo.io", description: { ar: "عرض معلومات IP الحالي (الموقع، المدينة، البلد، مزود الخدمة)", en: "Show current IP info (location, city, country, ISP)" } },
+      { command: "curl ipinfo.io/8.8.8.8", description: { ar: "عرض معلومات IP محدد (مثال: DNS جوجل)", en: "Show info for specific IP (e.g., Google DNS)" } },
+      { command: "curl ipinfo.io/ip", description: { ar: "عرض IP العام فقط", en: "Show public IP only" } },
+      { command: "curl ipinfo.io/city", description: { ar: "عرض اسم المدينة فقط", en: "Show city name only" } },
+      { command: "curl ipinfo.io/country", description: { ar: "عرض كود البلد فقط", en: "Show country code only" } },
+    ],
+  },
+  {
+    name: "Curl",
+    description: { ar: "أداة لنقل البيانات عبر البروتوكولات المختلفة", en: "Tool for transferring data via various protocols" },
+    commands: [
+      { command: "sudo apt install curl -y", description: { ar: "تثبيت الأداة من المستودعات الرسمية", en: "Install from official repositories" } },
+      { command: "curl -I https://example.com", description: { ar: "عرض معلومات الهيدر فقط (Headers)", en: "Show headers only" } },
+      { command: "curl -o file.html https://example.com", description: { ar: "تحميل صفحة وحفظها في ملف", en: "Download page and save to file" } },
+      { command: "curl -L https://example.com", description: { ar: "تتبع إعادة التوجيه (Redirects)", en: "Follow redirects" } },
+      { command: "curl -X POST -d 'data=value' https://api.com", description: { ar: "إرسال طلب POST مع بيانات", en: "Send POST request with data" } },
+      { command: "curl -u user:pass https://api.com", description: { ar: "الوصول بمصادقة", en: "Access with authentication" } },
+    ],
+  },
+  {
+    name: "Wget",
+    description: { ar: "أداة لتحميل الملفات من الإنترنت", en: "Tool for downloading files from the internet" },
+    commands: [
+      { command: "sudo apt install wget -y", description: { ar: "تثبيت الأداة", en: "Install the tool" } },
+      { command: "wget https://example.com/file.zip", description: { ar: "تحميل ملف مباشرة", en: "Download file directly" } },
+      { command: "wget -c https://example.com/file.zip", description: { ar: "استكمال تحميل متوقف", en: "Resume interrupted download" } },
+      { command: "wget -r https://example.com", description: { ar: "تحميل موقع كامل بشكل تكراري", en: "Download entire site recursively" } },
+      { command: "wget -b https://example.com/file.zip", description: { ar: "تحميل في الخلفية", en: "Download in background" } },
+      { command: "wget --limit-rate=1m https://example.com/file.zip", description: { ar: "تحديد سرعة التحميل", en: "Limit download speed" } },
+    ],
+  },
+  {
+    name: "DNSRecon",
+    description: { ar: "أداة لاستطلاع DNS واكتشاف السجلات", en: "DNS reconnaissance and record discovery tool" },
+    commands: [
+      { command: "sudo apt install dnsrecon -y", description: { ar: "تثبيت من مستودعات Kali", en: "Install from Kali repositories" } },
+      { command: "dnsrecon -d example.com", description: { ar: "فحص سجلات DNS الأساسية", en: "Scan basic DNS records" } },
+      { command: "dnsrecon -d example.com -t std", description: { ar: "فحص قياسي شامل", en: "Standard comprehensive scan" } },
+      { command: "dnsrecon -d example.com -t axfr", description: { ar: "محاولة نقل المنطقة (Zone Transfer)", en: "Attempt zone transfer" } },
+      { command: "dnsrecon -d example.com -t brt", description: { ar: "تخمين النطاقات الفرعية", en: "Brute force subdomains" } },
+    ],
+  },
+  {
+    name: "Whois",
+    description: { ar: "أداة للاستعلام عن معلومات تسجيل النطاق", en: "Tool for querying domain registration info" },
+    commands: [
+      { command: "sudo apt install whois -y", description: { ar: "تثبيت الأداة", en: "Install the tool" } },
+      { command: "whois example.com", description: { ar: "عرض معلومات تسجيل النطاق", en: "Show domain registration info" } },
+      { command: "whois 8.8.8.8", description: { ar: "عرض معلومات IP", en: "Show IP info" } },
+      { command: "whois -h whois.arin.net 8.8.8.8", description: { ar: "استخدام خادم WHOIS محدد", en: "Use specific WHOIS server" } },
+    ],
+  },
+  {
+    name: "Traceroute",
+    description: { ar: "أداة لتتبع مسار الحزم عبر الشبكة", en: "Tool for tracing packet route across network" },
+    commands: [
+      { command: "sudo apt install traceroute -y", description: { ar: "تثبيت الأداة", en: "Install the tool" } },
+      { command: "traceroute google.com", description: { ar: "تتبع المسار إلى موقع", en: "Trace route to website" } },
+      { command: "traceroute -n 8.8.8.8", description: { ar: "تتبع بدون DNS (أسرع)", en: "Trace without DNS (faster)" } },
+      { command: "traceroute -m 30 google.com", description: { ar: "تحديد أقصى عدد قفزات", en: "Set max hops" } },
+      { command: "traceroute -I google.com", description: { ar: "استخدام ICMP بدل UDP", en: "Use ICMP instead of UDP" } },
+    ],
+  },
+  {
+    name: "Netstat",
+    description: { ar: "أداة لعرض اتصالات الشبكة والمنافذ المفتوحة", en: "Tool to display network connections and open ports" },
+    commands: [
+      { command: "netstat -tuln", description: { ar: "عرض المنافذ المفتوحة (TCP/UDP)", en: "Show open ports (TCP/UDP)" } },
+      { command: "netstat -an", description: { ar: "عرض جميع الاتصالات", en: "Show all connections" } },
+      { command: "netstat -p", description: { ar: "عرض العمليات المرتبطة بالاتصالات", en: "Show processes with connections" } },
+      { command: "netstat -r", description: { ar: "عرض جدول التوجيه", en: "Show routing table" } },
+      { command: "netstat -s", description: { ar: "عرض إحصائيات الشبكة", en: "Show network statistics" } },
+    ],
+  },
+  {
+    name: "ifconfig",
+    description: { ar: "أداة لإعداد وعرض معلومات واجهات الشبكة", en: "Tool for configuring and displaying network interfaces" },
+    commands: [
+      { command: "sudo apt install net-tools -y", description: { ar: "تثبيت أدوات الشبكة", en: "Install network tools" } },
+      { command: "ifconfig", description: { ar: "عرض جميع واجهات الشبكة", en: "Show all network interfaces" } },
+      { command: "ifconfig eth0", description: { ar: "عرض واجهة محددة", en: "Show specific interface" } },
+      { command: "ifconfig eth0 up", description: { ar: "تفعيل واجهة الشبكة", en: "Enable network interface" } },
+      { command: "ifconfig eth0 down", description: { ar: "تعطيل واجهة الشبكة", en: "Disable network interface" } },
+    ],
+  },
+  {
+    name: "SSH",
+    description: { ar: "بروتوكول للاتصال الآمن بالخوادم", en: "Secure Shell protocol for remote server access" },
+    commands: [
+      { command: "sudo apt install openssh-client -y", description: { ar: "تثبيت عميل SSH", en: "Install SSH client" } },
+      { command: "ssh user@192.168.1.1", description: { ar: "الاتصال بخادم", en: "Connect to server" } },
+      { command: "ssh -p 2222 user@server.com", description: { ar: "الاتصال عبر منفذ مخصص", en: "Connect via custom port" } },
+      { command: "ssh-keygen -t rsa -b 4096", description: { ar: "إنشاء مفتاح SSH", en: "Generate SSH key" } },
+      { command: "ssh-copy-id user@server.com", description: { ar: "نسخ المفتاح للخادم", en: "Copy key to server" } },
+      { command: "ssh -L 8080:localhost:80 user@server.com", description: { ar: "إنشاء نفق SSH (Port Forwarding)", en: "Create SSH tunnel (Port Forwarding)" } },
+    ],
+  },
+  {
+    name: "OpenSSL",
+    description: { ar: "أداة للتشفير وإدارة الشهادات", en: "Tool for encryption and certificate management" },
+    commands: [
+      { command: "sudo apt install openssl -y", description: { ar: "تثبيت OpenSSL", en: "Install OpenSSL" } },
+      { command: "openssl version", description: { ar: "عرض إصدار OpenSSL", en: "Show OpenSSL version" } },
+      { command: "openssl rand -base64 32", description: { ar: "توليد نص عشوائي مشفر", en: "Generate random encoded string" } },
+      { command: "openssl s_client -connect google.com:443", description: { ar: "فحص شهادة SSL لموقع", en: "Check website SSL certificate" } },
+      { command: "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout key.pem -out cert.pem", description: { ar: "إنشاء شهادة SSL ذاتية", en: "Generate self-signed SSL certificate" } },
+    ],
+  },
+  {
+    name: "Nslookup",
+    description: { ar: "أداة للاستعلام عن سجلات DNS", en: "Tool for querying DNS records" },
+    commands: [
+      { command: "nslookup google.com", description: { ar: "استعلام DNS بسيط", en: "Simple DNS query" } },
+      { command: "nslookup -type=MX google.com", description: { ar: "استعلام سجلات البريد", en: "Query mail records" } },
+      { command: "nslookup -type=NS google.com", description: { ar: "استعلام خوادم الأسماء", en: "Query name servers" } },
+      { command: "nslookup -type=A google.com", description: { ar: "استعلام سجلات A", en: "Query A records" } },
+      { command: "nslookup 8.8.8.8", description: { ar: "استعلام عكسي (IP إلى اسم)", en: "Reverse lookup (IP to name)" } },
+    ],
+  },
+  {
+    name: "Dig",
+    description: { ar: "أداة متقدمة للاستعلام عن DNS", en: "Advanced DNS query tool" },
+    commands: [
+      { command: "sudo apt install dnsutils -y", description: { ar: "تثبيت الأداة", en: "Install the tool" } },
+      { command: "dig google.com", description: { ar: "استعلام DNS أساسي", en: "Basic DNS query" } },
+      { command: "dig google.com +short", description: { ar: "عرض النتيجة فقط (مختصر)", en: "Show result only (short)" } },
+      { command: "dig google.com MX", description: { ar: "استعلام سجلات البريد", en: "Query mail records" } },
+      { command: "dig google.com ANY", description: { ar: "استعلام جميع السجلات", en: "Query all records" } },
+      { command: "dig @8.8.8.8 google.com", description: { ar: "استخدام DNS محدد", en: "Use specific DNS server" } },
+    ],
+  },
+  {
+    name: "Ping",
+    description: { ar: "أداة لفحص الاتصال بالشبكة", en: "Tool for testing network connectivity" },
+    commands: [
+      { command: "ping google.com", description: { ar: "فحص الاتصال بموقع", en: "Test connection to website" } },
+      { command: "ping -c 4 google.com", description: { ar: "إرسال 4 حزم فقط", en: "Send 4 packets only" } },
+      { command: "ping -i 0.5 google.com", description: { ar: "تقليل الفاصل الزمني", en: "Reduce interval" } },
+      { command: "ping -s 1000 google.com", description: { ar: "تحديد حجم الحزمة", en: "Set packet size" } },
+      { command: "ping -f google.com", description: { ar: "وضع الفيضان (اختبار الأداء)", en: "Flood mode (performance test)" } },
+    ],
+  },
+  {
+    name: "ARP",
+    description: { ar: "أداة لعرض وإدارة جدول ARP", en: "Tool for viewing and managing ARP table" },
+    commands: [
+      { command: "arp -a", description: { ar: "عرض جدول ARP الكامل", en: "Show full ARP table" } },
+      { command: "arp -n", description: { ar: "عرض بدون تحويل DNS", en: "Show without DNS resolution" } },
+      { command: "arp -d 192.168.1.1", description: { ar: "حذف إدخال من الجدول", en: "Delete entry from table" } },
+      { command: "arp -s 192.168.1.1 aa:bb:cc:dd:ee:ff", description: { ar: "إضافة إدخال ثابت", en: "Add static entry" } },
+    ],
+  },
+  {
+    name: "Route",
+    description: { ar: "أداة لعرض وإدارة جدول التوجيه", en: "Tool for viewing and managing routing table" },
+    commands: [
+      { command: "route -n", description: { ar: "عرض جدول التوجيه", en: "Show routing table" } },
+      { command: "route add default gw 192.168.1.1", description: { ar: "إضافة البوابة الافتراضية", en: "Add default gateway" } },
+      { command: "route del default", description: { ar: "حذف البوابة الافتراضية", en: "Delete default gateway" } },
+      { command: "route add -net 10.0.0.0 netmask 255.0.0.0 gw 192.168.1.1", description: { ar: "إضافة مسار شبكة", en: "Add network route" } },
+    ],
+  },
+  {
+    name: "TCPDump",
+    description: { ar: "أداة لالتقاط وتحليل حزم الشبكة", en: "Tool for capturing and analyzing network packets" },
+    commands: [
+      { command: "sudo apt install tcpdump -y", description: { ar: "تثبيت الأداة", en: "Install the tool" } },
+      { command: "sudo tcpdump -i eth0", description: { ar: "التقاط الحزم على واجهة", en: "Capture packets on interface" } },
+      { command: "sudo tcpdump -c 100", description: { ar: "التقاط 100 حزمة فقط", en: "Capture 100 packets only" } },
+      { command: "sudo tcpdump -w capture.pcap", description: { ar: "حفظ الالتقاط في ملف", en: "Save capture to file" } },
+      { command: "sudo tcpdump -r capture.pcap", description: { ar: "قراءة ملف الالتقاط", en: "Read capture file" } },
+      { command: "sudo tcpdump host 192.168.1.1", description: { ar: "فلترة حسب IP", en: "Filter by IP" } },
+      { command: "sudo tcpdump port 80", description: { ar: "فلترة حسب المنفذ", en: "Filter by port" } },
+    ],
+  },
+  {
+    name: "IP",
+    description: { ar: "أداة حديثة لإدارة الشبكات (بديل ifconfig)", en: "Modern network management tool (ifconfig replacement)" },
+    commands: [
+      { command: "ip addr", description: { ar: "عرض عناوين IP", en: "Show IP addresses" } },
+      { command: "ip link", description: { ar: "عرض واجهات الشبكة", en: "Show network interfaces" } },
+      { command: "ip route", description: { ar: "عرض جدول التوجيه", en: "Show routing table" } },
+      { command: "ip neigh", description: { ar: "عرض جدول ARP", en: "Show ARP table" } },
+      { command: "ip link set eth0 up", description: { ar: "تفعيل واجهة", en: "Enable interface" } },
+      { command: "ip addr add 192.168.1.10/24 dev eth0", description: { ar: "إضافة عنوان IP", en: "Add IP address" } },
+    ],
+  },
 ];
 
 const ToolsPage = () => {
@@ -956,7 +1165,6 @@ const ToolsPage = () => {
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
-  const { exportToPdf } = usePdfExport();
 
   const copyCommand = (command: string) => {
     navigator.clipboard.writeText(command);
@@ -964,15 +1172,36 @@ const ToolsPage = () => {
     setTimeout(() => setCopiedCommand(null), 2000);
   };
 
-  const handleExportPdf = () => {
-    const data = tools.map(tool => ({
-      title: tool.name,
-      items: tool.commands.map(cmd => ({
-        name: cmd.command,
-        description: language === "ar" ? cmd.description.ar : cmd.description.en,
-      })),
-    }));
-    exportToPdf(data, "kali-tools.pdf", language === "ar" ? "أدوات كالي لينكس" : "Kali Linux Tools");
+  const downloadTool = (tool: Tool) => {
+    const watermark = `# ═══════════════════════════════════════════════════════════════
+# Tool: ${tool.name}
+# By: Qusay_kali
+# Instagram: @qusay_kali1
+# Website: https://qusaykali.netlify.app/
+# ═══════════════════════════════════════════════════════════════
+
+# ${language === "ar" ? tool.description.ar : tool.description.en}
+
+# ═══════════════════════════════════════════════════════════════
+# ${language === "ar" ? "خطوات التثبيت والاستخدام" : "Installation & Usage Steps"}
+# ═══════════════════════════════════════════════════════════════
+
+`;
+    
+    const commands = tool.commands.map((cmd, i) => 
+      `# ${language === "ar" ? "الخطوة" : "Step"} ${i + 1}: ${language === "ar" ? cmd.description.ar : cmd.description.en}\n${cmd.command}\n`
+    ).join('\n');
+    
+    const content = watermark + commands;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${tool.name.toLowerCase().replace(/\s+/g, '-')}-commands.sh`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const filteredTools = useMemo(() => {
@@ -1025,13 +1254,6 @@ const ToolsPage = () => {
               >
                 <Globe className="w-5 h-5 text-muted-foreground" />
               </button>
-              <button
-                onClick={handleExportPdf}
-                className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-colors flex items-center gap-2"
-                title={language === "ar" ? "تحميل PDF" : "Download PDF"}
-              >
-                <Download className="w-5 h-5 text-muted-foreground" />
-              </button>
             </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.subtitle}</p>
           </div>
@@ -1073,8 +1295,18 @@ const ToolsPage = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <span className="px-3 py-1 rounded-lg bg-primary/10 text-primary text-sm font-medium">{tool.commands.length} {t.commands}</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        downloadTool(tool);
+                      }}
+                      className="p-2 rounded-lg bg-primary/20 hover:bg-primary/30 transition-colors"
+                      title={language === "ar" ? "تحميل الأوامر" : "Download Commands"}
+                    >
+                      <Download className="w-5 h-5 text-primary" />
+                    </button>
                     {expandedTool === index ? (
                       <ChevronUp className="w-6 h-6 text-primary" />
                     ) : (
