@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/use-theme";
 import Index from "./pages/Index";
 import AIPage from "./pages/AIPage";
+import AI2Page from "./pages/AI2Page";
 import ToolsPage from "./pages/ToolsPage";
 import ScannerPage from "./pages/ScannerPage";
 import ScriptsPage from "./pages/ScriptsPage";
@@ -25,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/ai" element={<AIPage />} />
+            <Route path="/ai2" element={<AI2Page />} />
             <Route path="/tools" element={<ToolsPage />} />
             <Route path="/scanner" element={<ScannerPage />} />
             <Route path="/scripts" element={<ScriptsPage />} />
