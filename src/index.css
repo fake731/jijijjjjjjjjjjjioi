@@ -54,136 +54,8 @@
     --shadow-card: 0 4px 20px hsl(0 0% 0% / 0.5);
   }
 
-  /* ========== COLOR THEMES ========== */
+  /* ========== LIGHT/DARK BASE THEMES ========== */
   
-  /* Blue Theme (Default) */
-  .theme-blue {
-    --primary: 200 100% 50%;
-    --primary-foreground: 220 25% 4%;
-    --accent: 200 100% 45%;
-    --accent-foreground: 220 25% 4%;
-    --border: 200 60% 25%;
-    --ring: 200 100% 50%;
-    --cyber-cyan: 200 100% 50%;
-    --cyber-cyan-glow: 200 100% 60%;
-    --cyber-border: 200 60% 25%;
-  }
-
-  /* Red Theme */
-  .theme-red {
-    --primary: 0 90% 55%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 0 85% 50%;
-    --accent-foreground: 0 0% 100%;
-    --border: 0 60% 30%;
-    --ring: 0 90% 55%;
-    --cyber-cyan: 0 90% 55%;
-    --cyber-cyan-glow: 0 100% 65%;
-    --cyber-border: 0 60% 30%;
-  }
-  
-  .theme-red.dark, .dark.theme-red {
-    --foreground: 0 90% 55%;
-    --card-foreground: 0 90% 55%;
-    --popover-foreground: 0 90% 55%;
-    --secondary-foreground: 0 80% 70%;
-    --muted-foreground: 0 40% 65%;
-  }
-
-  /* Green Theme */
-  .theme-green {
-    --primary: 145 100% 50%;
-    --primary-foreground: 145 100% 10%;
-    --accent: 145 90% 45%;
-    --accent-foreground: 145 100% 10%;
-    --border: 145 60% 25%;
-    --ring: 145 100% 50%;
-    --cyber-cyan: 145 100% 50%;
-    --cyber-cyan-glow: 145 100% 60%;
-    --cyber-border: 145 60% 25%;
-  }
-
-  .theme-green.dark, .dark.theme-green {
-    --foreground: 145 100% 50%;
-    --card-foreground: 145 100% 50%;
-    --popover-foreground: 145 100% 50%;
-    --secondary-foreground: 145 80% 70%;
-    --muted-foreground: 145 40% 65%;
-  }
-
-  /* Purple Theme */
-  .theme-purple {
-    --primary: 270 90% 60%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 270 85% 55%;
-    --accent-foreground: 0 0% 100%;
-    --border: 270 60% 30%;
-    --ring: 270 90% 60%;
-    --cyber-cyan: 270 90% 60%;
-    --cyber-cyan-glow: 270 100% 70%;
-    --cyber-border: 270 60% 30%;
-  }
-
-  .theme-purple.dark, .dark.theme-purple {
-    --foreground: 270 90% 60%;
-    --card-foreground: 270 90% 60%;
-    --popover-foreground: 270 90% 60%;
-    --secondary-foreground: 270 80% 75%;
-    --muted-foreground: 270 40% 65%;
-  }
-
-  /* Orange Theme */
-  .theme-orange {
-    --primary: 25 100% 50%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 25 90% 45%;
-    --accent-foreground: 0 0% 100%;
-    --border: 25 60% 30%;
-    --ring: 25 100% 50%;
-    --cyber-cyan: 25 100% 50%;
-    --cyber-cyan-glow: 25 100% 60%;
-    --cyber-border: 25 60% 30%;
-  }
-
-  .theme-orange.dark, .dark.theme-orange {
-    --foreground: 25 100% 50%;
-    --card-foreground: 25 100% 50%;
-    --popover-foreground: 25 100% 50%;
-    --secondary-foreground: 25 80% 70%;
-    --muted-foreground: 25 40% 65%;
-  }
-
-  /* Light mode adjustments for color themes */
-  .light.theme-red, .theme-red.light {
-    --foreground: 0 70% 30%;
-    --card-foreground: 0 70% 30%;
-    --popover-foreground: 0 70% 30%;
-  }
-
-  .light.theme-green, .theme-green.light {
-    --foreground: 145 70% 25%;
-    --card-foreground: 145 70% 25%;
-    --popover-foreground: 145 70% 25%;
-  }
-
-  .light.theme-purple, .theme-purple.light {
-    --foreground: 270 60% 35%;
-    --card-foreground: 270 60% 35%;
-    --popover-foreground: 270 60% 35%;
-  }
-
-  .light.theme-orange, .theme-orange.light {
-    --foreground: 25 70% 30%;
-    --card-foreground: 25 70% 30%;
-    --popover-foreground: 25 70% 30%;
-  }
-
-  .light.theme-blue, .theme-blue.light {
-    --foreground: 200 70% 30%;
-    --card-foreground: 200 70% 30%;
-    --popover-foreground: 200 70% 30%;
-  }
-
   .light {
     --background: 210 40% 98%;
     --foreground: 220 30% 15%;
@@ -258,6 +130,188 @@
     --cyber-card: 220 25% 10%;
     --cyber-border: 200 60% 25%;
   }
+
+  /* ========== COLOR THEMES (must come AFTER light/dark) ========== */
+  
+  /* Blue Theme (Default) - Dark Mode */
+  .dark.theme-blue {
+    --foreground: 200 100% 50%;
+    --card-foreground: 200 100% 50%;
+    --popover-foreground: 200 100% 50%;
+    --primary: 200 100% 50%;
+    --primary-foreground: 220 25% 4%;
+    --secondary-foreground: 200 100% 70%;
+    --muted-foreground: 200 40% 65%;
+    --accent: 200 100% 45%;
+    --accent-foreground: 220 25% 4%;
+    --border: 200 60% 25%;
+    --ring: 200 100% 50%;
+    --cyber-cyan: 200 100% 50%;
+    --cyber-cyan-glow: 200 100% 60%;
+    --cyber-border: 200 60% 25%;
+  }
+
+  /* Blue Theme - Light Mode */
+  .light.theme-blue {
+    --foreground: 200 70% 30%;
+    --card-foreground: 200 70% 30%;
+    --popover-foreground: 200 70% 30%;
+    --primary: 200 100% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 200 60% 35%;
+    --muted-foreground: 200 30% 45%;
+    --accent: 200 100% 40%;
+    --accent-foreground: 0 0% 100%;
+    --border: 200 40% 75%;
+    --ring: 200 100% 45%;
+    --cyber-cyan: 200 100% 45%;
+    --cyber-cyan-glow: 200 100% 55%;
+    --cyber-border: 200 40% 75%;
+  }
+
+  /* Red Theme - Dark Mode */
+  .dark.theme-red {
+    --foreground: 0 90% 60%;
+    --card-foreground: 0 90% 60%;
+    --popover-foreground: 0 90% 60%;
+    --primary: 0 90% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 0 80% 70%;
+    --muted-foreground: 0 50% 60%;
+    --accent: 0 85% 50%;
+    --accent-foreground: 0 0% 100%;
+    --border: 0 60% 35%;
+    --ring: 0 90% 55%;
+    --cyber-cyan: 0 90% 55%;
+    --cyber-cyan-glow: 0 100% 65%;
+    --cyber-border: 0 60% 35%;
+  }
+
+  /* Red Theme - Light Mode */
+  .light.theme-red {
+    --foreground: 0 70% 35%;
+    --card-foreground: 0 70% 35%;
+    --popover-foreground: 0 70% 35%;
+    --primary: 0 85% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 0 60% 40%;
+    --muted-foreground: 0 40% 50%;
+    --accent: 0 80% 45%;
+    --accent-foreground: 0 0% 100%;
+    --border: 0 40% 75%;
+    --ring: 0 85% 50%;
+    --cyber-cyan: 0 85% 50%;
+    --cyber-cyan-glow: 0 90% 60%;
+    --cyber-border: 0 40% 75%;
+  }
+
+  /* Green Theme - Dark Mode */
+  .dark.theme-green {
+    --foreground: 145 100% 50%;
+    --card-foreground: 145 100% 50%;
+    --popover-foreground: 145 100% 50%;
+    --primary: 145 100% 50%;
+    --primary-foreground: 145 100% 10%;
+    --secondary-foreground: 145 80% 65%;
+    --muted-foreground: 145 50% 55%;
+    --accent: 145 90% 45%;
+    --accent-foreground: 145 100% 10%;
+    --border: 145 60% 30%;
+    --ring: 145 100% 50%;
+    --cyber-cyan: 145 100% 50%;
+    --cyber-cyan-glow: 145 100% 60%;
+    --cyber-border: 145 60% 30%;
+  }
+
+  /* Green Theme - Light Mode */
+  .light.theme-green {
+    --foreground: 145 70% 28%;
+    --card-foreground: 145 70% 28%;
+    --popover-foreground: 145 70% 28%;
+    --primary: 145 80% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 145 60% 35%;
+    --muted-foreground: 145 40% 45%;
+    --accent: 145 75% 35%;
+    --accent-foreground: 0 0% 100%;
+    --border: 145 40% 75%;
+    --ring: 145 80% 40%;
+    --cyber-cyan: 145 80% 40%;
+    --cyber-cyan-glow: 145 90% 50%;
+    --cyber-border: 145 40% 75%;
+  }
+
+  /* Purple Theme - Dark Mode */
+  .dark.theme-purple {
+    --foreground: 270 90% 70%;
+    --card-foreground: 270 90% 70%;
+    --popover-foreground: 270 90% 70%;
+    --primary: 270 90% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 270 80% 75%;
+    --muted-foreground: 270 50% 65%;
+    --accent: 270 85% 55%;
+    --accent-foreground: 0 0% 100%;
+    --border: 270 60% 40%;
+    --ring: 270 90% 60%;
+    --cyber-cyan: 270 90% 60%;
+    --cyber-cyan-glow: 270 100% 70%;
+    --cyber-border: 270 60% 40%;
+  }
+
+  /* Purple Theme - Light Mode */
+  .light.theme-purple {
+    --foreground: 270 60% 40%;
+    --card-foreground: 270 60% 40%;
+    --popover-foreground: 270 60% 40%;
+    --primary: 270 70% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 270 50% 45%;
+    --muted-foreground: 270 40% 50%;
+    --accent: 270 65% 50%;
+    --accent-foreground: 0 0% 100%;
+    --border: 270 40% 80%;
+    --ring: 270 70% 55%;
+    --cyber-cyan: 270 70% 55%;
+    --cyber-cyan-glow: 270 80% 65%;
+    --cyber-border: 270 40% 80%;
+  }
+
+  /* Orange Theme - Dark Mode */
+  .dark.theme-orange {
+    --foreground: 25 100% 55%;
+    --card-foreground: 25 100% 55%;
+    --popover-foreground: 25 100% 55%;
+    --primary: 25 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 25 90% 65%;
+    --muted-foreground: 25 60% 55%;
+    --accent: 25 90% 45%;
+    --accent-foreground: 0 0% 100%;
+    --border: 25 70% 35%;
+    --ring: 25 100% 50%;
+    --cyber-cyan: 25 100% 50%;
+    --cyber-cyan-glow: 25 100% 60%;
+    --cyber-border: 25 70% 35%;
+  }
+
+  /* Orange Theme - Light Mode */
+  .light.theme-orange {
+    --foreground: 25 80% 35%;
+    --card-foreground: 25 80% 35%;
+    --popover-foreground: 25 80% 35%;
+    --primary: 25 90% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary-foreground: 25 70% 40%;
+    --muted-foreground: 25 50% 45%;
+    --accent: 25 85% 45%;
+    --accent-foreground: 0 0% 100%;
+    --border: 25 50% 80%;
+    --ring: 25 90% 50%;
+    --cyber-cyan: 25 90% 50%;
+    --cyber-cyan-glow: 25 95% 60%;
+    --cyber-border: 25 50% 80%;
+  }
 }
 
 @layer base {
@@ -304,15 +358,15 @@
   }
 
   .gradient-cyber-bg {
-    background: radial-gradient(ellipse at center top, hsl(200 100% 50% / 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at center, hsl(200 100% 50% / 0.03) 0%, transparent 70%),
+    background: radial-gradient(ellipse at center top, hsl(var(--primary) / 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at center, hsl(var(--primary) / 0.03) 0%, transparent 70%),
                 hsl(var(--background));
   }
 
   .cyber-grid {
     background-image: 
-      linear-gradient(hsl(200 100% 50% / 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(200 100% 50% / 0.03) 1px, transparent 1px);
+      linear-gradient(hsl(var(--primary) / 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.03) 1px, transparent 1px);
     background-size: 50px 50px;
   }
 
@@ -325,11 +379,11 @@
   }
 
   .light .box-glow {
-    box-shadow: 0 4px 20px hsl(var(--cyber-cyan) / 0.15);
+    box-shadow: 0 4px 20px hsl(var(--primary) / 0.15);
   }
 
   .light .box-glow-sm {
-    box-shadow: 0 2px 10px hsl(var(--cyber-cyan) / 0.1);
+    box-shadow: 0 2px 10px hsl(var(--primary) / 0.1);
   }
 }
 
