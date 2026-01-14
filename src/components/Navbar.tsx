@@ -2,20 +2,22 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
-
-const navItems = [
-  { label: "الرئيسية", path: "/" },
-  { label: "الدليل الكامل", path: "/guide" },
-  { label: "ادوات كالي", path: "/tools" },
-  { label: "السكربتات", path: "/scripts" },
-  { label: "الذكاء الاصطناعي", path: "/ai" },
-  { label: "أوامر كالي", path: "/scanner" },
-  { label: "تنزيل كالي", path: "/download" },
-];
+import { useLanguage } from "@/hooks/use-language";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { t } = useLanguage();
+
+  const navItems = [
+    { label: t("nav.home"), path: "/" },
+    { label: t("nav.guide"), path: "/guide" },
+    { label: t("nav.tools"), path: "/tools" },
+    { label: t("nav.scripts"), path: "/scripts" },
+    { label: t("nav.ai"), path: "/ai" },
+    { label: t("nav.scanner"), path: "/scanner" },
+    { label: t("nav.download"), path: "/download" },
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/30">

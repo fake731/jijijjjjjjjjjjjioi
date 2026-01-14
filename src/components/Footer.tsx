@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/hooks/use-language";
 
 const Footer = () => {
+  const { t } = useLanguage();
+  
   return (
     <footer className="py-12 border-t border-border/30 bg-background">
       <div className="container mx-auto px-4">
@@ -15,7 +18,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-muted-foreground text-sm">
-            © 2025 Qusay_kali. جميع الحقوق محفوظة
+            © 2025 Qusay_kali. {t("footer.rights")}
           </p>
 
           {/* Social Links */}
