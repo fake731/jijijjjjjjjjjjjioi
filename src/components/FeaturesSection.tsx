@@ -1,46 +1,49 @@
 import { Brain, Terminal, Wrench, Code, BookOpen, Download } from "lucide-react";
 import { Link } from "react-router-dom";
-
-const features = [
-  {
-    icon: Brain,
-    title: "ذكاء اصطناعي متخصص",
-    description: "(كلمة السر بالانستا) AI متقدم متخصص في الأمن السيبراني يجيب على جميع استفساراتك بدقة وسرعة",
-    link: "/ai",
-  },
-  {
-    icon: Terminal,
-    title: "أوامر كالي لينكس",
-    description: "+50 أمر أساسي لنظام كالي لينكس مع شرح كامل بالعربية والإنجليزية",
-    link: "/scanner",
-  },
-  {
-    icon: Wrench,
-    title: "أدوات كالي لينكس",
-    description: "+25 أداة احترافية مع شرح كامل للأوامر والاستخدامات المتقدمة",
-    link: "/tools",
-  },
-  {
-    icon: Code,
-    title: "السكربتات الجاهزة",
-    description: "سكربتات بسيطة",
-    link: "/scripts",
-  },
-  {
-    icon: BookOpen,
-    title: "الدليل الكامل",
-    description: "(تحت الانشاء) الدليل الكامل للأمن السيبراني",
-    link: "/guide",
-  },
-  {
-    icon: Download,
-    title: "تنزيل كالي لينكس",
-    description: "روابط تنزيل مباشرة لجميع إصدارات Kali Linux مع شرح التثبيت",
-    link: "/download",
-  },
-];
+import { useLanguage } from "@/hooks/use-language";
 
 const FeaturesSection = () => {
+  const { t } = useLanguage();
+  
+  const features = [
+    {
+      icon: Brain,
+      title: t("features.ai.title"),
+      description: t("features.ai.desc"),
+      link: "/ai",
+    },
+    {
+      icon: Terminal,
+      title: t("nav.scanner"),
+      description: t("features.tools.desc"),
+      link: "/scanner",
+    },
+    {
+      icon: Wrench,
+      title: t("features.tools.title"),
+      description: t("features.tools.desc"),
+      link: "/tools",
+    },
+    {
+      icon: Code,
+      title: t("features.scripts.title"),
+      description: t("features.scripts.desc"),
+      link: "/scripts",
+    },
+    {
+      icon: BookOpen,
+      title: t("features.guide.title"),
+      description: t("features.guide.desc"),
+      link: "/guide",
+    },
+    {
+      icon: Download,
+      title: t("nav.download"),
+      description: t("features.tools.desc"),
+      link: "/download",
+    },
+  ];
+
   return (
     <section className="py-24 bg-background relative">
       {/* Background glow */}
@@ -49,7 +52,7 @@ const FeaturesSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Title */}
         <h2 className="text-3xl md:text-4xl font-bold text-primary text-center mb-16 text-glow-sm">
-          ميزات المنصة
+          {t("features.title")}
         </h2>
 
         {/* Features Grid */}

@@ -1,5 +1,6 @@
-import { Moon, Sun, Palette, Check } from "lucide-react";
+import { Moon, Sun, Palette, Check, Languages } from "lucide-react";
 import { useTheme, colorThemes } from "@/hooks/use-theme";
+import { useLanguage, languages } from "@/hooks/use-language";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,21 +12,53 @@ import {
 
 const ThemeToggle = () => {
   const { theme, colorTheme, toggleTheme, setColorTheme } = useTheme();
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <div className="flex items-center gap-2">
+      {/* Language Selector */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            className="w-10 h-10 rounded-xl bg-secondary border border-border/50 flex items-center justify-center hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
+            aria-label={t("theme.language")}
+          >
+            <Languages className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuLabel className="text-center">{t("theme.language")}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {languages.map((lang) => (
+            <DropdownMenuItem
+              key={lang.id}
+              onClick={() => setLanguage(lang.id)}
+              className="flex items-center justify-between cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-lg">{lang.flag}</span>
+                <span>{lang.nativeName}</span>
+              </div>
+              {language === lang.id && (
+                <Check className="w-4 h-4 text-primary" />
+              )}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       {/* Color Theme Selector */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             className="w-10 h-10 rounded-xl bg-secondary border border-border/50 flex items-center justify-center hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
-            aria-label="اختر اللون"
+            aria-label={t("theme.select")}
           >
             <Palette className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuLabel className="text-center">اختر الثيم</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-center">{t("theme.select")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {colorThemes.map((ct) => (
             <DropdownMenuItem
@@ -52,7 +85,7 @@ const ThemeToggle = () => {
       <button
         onClick={toggleTheme}
         className="w-10 h-10 rounded-xl bg-secondary border border-border/50 flex items-center justify-center hover:border-primary/50 hover:bg-primary/10 transition-all duration-300"
-        aria-label={theme === "dark" ? "تبديل للوضع الفاتح" : "تبديل للوضع الداكن"}
+        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       >
         {theme === "dark" ? (
           <Sun className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />

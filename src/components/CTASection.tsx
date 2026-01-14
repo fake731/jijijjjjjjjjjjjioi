@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useLanguage } from "@/hooks/use-language";
 
 const CTASection = () => {
+  const { t } = useLanguage();
+  
   return (
     <section className="py-24 relative overflow-hidden">
       {/* Background gradient */}
@@ -8,19 +11,19 @@ const CTASection = () => {
       
       <div className="container mx-auto px-4 text-center relative z-10">
         <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4 text-glow-sm">
-          ابدأ رحلتك في الأمن السيبراني الآن
+          {t("cta.title")}
         </h2>
         
         <p className="text-muted-foreground text-lg mb-10">
-          100% الموقع مجاني
+          {t("cta.description")}
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link to="/guide" className="cyber-button-primary">
-            الدليل الكامل
+            {t("nav.guide")}
           </Link>
           <Link to="/tools" className="cyber-button-outline">
-            تصفح الأدوات
+            {t("nav.tools")}
           </Link>
         </div>
       </div>
