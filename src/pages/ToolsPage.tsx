@@ -1234,6 +1234,9 @@ const ToolsPage = () => {
     commands: language === "ar" ? "أمر" : "commands",
     expandedView: language === "ar" ? "عرض موسع" : "Expanded",
     compactView: language === "ar" ? "عرض مضغوط" : "Compact",
+    legalWarning: language === "ar" 
+      ? "⚠️ تحذير قانوني: هذه الأدوات مخصصة للأغراض التعليمية واختبار الاختراق الأخلاقي فقط. استخدم هذه الأدوات فقط على أنظمتك الخاصة أو بتصريح كتابي من المالك. الاستخدام غير المصرح به يعد جريمة يعاقب عليها القانون."
+      : "⚠️ Legal Warning: These tools are for educational purposes and ethical penetration testing only. Use only on systems you own or have written authorization. Unauthorized use is illegal.",
   };
 
   return (
@@ -1265,6 +1268,18 @@ const ToolsPage = () => {
               </button>
             </div>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.subtitle}</p>
+            
+            {/* Legal Warning Banner */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-6 max-w-4xl mx-auto p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 backdrop-blur-sm"
+            >
+              <p className={`text-yellow-400 text-sm md:text-base font-medium ${language === "ar" ? "text-right" : "text-left"}`} dir={language === "ar" ? "rtl" : "ltr"}>
+                {t.legalWarning}
+              </p>
+            </motion.div>
           </motion.div>
 
           {/* Search & View Toggle */}
