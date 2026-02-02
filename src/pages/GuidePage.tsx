@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InquirySection from "@/components/InquirySection";
 import { BookOpen, Shield, Target, Eye, Lock, Network, Database, Terminal, AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Zap, Bug, FileCode, Server, Wifi, Key, Globe, Cpu, Cloud, Smartphone, Code, Radio, Search, Users, Layers, Activity, HardDrive, MonitorSpeaker, Fingerprint, ShieldCheck, Skull, Crosshair, Binary, Braces, Wrench } from "lucide-react";
 import { useState } from "react";
 
@@ -1402,6 +1403,9 @@ const GuidePage = () => {
             </div>
           </div>
         </div>
+        
+        {/* Inquiry Section */}
+        <InquirySection />
       </main>
       <Footer />
     </div>
