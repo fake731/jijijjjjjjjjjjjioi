@@ -14,6 +14,7 @@ import ScannerPage from "./pages/ScannerPage";
 import ScriptsPage from "./pages/ScriptsPage";
 import GuidePage from "./pages/GuidePage";
 import DownloadPage from "./pages/DownloadPage";
+import WebDevPage from "./pages/WebDevPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -62,6 +63,7 @@ const AnimatedRoutes = () => {
           <Route path="/scripts" element={<ScriptsPage />} />
           <Route path="/guide" element={<GuidePage />} />
           <Route path="/download" element={<DownloadPage />} />
+          <Route path="/webdev" element={<WebDevPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>

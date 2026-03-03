@@ -9,6 +9,7 @@ import {
   Code,
   BookOpen,
   Download,
+  Globe,
   ChevronRight,
   ChevronLeft,
   Menu,
@@ -29,6 +30,7 @@ const navItems: NavItem[] = [
   { path: "/scanner", icon: Scan, labelKey: "scanner" },
   { path: "/scripts", icon: Code, labelKey: "scripts" },
   { path: "/guide", icon: BookOpen, labelKey: "guide" },
+  { path: "/webdev", icon: Globe, labelKey: "webdev" },
   { path: "/download", icon: Download, labelKey: "download" },
 ];
 
@@ -39,6 +41,7 @@ const navLabels: Record<string, { ar: string; en: string }> = {
   scanner: { ar: "الماسح", en: "Scanner" },
   scripts: { ar: "السكربتات", en: "Scripts" },
   guide: { ar: "الدليل", en: "Guide" },
+  webdev: { ar: "تطوير الويب", en: "Web Dev" },
   download: { ar: "التحميل", en: "Download" },
 };
 
