@@ -4228,4 +4228,2066 @@ function UserMenu() {
       },
     ],
   },
+  {
+    id: "python",
+    title: "Python للويب",
+    icon: "Server",
+    color: "text-yellow-500",
+    topics: [
+      {
+        title: "أساسيات Python",
+        content: `# المتغيرات وأنواع البيانات
+name = "أحمد"          # str
+age = 25               # int
+height = 1.75          # float
+is_active = True       # bool
+skills = ["Python", "JS", "SQL"]  # list
+info = {"name": "أحمد", "age": 25}  # dict
+coordinates = (10, 20)  # tuple
+unique = {1, 2, 3}     # set
+
+# التحقق من النوع
+print(type(name))  # <class 'str'>
+isinstance(age, int)  # True
+
+# تحويل الأنواع
+str(25)      # "25"
+int("25")    # 25
+float("3.14") # 3.14
+list("abc")  # ['a', 'b', 'c']
+
+# String Methods
+text = "Hello World"
+text.lower()        # "hello world"
+text.upper()        # "HELLO WORLD"
+text.strip()        # إزالة المسافات
+text.split(" ")     # ['Hello', 'World']
+text.replace("World", "Python")
+f"اسمي {name} وعمري {age}"  # f-strings
+"، ".join(skills)   # "Python، JS، SQL"
+
+# List Methods
+skills.append("React")
+skills.insert(0, "HTML")
+skills.remove("JS")
+skills.pop()         # يحذف الأخير
+skills.sort()
+skills.reverse()
+len(skills)
+"Python" in skills   # True
+
+# Dictionary Methods
+info.keys()          # dict_keys(['name', 'age'])
+info.values()        # dict_values(['أحمد', 25])
+info.items()         # dict_items([...])
+info.get("name", "غير معروف")
+info.update({"email": "a@b.com"})
+del info["age"]
+
+# List Comprehension
+squares = [x**2 for x in range(10)]
+even = [x for x in range(20) if x % 2 == 0]
+matrix = [[i*j for j in range(5)] for i in range(5)]
+
+# Dict Comprehension
+squared = {x: x**2 for x in range(5)}
+
+# الشروط
+if age >= 18:
+    print("بالغ")
+elif age >= 13:
+    print("مراهق")
+else:
+    print("طفل")
+
+# Ternary
+status = "بالغ" if age >= 18 else "قاصر"
+
+# الحلقات
+for skill in skills:
+    print(skill)
+
+for i, skill in enumerate(skills):
+    print(f"{i}: {skill}")
+
+for key, value in info.items():
+    print(f"{key}: {value}")
+
+while age > 0:
+    age -= 1
+
+# الدوال
+def greet(name: str, greeting: str = "مرحباً") -> str:
+    """دالة الترحيب"""
+    return f"{greeting}، {name}!"
+
+# Lambda
+square = lambda x: x ** 2
+add = lambda a, b: a + b
+
+# *args و **kwargs
+def flexible(*args, **kwargs):
+    print(args)    # tuple
+    print(kwargs)  # dict
+
+# Decorators
+def timer(func):
+    import time
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"استغرق {time.time() - start:.4f} ثانية")
+        return result
+    return wrapper
+
+@timer
+def slow_function():
+    import time
+    time.sleep(1)
+
+# Classes
+class User:
+    def __init__(self, name: str, email: str):
+        self.name = name
+        self.email = email
+        self._password = None
+    
+    @property
+    def password(self):
+        raise AttributeError("لا يمكن قراءة كلمة المرور")
+    
+    @password.setter
+    def password(self, value):
+        import hashlib
+        self._password = hashlib.sha256(value.encode()).hexdigest()
+    
+    def __str__(self):
+        return f"User({self.name})"
+    
+    def __repr__(self):
+        return f"User(name='{self.name}', email='{self.email}')"
+
+# Error Handling
+try:
+    result = 10 / 0
+except ZeroDivisionError as e:
+    print(f"خطأ: {e}")
+except Exception as e:
+    print(f"خطأ عام: {e}")
+finally:
+    print("تم التنفيذ")
+
+# Context Managers
+with open("file.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+
+# Generators
+def fibonacci(n):
+    a, b = 0, 1
+    for _ in range(n):
+        yield a
+        a, b = b, a + b
+
+for num in fibonacci(10):
+    print(num)`,
+      },
+      {
+        title: "Flask Framework",
+        content: `# تثبيت Flask
+# pip install flask flask-cors flask-sqlalchemy
+
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from functools import wraps
+import jwt
+import datetime
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your-secret-key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+CORS(app)
+db = SQLAlchemy(app)
+
+# ============ Models ============
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    posts = db.relationship('Post', backref='author', lazy=True)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'created_at': self.created_at.isoformat()
+        }
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+# ============ Auth Middleware ============
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization', '').replace('Bearer ', '')
+        if not token:
+            return jsonify({'error': 'Token مطلوب'}), 401
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_user = User.query.get(data['user_id'])
+        except:
+            return jsonify({'error': 'Token غير صالح'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
+
+# ============ Routes ============
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    
+    if User.query.filter_by(email=data['email']).first():
+        return jsonify({'error': 'البريد مستخدم'}), 400
+    
+    from werkzeug.security import generate_password_hash
+    user = User(
+        username=data['username'],
+        email=data['email'],
+        password=generate_password_hash(data['password'])
+    )
+    db.session.add(user)
+    db.session.commit()
+    
+    return jsonify({'message': 'تم التسجيل بنجاح', 'user': user.to_dict()}), 201
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    user = User.query.filter_by(email=data['email']).first()
+    
+    from werkzeug.security import check_password_hash
+    if user and check_password_hash(user.password, data['password']):
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        }, app.config['SECRET_KEY'])
+        return jsonify({'token': token, 'user': user.to_dict()})
+    
+    return jsonify({'error': 'بيانات خاطئة'}), 401
+
+@app.route('/api/posts', methods=['GET'])
+def get_posts():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+    
+    posts = Post.query.order_by(Post.created_at.desc())\\
+                      .paginate(page=page, per_page=per_page)
+    
+    return jsonify({
+        'posts': [{'id': p.id, 'title': p.title, 'content': p.content} for p in posts.items],
+        'total': posts.total,
+        'pages': posts.pages,
+        'current_page': posts.page
+    })
+
+@app.route('/api/posts', methods=['POST'])
+@token_required
+def create_post(current_user):
+    data = request.get_json()
+    post = Post(title=data['title'], content=data['content'], user_id=current_user.id)
+    db.session.add(post)
+    db.session.commit()
+    return jsonify({'message': 'تم إنشاء المقال'}), 201
+
+# Error Handlers
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({'error': 'غير موجود'}), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return jsonify({'error': 'خطأ في الخادم'}), 500
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)`,
+      },
+      {
+        title: "Django Framework",
+        content: `# تثبيت Django
+# pip install django djangorestframework django-cors-headers
+
+# ============ models.py ============
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+class CustomUser(AbstractUser):
+    bio = models.TextField(blank=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True)
+    
+    class Meta:
+        verbose_name = 'مستخدم'
+        verbose_name_plural = 'مستخدمون'
+
+class Article(models.Model):
+    title = models.CharField(max_length=200, verbose_name='العنوان')
+    slug = models.SlugField(unique=True)
+    content = models.TextField(verbose_name='المحتوى')
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='articles')
+    category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True)
+    tags = models.ManyToManyField('Tag', blank=True)
+    is_published = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'مقال'
+    
+    def __str__(self):
+        return self.title
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    
+    class Meta:
+        verbose_name_plural = 'التصنيفات'
+
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+
+# ============ serializers.py ============
+from rest_framework import serializers
+
+class ArticleSerializer(serializers.ModelSerializer):
+    author_name = serializers.CharField(source='author.username', read_only=True)
+    
+    class Meta:
+        model = Article
+        fields = ['id', 'title', 'slug', 'content', 'author', 'author_name',
+                  'category', 'tags', 'is_published', 'created_at']
+        read_only_fields = ['author']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'bio', 'avatar']
+
+# ============ views.py ============
+from rest_framework import viewsets, permissions, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.select_related('author', 'category')
+    serializer_class = ArticleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ['category', 'is_published']
+    search_fields = ['title', 'content']
+    ordering_fields = ['created_at', 'title']
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+    
+    @action(detail=False, methods=['get'])
+    def published(self, request):
+        articles = self.queryset.filter(is_published=True)
+        serializer = self.get_serializer(articles, many=True)
+        return Response(serializer.data)
+
+# ============ urls.py ============
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register(r'articles', ArticleViewSet)
+
+urlpatterns = [
+    path('api/', include(router.urls)),
+    path('api/auth/', include('rest_framework.urls')),
+]
+
+# ============ settings.py (المهم) ============
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'rest_framework',
+    'corsheaders',
+    'django_filters',
+    'myapp',
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+}
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+]`,
+      },
+      {
+        title: "FastAPI Framework",
+        content: `# تثبيت FastAPI
+# pip install fastapi uvicorn sqlalchemy pydantic python-jose passlib
+
+from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel, EmailStr, validator
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Text, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session, relationship
+from jose import JWTError, jwt
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
+from typing import Optional, List
+
+# ============ Database Setup ============
+SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# ============ Models ============
+class UserDB(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, index=True)
+    email = Column(String(100), unique=True, index=True)
+    hashed_password = Column(String(200))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    posts = relationship("PostDB", back_populates="author")
+
+class PostDB(Base):
+    __tablename__ = "posts"
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(200))
+    content = Column(Text)
+    author_id = Column(Integer, ForeignKey("users.id"))
+    created_at = Column(DateTime, default=datetime.utcnow)
+    author = relationship("UserDB", back_populates="posts")
+
+Base.metadata.create_all(bind=engine)
+
+# ============ Schemas (Pydantic) ============
+class UserCreate(BaseModel):
+    username: str
+    email: EmailStr
+    password: str
+    
+    @validator('password')
+    def password_strength(cls, v):
+        if len(v) < 8:
+            raise ValueError('كلمة المرور يجب أن تكون 8 أحرف على الأقل')
+        return v
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+class PostCreate(BaseModel):
+    title: str
+    content: str
+
+class PostResponse(BaseModel):
+    id: int
+    title: str
+    content: str
+    author_id: int
+    created_at: datetime
+    
+    class Config:
+        from_attributes = True
+
+# ============ Auth ============
+SECRET_KEY = "your-secret-key-here"
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+app = FastAPI(title="My API", version="1.0.0", docs_url="/docs")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def create_token(data: dict) -> str:
+    expires = datetime.utcnow() + timedelta(hours=24)
+    return jwt.encode({**data, "exp": expires}, SECRET_KEY, algorithm="HS256")
+
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user = db.query(UserDB).filter(UserDB.id == payload.get("sub")).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="مستخدم غير موجود")
+        return user
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Token غير صالح")
+
+# ============ Endpoints ============
+@app.post("/register", response_model=UserResponse, status_code=201)
+def register(user: UserCreate, db: Session = Depends(get_db)):
+    if db.query(UserDB).filter(UserDB.email == user.email).first():
+        raise HTTPException(400, "البريد مستخدم مسبقاً")
+    
+    db_user = UserDB(
+        username=user.username,
+        email=user.email,
+        hashed_password=pwd_context.hash(user.password)
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+@app.post("/token")
+def login(form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(UserDB).filter(UserDB.username == form.username).first()
+    if not user or not pwd_context.verify(form.password, user.hashed_password):
+        raise HTTPException(401, "بيانات خاطئة")
+    return {"access_token": create_token({"sub": user.id}), "token_type": "bearer"}
+
+@app.get("/posts", response_model=List[PostResponse])
+def get_posts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    return db.query(PostDB).offset(skip).limit(limit).all()
+
+@app.post("/posts", response_model=PostResponse, status_code=201)
+def create_post(post: PostCreate, user: UserDB = Depends(get_current_user), db: Session = Depends(get_db)):
+    db_post = PostDB(**post.dict(), author_id=user.id)
+    db.add(db_post)
+    db.commit()
+    db.refresh(db_post)
+    return db_post
+
+@app.delete("/posts/{post_id}", status_code=204)
+def delete_post(post_id: int, user: UserDB = Depends(get_current_user), db: Session = Depends(get_db)):
+    post = db.query(PostDB).filter(PostDB.id == post_id, PostDB.author_id == user.id).first()
+    if not post:
+        raise HTTPException(404, "غير موجود")
+    db.delete(post)
+    db.commit()
+
+# تشغيل: uvicorn main:app --reload`,
+      },
+    ],
+  },
+  {
+    id: "php",
+    title: "PHP و Laravel",
+    icon: "Server",
+    color: "text-indigo-500",
+    topics: [
+      {
+        title: "أساسيات PHP",
+        content: `<?php
+// ============ المتغيرات والأنواع ============
+$name = "أحمد";          // string
+$age = 25;               // integer
+$height = 1.75;          // float
+$isActive = true;        // boolean
+$skills = ["PHP", "JS"]; // array
+$info = null;            // null
+
+// الثوابت
+define("APP_NAME", "موقعي");
+const VERSION = "1.0.0";
+
+// ============ المصفوفات ============
+// مصفوفة مرقمة
+$colors = ["أحمر", "أخضر", "أزرق"];
+
+// مصفوفة ترابطية
+$user = [
+    "name" => "أحمد",
+    "age" => 25,
+    "email" => "ahmed@example.com"
 ];
+
+// دوال المصفوفات
+array_push($colors, "أصفر");
+array_pop($colors);
+array_merge($colors, ["برتقالي"]);
+in_array("أحمر", $colors);  // true
+count($colors);
+sort($colors);
+array_map(fn($c) => strtoupper($c), $colors);
+array_filter($colors, fn($c) => strlen($c) > 3);
+array_reduce($colors, fn($carry, $c) => $carry . $c, "");
+
+// ============ الدوال ============
+function greet(string $name, string $greeting = "مرحباً"): string {
+    return "{$greeting}، {$name}!";
+}
+
+// Arrow Functions (PHP 7.4+)
+$square = fn($x) => $x ** 2;
+
+// Variadic Functions
+function sum(int ...$numbers): int {
+    return array_sum($numbers);
+}
+
+// ============ OOP ============
+class User {
+    private string $name;
+    private string $email;
+    protected ?string $password = null;
+    
+    public function __construct(string $name, string $email) {
+        $this->name = $name;
+        $this->email = $email;
+    }
+    
+    public function getName(): string {
+        return $this->name;
+    }
+    
+    public function setPassword(string $password): void {
+        $this->password = password_hash($password, PASSWORD_BCRYPT);
+    }
+    
+    public function verifyPassword(string $password): bool {
+        return password_verify($password, $this->password);
+    }
+    
+    public function __toString(): string {
+        return "User: {$this->name}";
+    }
+}
+
+// الوراثة
+class Admin extends User {
+    private array $permissions;
+    
+    public function __construct(string $name, string $email, array $permissions = []) {
+        parent::__construct($name, $email);
+        $this->permissions = $permissions;
+    }
+    
+    public function hasPermission(string $permission): bool {
+        return in_array($permission, $this->permissions);
+    }
+}
+
+// Interfaces
+interface Authenticatable {
+    public function login(string $email, string $password): bool;
+    public function logout(): void;
+}
+
+// Traits
+trait HasTimestamps {
+    public DateTime $createdAt;
+    public DateTime $updatedAt;
+    
+    public function touch(): void {
+        $this->updatedAt = new DateTime();
+    }
+}
+
+// ============ Error Handling ============
+try {
+    $result = someRiskyOperation();
+} catch (InvalidArgumentException $e) {
+    echo "خطأ في المدخلات: " . $e->getMessage();
+} catch (Exception $e) {
+    error_log($e->getMessage());
+    echo "حدث خطأ غير متوقع";
+} finally {
+    // تنفذ دائماً
+}
+
+// ============ File Operations ============
+// قراءة ملف
+$content = file_get_contents("data.txt");
+$lines = file("data.txt", FILE_IGNORE_NEW_LINES);
+
+// كتابة ملف
+file_put_contents("output.txt", "محتوى جديد");
+file_put_contents("log.txt", "سطر جديد\\n", FILE_APPEND);
+
+// JSON
+$json = json_encode($user, JSON_UNESCAPED_UNICODE);
+$data = json_decode($json, true);
+
+// ============ PDO Database ============
+$pdo = new PDO(
+    "mysql:host=localhost;dbname=mydb;charset=utf8mb4",
+    "root", "password",
+    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+);
+
+// Prepared Statements (آمن من SQL Injection)
+$stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+$stmt->execute(['email' => $email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Insert
+$stmt = $pdo->prepare("INSERT INTO users (name, email) VALUES (:name, :email)");
+$stmt->execute(['name' => $name, 'email' => $email]);
+$lastId = $pdo->lastInsertId();
+
+// Transaction
+$pdo->beginTransaction();
+try {
+    $pdo->exec("UPDATE accounts SET balance = balance - 100 WHERE id = 1");
+    $pdo->exec("UPDATE accounts SET balance = balance + 100 WHERE id = 2");
+    $pdo->commit();
+} catch (Exception $e) {
+    $pdo->rollBack();
+    throw $e;
+}
+?>`,
+      },
+      {
+        title: "Laravel الأساسي",
+        content: `// تثبيت Laravel
+// composer create-project laravel/laravel myproject
+// php artisan serve
+
+// ============ Routes (routes/api.php) ============
+use App\\Http\\Controllers\\PostController;
+use App\\Http\\Controllers\\AuthController;
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('posts', PostController::class);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', fn(Request $request) => $request->user());
+});
+
+// ============ Model (app/Models/Post.php) ============
+namespace App\\Models;
+use Illuminate\\Database\\Eloquent\\Model;
+use Illuminate\\Database\\Eloquent\\Relations\\BelongsTo;
+use Illuminate\\Database\\Eloquent\\Factories\\HasFactory;
+
+class Post extends Model {
+    use HasFactory;
+    
+    protected $fillable = ['title', 'content', 'slug', 'is_published'];
+    protected $casts = ['is_published' => 'boolean', 'created_at' => 'datetime'];
+    protected $hidden = ['updated_at'];
+    
+    // العلاقات
+    public function author(): BelongsTo {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    
+    public function tags() {
+        return $this->belongsToMany(Tag::class);
+    }
+    
+    // Scopes
+    public function scopePublished($query) {
+        return $query->where('is_published', true);
+    }
+    
+    public function scopeByAuthor($query, $userId) {
+        return $query->where('user_id', $userId);
+    }
+    
+    // Accessors
+    public function getExcerptAttribute(): string {
+        return Str::limit($this->content, 150);
+    }
+    
+    // Route Model Binding
+    public function getRouteKeyName(): string {
+        return 'slug';
+    }
+}
+
+// ============ Migration ============
+// php artisan make:migration create_posts_table
+Schema::create('posts', function (Blueprint $table) {
+    $table->id();
+    $table->string('title');
+    $table->string('slug')->unique();
+    $table->text('content');
+    $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+    $table->boolean('is_published')->default(false);
+    $table->timestamps();
+    $table->index(['user_id', 'is_published']);
+});
+
+// ============ Controller ============
+namespace App\\Http\\Controllers;
+use App\\Models\\Post;
+use App\\Http\\Requests\\PostRequest;
+use Illuminate\\Http\\JsonResponse;
+
+class PostController extends Controller {
+    public function index(): JsonResponse {
+        $posts = Post::with('author:id,name')
+            ->published()
+            ->latest()
+            ->paginate(15);
+        
+        return response()->json($posts);
+    }
+    
+    public function store(PostRequest $request): JsonResponse {
+        $post = $request->user()->posts()->create(
+            $request->validated()
+        );
+        
+        return response()->json($post, 201);
+    }
+    
+    public function show(Post $post): JsonResponse {
+        return response()->json($post->load('author', 'tags'));
+    }
+    
+    public function update(PostRequest $request, Post $post): JsonResponse {
+        $this->authorize('update', $post);
+        $post->update($request->validated());
+        return response()->json($post);
+    }
+    
+    public function destroy(Post $post): JsonResponse {
+        $this->authorize('delete', $post);
+        $post->delete();
+        return response()->json(null, 204);
+    }
+}
+
+// ============ Form Request ============
+namespace App\\Http\\Requests;
+use Illuminate\\Foundation\\Http\\FormRequest;
+
+class PostRequest extends FormRequest {
+    public function rules(): array {
+        return [
+            'title' => 'required|string|max:200',
+            'content' => 'required|string',
+            'slug' => 'required|string|unique:posts,slug,' . $this->post?->id,
+            'is_published' => 'boolean',
+        ];
+    }
+    
+    public function messages(): array {
+        return [
+            'title.required' => 'العنوان مطلوب',
+            'content.required' => 'المحتوى مطلوب',
+        ];
+    }
+}
+
+// ============ Middleware ============
+namespace App\\Http\\Middleware;
+
+class AdminOnly {
+    public function handle($request, $next) {
+        if (!$request->user()?->is_admin) {
+            return response()->json(['error' => 'غير مصرح'], 403);
+        }
+        return $next($request);
+    }
+}
+
+// ============ Eloquent Queries ============
+// جلب البيانات
+Post::all();
+Post::find(1);
+Post::findOrFail(1);
+Post::where('is_published', true)->get();
+Post::where('title', 'like', '%بحث%')->first();
+Post::whereIn('id', [1, 2, 3])->get();
+Post::whereBetween('created_at', [$start, $end])->count();
+
+// Eager Loading (تجنب N+1)
+Post::with(['author', 'tags'])->get();
+Post::withCount('comments')->get();
+
+// Aggregation
+Post::count();
+Post::max('views');
+Post::avg('rating');
+Post::sum('views');
+
+// Chunking (للبيانات الكبيرة)
+Post::chunk(100, function ($posts) {
+    foreach ($posts as $post) {
+        // معالجة
+    }
+});`,
+      },
+      {
+        title: "PHP Security و APIs",
+        content: `<?php
+// ============ تأمين PHP ============
+
+// 1. منع SQL Injection - استخدم Prepared Statements دائماً
+// خطأ ❌
+$query = "SELECT * FROM users WHERE id = " . $_GET['id'];
+
+// صحيح ✅
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$_GET['id']]);
+
+// 2. منع XSS
+// خطأ ❌
+echo $_GET['name'];
+
+// صحيح ✅
+echo htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8');
+
+// 3. CSRF Protection
+session_start();
+$token = bin2hex(random_bytes(32));
+$_SESSION['csrf_token'] = $token;
+// في النموذج: <input type="hidden" name="csrf_token" value="<?= $token ?>">
+
+// التحقق
+if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    die('CSRF token invalid');
+}
+
+// 4. تأمين رفع الملفات
+function secureUpload(array $file): string {
+    $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    $maxSize = 5 * 1024 * 1024; // 5MB
+    
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception('خطأ في الرفع');
+    }
+    
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime = $finfo->file($file['tmp_name']);
+    
+    if (!in_array($mime, $allowed)) {
+        throw new Exception('نوع ملف غير مسموح');
+    }
+    
+    if ($file['size'] > $maxSize) {
+        throw new Exception('حجم الملف كبير');
+    }
+    
+    $ext = match($mime) {
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+    };
+    
+    $filename = bin2hex(random_bytes(16)) . '.' . $ext;
+    $path = 'uploads/' . $filename;
+    
+    if (!move_uploaded_file($file['tmp_name'], $path)) {
+        throw new Exception('فشل في حفظ الملف');
+    }
+    
+    return $path;
+}
+
+// 5. Rate Limiting بسيط
+function checkRateLimit(string $ip, int $maxRequests = 60, int $window = 60): bool {
+    $key = "rate_limit:{$ip}";
+    $redis = new Redis();
+    $redis->connect('127.0.0.1');
+    
+    $current = $redis->incr($key);
+    if ($current === 1) {
+        $redis->expire($key, $window);
+    }
+    
+    return $current <= $maxRequests;
+}
+
+// 6. Password Hashing
+$hash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+$isValid = password_verify($inputPassword, $hash);
+
+// تحقق إذا كان الهاش يحتاج تحديث
+if (password_needs_rehash($hash, PASSWORD_BCRYPT, ['cost' => 12])) {
+    $newHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+    // حدث في قاعدة البيانات
+}
+
+// ============ بناء REST API بسيط ============
+header('Content-Type: application/json; charset=utf-8');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+
+$method = $_SERVER['REQUEST_METHOD'];
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$segments = explode('/', trim($path, '/'));
+
+// Simple Router
+switch ("{$method} {$segments[1]}") {
+    case 'GET users':
+        $stmt = $pdo->query("SELECT id, name, email FROM users LIMIT 50");
+        echo json_encode(['data' => $stmt->fetchAll(PDO::FETCH_ASSOC)]);
+        break;
+    
+    case 'POST users':
+        $input = json_decode(file_get_contents('php://input'), true);
+        // validation و insert...
+        http_response_code(201);
+        echo json_encode(['message' => 'تم الإنشاء']);
+        break;
+    
+    case 'PUT users':
+        $id = $segments[2] ?? null;
+        if (!$id) { http_response_code(400); break; }
+        // update...
+        echo json_encode(['message' => 'تم التحديث']);
+        break;
+    
+    case 'DELETE users':
+        $id = $segments[2] ?? null;
+        // delete...
+        http_response_code(204);
+        break;
+    
+    default:
+        http_response_code(404);
+        echo json_encode(['error' => 'غير موجود']);
+}
+?>`,
+      },
+    ],
+  },
+  {
+    id: "graphql",
+    title: "GraphQL",
+    icon: "Globe",
+    color: "text-pink-500",
+    topics: [
+      {
+        title: "أساسيات GraphQL",
+        content: `// ============ GraphQL Schema ============
+// schema.graphql
+
+# الأنواع الأساسية
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  avatar: String
+  posts: [Post!]!
+  followers: [User!]!
+  followersCount: Int!
+  createdAt: DateTime!
+}
+
+type Post {
+  id: ID!
+  title: String!
+  content: String!
+  author: User!
+  comments: [Comment!]!
+  tags: [String!]!
+  likes: Int!
+  isPublished: Boolean!
+  createdAt: DateTime!
+}
+
+type Comment {
+  id: ID!
+  text: String!
+  author: User!
+  post: Post!
+  createdAt: DateTime!
+}
+
+# Input Types
+input CreatePostInput {
+  title: String!
+  content: String!
+  tags: [String!]
+  isPublished: Boolean = false
+}
+
+input UpdatePostInput {
+  title: String
+  content: String
+  tags: [String!]
+  isPublished: Boolean
+}
+
+input PaginationInput {
+  page: Int = 1
+  limit: Int = 10
+}
+
+# Response Types
+type PostsResponse {
+  posts: [Post!]!
+  total: Int!
+  hasMore: Boolean!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+# Queries
+type Query {
+  me: User
+  user(id: ID!): User
+  users(pagination: PaginationInput): [User!]!
+  post(id: ID!): Post
+  posts(pagination: PaginationInput, search: String): PostsResponse!
+  postsByTag(tag: String!): [Post!]!
+}
+
+# Mutations
+type Mutation {
+  register(username: String!, email: String!, password: String!): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+  createPost(input: CreatePostInput!): Post!
+  updatePost(id: ID!, input: UpdatePostInput!): Post!
+  deletePost(id: ID!): Boolean!
+  likePost(id: ID!): Post!
+  addComment(postId: ID!, text: String!): Comment!
+  followUser(userId: ID!): User!
+}
+
+# Subscriptions (Real-time)
+type Subscription {
+  postCreated: Post!
+  commentAdded(postId: ID!): Comment!
+}
+
+scalar DateTime`,
+      },
+      {
+        title: "GraphQL مع Apollo Server",
+        content: `// npm install @apollo/server graphql
+// npm install @apollo/client (للعميل)
+
+// ============ Server Setup ============
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+
+const typeDefs = \`#graphql
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+    posts: [Post!]!
+  }
+  
+  type Post {
+    id: ID!
+    title: String!
+    content: String!
+    author: User!
+  }
+  
+  type Query {
+    users: [User!]!
+    user(id: ID!): User
+    posts: [Post!]!
+  }
+  
+  type Mutation {
+    createUser(name: String!, email: String!): User!
+    createPost(title: String!, content: String!, authorId: ID!): Post!
+  }
+\`;
+
+// ============ Resolvers ============
+const resolvers = {
+  Query: {
+    users: async (_, __, { dataSources }) => {
+      return dataSources.userAPI.getAll();
+    },
+    user: async (_, { id }, { dataSources }) => {
+      return dataSources.userAPI.getById(id);
+    },
+    posts: async (_, __, { dataSources }) => {
+      return dataSources.postAPI.getAll();
+    },
+  },
+  
+  Mutation: {
+    createUser: async (_, { name, email }, { dataSources }) => {
+      return dataSources.userAPI.create({ name, email });
+    },
+    createPost: async (_, args, { dataSources, user }) => {
+      if (!user) throw new Error('يجب تسجيل الدخول');
+      return dataSources.postAPI.create(args);
+    },
+  },
+  
+  // Field Resolvers
+  User: {
+    posts: async (parent, _, { dataSources }) => {
+      return dataSources.postAPI.getByAuthor(parent.id);
+    },
+  },
+  
+  Post: {
+    author: async (parent, _, { dataSources }) => {
+      return dataSources.userAPI.getById(parent.authorId);
+    },
+  },
+};
+
+// ============ Start Server ============
+const server = new ApolloServer({ typeDefs, resolvers });
+
+const { url } = await startStandaloneServer(server, {
+  listen: { port: 4000 },
+  context: async ({ req }) => {
+    const token = req.headers.authorization || '';
+    const user = await verifyToken(token);
+    return { user, dataSources: { userAPI: new UserAPI(), postAPI: new PostAPI() } };
+  },
+});
+
+console.log(\`Server ready at \${url}\`);
+
+// ============ Client (React + Apollo) ============
+import { ApolloClient, InMemoryCache, ApolloProvider, gql, useQuery, useMutation } from '@apollo/client';
+
+const client = new ApolloClient({
+  uri: 'http://localhost:4000/graphql',
+  cache: new InMemoryCache(),
+  headers: { Authorization: \`Bearer \${token}\` },
+});
+
+// App wrapper
+<ApolloProvider client={client}>
+  <App />
+</ApolloProvider>
+
+// Query Hook
+const GET_POSTS = gql\`
+  query GetPosts($page: Int, $limit: Int) {
+    posts(pagination: { page: $page, limit: $limit }) {
+      posts {
+        id
+        title
+        content
+        author { name }
+        createdAt
+      }
+      total
+      hasMore
+    }
+  }
+\`;
+
+function PostList() {
+  const { loading, error, data, fetchMore } = useQuery(GET_POSTS, {
+    variables: { page: 1, limit: 10 },
+  });
+  
+  if (loading) return <p>جاري التحميل...</p>;
+  if (error) return <p>خطأ: {error.message}</p>;
+  
+  return (
+    <div>
+      {data.posts.posts.map(post => (
+        <div key={post.id}>
+          <h2>{post.title}</h2>
+          <p>بواسطة {post.author.name}</p>
+        </div>
+      ))}
+      {data.posts.hasMore && (
+        <button onClick={() => fetchMore({ variables: { page: 2 } })}>
+          تحميل المزيد
+        </button>
+      )}
+    </div>
+  );
+}
+
+// Mutation Hook
+const CREATE_POST = gql\`
+  mutation CreatePost($input: CreatePostInput!) {
+    createPost(input: $input) {
+      id
+      title
+    }
+  }
+\`;
+
+function CreatePostForm() {
+  const [createPost, { loading }] = useMutation(CREATE_POST, {
+    refetchQueries: [{ query: GET_POSTS }],
+    onCompleted: () => alert('تم إنشاء المقال!'),
+  });
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createPost({
+      variables: { input: { title, content, isPublished: true } },
+    });
+  };
+  
+  return <form onSubmit={handleSubmit}>...</form>;
+}`,
+      },
+    ],
+  },
+  {
+    id: "websockets",
+    title: "WebSockets و Real-time",
+    icon: "Zap",
+    color: "text-amber-500",
+    topics: [
+      {
+        title: "WebSocket API",
+        content: `// ============ WebSocket الأساسي (المتصفح) ============
+const ws = new WebSocket('ws://localhost:8080');
+
+ws.onopen = () => {
+  console.log('متصل بالخادم');
+  ws.send(JSON.stringify({ type: 'join', room: 'general' }));
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log('رسالة:', data);
+  
+  switch (data.type) {
+    case 'message':
+      displayMessage(data);
+      break;
+    case 'notification':
+      showNotification(data);
+      break;
+    case 'typing':
+      showTypingIndicator(data.user);
+      break;
+  }
+};
+
+ws.onerror = (error) => {
+  console.error('خطأ WebSocket:', error);
+};
+
+ws.onclose = (event) => {
+  console.log(\`انقطع الاتصال: \${event.code} - \${event.reason}\`);
+  // إعادة الاتصال تلقائياً
+  setTimeout(() => reconnect(), 3000);
+};
+
+// إرسال رسالة
+function sendMessage(text) {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({
+      type: 'message',
+      text,
+      timestamp: Date.now()
+    }));
+  }
+}
+
+// ============ WebSocket Server (Node.js) ============
+// npm install ws
+import { WebSocketServer, WebSocket } from 'ws';
+
+const wss = new WebSocketServer({ port: 8080 });
+const rooms = new Map(); // room -> Set<WebSocket>
+
+wss.on('connection', (ws, req) => {
+  const ip = req.socket.remoteAddress;
+  console.log(\`اتصال جديد من \${ip}\`);
+  
+  ws.isAlive = true;
+  ws.on('pong', () => { ws.isAlive = true; });
+  
+  ws.on('message', (raw) => {
+    try {
+      const data = JSON.parse(raw);
+      
+      switch (data.type) {
+        case 'join':
+          joinRoom(ws, data.room);
+          break;
+          
+        case 'message':
+          broadcastToRoom(ws.room, {
+            type: 'message',
+            user: ws.username,
+            text: data.text,
+            timestamp: Date.now()
+          }, ws);
+          break;
+          
+        case 'typing':
+          broadcastToRoom(ws.room, {
+            type: 'typing',
+            user: ws.username
+          }, ws);
+          break;
+      }
+    } catch (e) {
+      ws.send(JSON.stringify({ type: 'error', message: 'رسالة غير صالحة' }));
+    }
+  });
+  
+  ws.on('close', () => {
+    leaveRoom(ws);
+    console.log('اتصال مغلق');
+  });
+});
+
+function joinRoom(ws, roomName) {
+  if (!rooms.has(roomName)) {
+    rooms.set(roomName, new Set());
+  }
+  rooms.get(roomName).add(ws);
+  ws.room = roomName;
+  
+  broadcastToRoom(roomName, {
+    type: 'notification',
+    text: \`\${ws.username} انضم للغرفة\`
+  });
+}
+
+function broadcastToRoom(roomName, data, exclude = null) {
+  const room = rooms.get(roomName);
+  if (!room) return;
+  
+  const message = JSON.stringify(data);
+  room.forEach(client => {
+    if (client !== exclude && client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  });
+}
+
+// Heartbeat - كشف الاتصالات الميتة
+const interval = setInterval(() => {
+  wss.clients.forEach(ws => {
+    if (!ws.isAlive) return ws.terminate();
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 30000);
+
+wss.on('close', () => clearInterval(interval));`,
+      },
+      {
+        title: "Socket.IO و تطبيق Chat",
+        content: `// npm install socket.io (server)
+// npm install socket.io-client (client)
+
+// ============ Server ============
+import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] }
+});
+
+// Middleware للتحقق
+io.use((socket, next) => {
+  const token = socket.handshake.auth.token;
+  try {
+    const user = verifyToken(token);
+    socket.user = user;
+    next();
+  } catch (err) {
+    next(new Error('غير مصرح'));
+  }
+});
+
+// إدارة الغرف والمستخدمين
+const onlineUsers = new Map();
+
+io.on('connection', (socket) => {
+  console.log(\`\${socket.user.name} متصل\`);
+  onlineUsers.set(socket.user.id, socket.id);
+  
+  // إرسال المستخدمين المتصلين
+  io.emit('users:online', Array.from(onlineUsers.keys()));
+  
+  // الانضمام لغرفة
+  socket.on('room:join', (roomId) => {
+    socket.join(roomId);
+    socket.to(roomId).emit('room:joined', {
+      user: socket.user.name,
+      roomId
+    });
+  });
+  
+  // إرسال رسالة
+  socket.on('message:send', async (data) => {
+    const message = {
+      id: generateId(),
+      text: data.text,
+      sender: socket.user,
+      roomId: data.roomId,
+      timestamp: new Date(),
+    };
+    
+    // حفظ في قاعدة البيانات
+    await saveMessage(message);
+    
+    // إرسال للغرفة
+    io.to(data.roomId).emit('message:new', message);
+  });
+  
+  // مؤشر الكتابة
+  socket.on('typing:start', (roomId) => {
+    socket.to(roomId).emit('typing:show', socket.user.name);
+  });
+  
+  socket.on('typing:stop', (roomId) => {
+    socket.to(roomId).emit('typing:hide', socket.user.name);
+  });
+  
+  // رسالة خاصة
+  socket.on('message:private', (data) => {
+    const targetSocketId = onlineUsers.get(data.targetUserId);
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('message:private', {
+        from: socket.user,
+        text: data.text
+      });
+    }
+  });
+  
+  // قطع الاتصال
+  socket.on('disconnect', () => {
+    onlineUsers.delete(socket.user.id);
+    io.emit('users:online', Array.from(onlineUsers.keys()));
+  });
+});
+
+httpServer.listen(3001, () => console.log('Socket server on :3001'));
+
+// ============ Client (React) ============
+import { io } from 'socket.io-client';
+import { useEffect, useState, useCallback } from 'react';
+
+// Custom Hook
+function useSocket(token) {
+  const [socket, setSocket] = useState(null);
+  const [connected, setConnected] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [typingUsers, setTypingUsers] = useState([]);
+
+  useEffect(() => {
+    const s = io('http://localhost:3001', {
+      auth: { token },
+      reconnection: true,
+      reconnectionDelay: 1000,
+    });
+
+    s.on('connect', () => setConnected(true));
+    s.on('disconnect', () => setConnected(false));
+    s.on('message:new', (msg) => setMessages(prev => [...prev, msg]));
+    s.on('users:online', (users) => setOnlineUsers(users));
+    s.on('typing:show', (user) => setTypingUsers(prev => [...prev, user]));
+    s.on('typing:hide', (user) => setTypingUsers(prev => prev.filter(u => u !== user)));
+
+    setSocket(s);
+    return () => s.disconnect();
+  }, [token]);
+
+  const sendMessage = useCallback((text, roomId) => {
+    socket?.emit('message:send', { text, roomId });
+  }, [socket]);
+
+  const joinRoom = useCallback((roomId) => {
+    socket?.emit('room:join', roomId);
+  }, [socket]);
+
+  return { connected, messages, onlineUsers, typingUsers, sendMessage, joinRoom };
+}
+
+// استخدام في Component
+function ChatRoom({ roomId }) {
+  const { connected, messages, typingUsers, sendMessage, joinRoom } = useSocket(token);
+  const [text, setText] = useState('');
+  
+  useEffect(() => { joinRoom(roomId); }, [roomId]);
+  
+  const handleSend = () => {
+    if (text.trim()) {
+      sendMessage(text, roomId);
+      setText('');
+    }
+  };
+  
+  return (
+    <div>
+      <div>{connected ? '🟢 متصل' : '🔴 غير متصل'}</div>
+      <div>
+        {messages.map(m => (
+          <div key={m.id}>
+            <b>{m.sender.name}:</b> {m.text}
+          </div>
+        ))}
+        {typingUsers.length > 0 && (
+          <div>{typingUsers.join(', ')} يكتب...</div>
+        )}
+      </div>
+      <input value={text} onChange={e => setText(e.target.value)} />
+      <button onClick={handleSend}>إرسال</button>
+    </div>
+  );
+}`,
+      },
+    ],
+  },
+  {
+    id: "performance",
+    title: "أداء الويب (Performance)",
+    icon: "Zap",
+    color: "text-lime-500",
+    topics: [
+      {
+        title: "تحسين الأداء",
+        content: `// ============ Core Web Vitals ============
+// LCP (Largest Contentful Paint) < 2.5s
+// FID (First Input Delay) < 100ms  
+// CLS (Cumulative Layout Shift) < 0.1
+// INP (Interaction to Next Paint) < 200ms
+
+// ============ JavaScript Performance ============
+
+// 1. Debounce & Throttle
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+
+function throttle(fn, limit) {
+  let inThrottle;
+  return (...args) => {
+    if (!inThrottle) {
+      fn(...args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+}
+
+// استخدام
+const handleSearch = debounce((query) => {
+  fetch(\`/api/search?q=\${query}\`);
+}, 300);
+
+const handleScroll = throttle(() => {
+  // تحديث الموضع
+}, 100);
+
+// 2. Virtual Scrolling (للقوائم الطويلة)
+function VirtualList({ items, itemHeight, containerHeight }) {
+  const [scrollTop, setScrollTop] = useState(0);
+  
+  const startIndex = Math.floor(scrollTop / itemHeight);
+  const endIndex = Math.min(
+    startIndex + Math.ceil(containerHeight / itemHeight) + 1,
+    items.length
+  );
+  
+  const visibleItems = items.slice(startIndex, endIndex);
+  const totalHeight = items.length * itemHeight;
+  const offsetY = startIndex * itemHeight;
+  
+  return (
+    <div
+      style={{ height: containerHeight, overflow: 'auto' }}
+      onScroll={(e) => setScrollTop(e.target.scrollTop)}
+    >
+      <div style={{ height: totalHeight, position: 'relative' }}>
+        <div style={{ transform: \`translateY(\${offsetY}px)\` }}>
+          {visibleItems.map((item, i) => (
+            <div key={startIndex + i} style={{ height: itemHeight }}>
+              {item.name}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 3. Lazy Loading
+const HeavyComponent = React.lazy(() => import('./HeavyComponent'));
+
+function App() {
+  return (
+    <Suspense fallback={<Skeleton />}>
+      <HeavyComponent />
+    </Suspense>
+  );
+}
+
+// 4. Memoization
+const ExpensiveList = React.memo(({ items }) => {
+  return items.map(item => <Item key={item.id} {...item} />);
+});
+
+const memoizedValue = useMemo(() => {
+  return heavyComputation(data);
+}, [data]);
+
+const memoizedCallback = useCallback((id) => {
+  deleteItem(id);
+}, [deleteItem]);
+
+// 5. Web Workers (عمليات ثقيلة في خيط منفصل)
+// worker.js
+self.onmessage = (e) => {
+  const result = heavyComputation(e.data);
+  self.postMessage(result);
+};
+
+// main.js
+const worker = new Worker('worker.js');
+worker.postMessage(largeData);
+worker.onmessage = (e) => {
+  console.log('النتيجة:', e.data);
+};
+
+// 6. Intersection Observer (Lazy Loading)
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const img = entry.target;
+      img.src = img.dataset.src;
+      observer.unobserve(img);
+    }
+  });
+}, { rootMargin: '100px' });
+
+document.querySelectorAll('img[data-src]').forEach(img => {
+  observer.observe(img);
+});
+
+// 7. تقليل Bundle Size
+// Dynamic imports
+const AdminPanel = () => import('./AdminPanel');
+
+// Tree Shaking - استورد ما تحتاجه فقط
+import { debounce } from 'lodash-es'; // ✅
+// import _ from 'lodash'; // ❌ يجلب المكتبة كاملة
+
+// 8. Caching Strategies
+// Service Worker
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      return cached || fetch(event.request).then(response => {
+        const clone = response.clone();
+        caches.open('v1').then(cache => cache.put(event.request, clone));
+        return response;
+      });
+    })
+  );
+});
+
+// React Query Caching
+const { data } = useQuery({
+  queryKey: ['posts'],
+  queryFn: fetchPosts,
+  staleTime: 5 * 60 * 1000, // 5 دقائق
+  cacheTime: 30 * 60 * 1000, // 30 دقيقة
+  refetchOnWindowFocus: false,
+});`,
+      },
+      {
+        title: "تحسين CSS و الصور",
+        content: `/* ============ CSS Performance ============ */
+
+/* 1. استخدم will-change للعناصر المتحركة */
+.animated-element {
+  will-change: transform, opacity;
+  /* أزله بعد انتهاء الحركة */
+}
+
+/* 2. استخدم transform بدل top/left للحركات */
+/* بطيء ❌ */
+.move-bad { left: 100px; top: 50px; }
+
+/* سريع ✅ */
+.move-good { transform: translate(100px, 50px); }
+
+/* 3. تجنب Layout Thrashing */
+/* بطيء ❌ - يسبب reflow متكرر */
+/*
+elements.forEach(el => {
+  const height = el.offsetHeight; // قراءة
+  el.style.height = height + 10 + 'px'; // كتابة
+});
+*/
+
+/* سريع ✅ - اقرأ أولاً ثم اكتب */
+/*
+const heights = elements.map(el => el.offsetHeight);
+elements.forEach((el, i) => {
+  el.style.height = heights[i] + 10 + 'px';
+});
+*/
+
+/* 4. Container Queries */
+@container (min-width: 400px) {
+  .card { flex-direction: row; }
+}
+
+/* 5. Content Visibility */
+.offscreen-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* 6. CSS Layers */
+@layer base, components, utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+}
+
+/* 7. خطوط محسّنة */
+@font-face {
+  font-family: 'CustomFont';
+  src: url('font.woff2') format('woff2');
+  font-display: swap; /* يظهر نص بديل أثناء التحميل */
+  unicode-range: U+0600-06FF; /* عربي فقط */
+}
+
+/* ============ تحسين الصور ============ */
+
+/* في HTML */
+/*
+<!-- صور متجاوبة -->
+<img
+  src="image-800.webp"
+  srcset="image-400.webp 400w,
+          image-800.webp 800w,
+          image-1200.webp 1200w"
+  sizes="(max-width: 600px) 400px,
+         (max-width: 900px) 800px,
+         1200px"
+  alt="وصف الصورة"
+  loading="lazy"
+  decoding="async"
+  width="800"
+  height="600"
+>
+
+<!-- صورة حديثة مع fallback -->
+<picture>
+  <source srcset="image.avif" type="image/avif">
+  <source srcset="image.webp" type="image/webp">
+  <img src="image.jpg" alt="وصف" loading="lazy">
+</picture>
+*/
+
+/* ============ Lighthouse Tips ============ */
+/*
+1. ضغط الصور: استخدم WebP/AVIF بدل JPEG/PNG
+2. ضغط النصوص: Gzip/Brotli على الخادم
+3. CDN: استخدم شبكة توزيع المحتوى
+4. HTTP/2 أو HTTP/3: لتحميل متوازي
+5. Preload الموارد المهمة:
+   <link rel="preload" href="font.woff2" as="font" crossorigin>
+   <link rel="preload" href="hero.webp" as="image">
+   <link rel="preconnect" href="https://api.example.com">
+   <link rel="dns-prefetch" href="https://cdn.example.com">
+6. أزل CSS/JS غير المستخدم
+7. كسّر الكود (Code Splitting)
+8. استخدم Service Workers للتخزين المؤقت
+*/`,
+      },
+    ],
+  },
+  {
+    id: "state-management",
+    title: "إدارة الحالة (State Management)",
+    icon: "Layers",
+    color: "text-violet-500",
+    topics: [
+      {
+        title: "Zustand و Jotai و Redux Toolkit",
+        content: `// ============ Zustand (خفيف وبسيط) ============
+// npm install zustand
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+interface CartStore {
+  items: CartItem[];
+  total: number;
+  addItem: (item: Omit<CartItem, 'quantity'>) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
+  clearCart: () => void;
+}
+
+const useCartStore = create<CartStore>()(
+  devtools(
+    persist(
+      (set, get) => ({
+        items: [],
+        total: 0,
+        
+        addItem: (item) => set((state) => {
+          const existing = state.items.find(i => i.id === item.id);
+          if (existing) {
+            return {
+              items: state.items.map(i =>
+                i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+              ),
+              total: state.total + item.price,
+            };
+          }
+          return {
+            items: [...state.items, { ...item, quantity: 1 }],
+            total: state.total + item.price,
+          };
+        }),
+        
+        removeItem: (id) => set((state) => {
+          const item = state.items.find(i => i.id === id);
+          return {
+            items: state.items.filter(i => i.id !== id),
+            total: state.total - (item ? item.price * item.quantity : 0),
+          };
+        }),
+        
+        updateQuantity: (id, quantity) => set((state) => {
+          const item = state.items.find(i => i.id === id);
+          if (!item) return state;
+          const diff = (quantity - item.quantity) * item.price;
+          return {
+            items: state.items.map(i =>
+              i.id === id ? { ...i, quantity } : i
+            ),
+            total: state.total + diff,
+          };
+        }),
+        
+        clearCart: () => set({ items: [], total: 0 }),
+      }),
+      { name: 'cart-storage' }
+    )
+  )
+);
+
+// استخدام في Component
+function Cart() {
+  const { items, total, removeItem } = useCartStore();
+  // Selector لأداء أفضل
+  const itemCount = useCartStore(state => state.items.length);
+  
+  return (
+    <div>
+      <h2>السلة ({itemCount})</h2>
+      {items.map(item => (
+        <div key={item.id}>
+          {item.name} x{item.quantity} - {item.price * item.quantity}
+          <button onClick={() => removeItem(item.id)}>حذف</button>
+        </div>
+      ))}
+      <p>المجموع: {total}</p>
+    </div>
+  );
+}
+
+// ============ Redux Toolkit ============
+// npm install @reduxjs/toolkit react-redux
+import { configureStore, createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { Provider, useSelector, useDispatch } from 'react-redux';
+
+// Async Thunk
+const fetchPosts = createAsyncThunk('posts/fetch', async (_, { rejectWithValue }) => {
+  try {
+    const res = await fetch('/api/posts');
+    if (!res.ok) throw new Error('فشل الجلب');
+    return res.json();
+  } catch (err) {
+    return rejectWithValue(err.message);
+  }
+});
+
+const postsSlice = createSlice({
+  name: 'posts',
+  initialState: { items: [], loading: false, error: null },
+  reducers: {
+    addPost: (state, action) => { state.items.push(action.payload); },
+    removePost: (state, action) => {
+      state.items = state.items.filter(p => p.id !== action.payload);
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPosts.pending, (state) => { state.loading = true; })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.items = action.payload;
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+const store = configureStore({
+  reducer: { posts: postsSlice.reducer },
+});
+
+// استخدام
+function PostList() {
+  const dispatch = useDispatch();
+  const { items, loading } = useSelector(state => state.posts);
+  
+  useEffect(() => { dispatch(fetchPosts()); }, []);
+  
+  if (loading) return <p>جاري التحميل...</p>;
+  return items.map(p => <div key={p.id}>{p.title}</div>);
+}`,
+      },
+    ],
+  },
+];
+
