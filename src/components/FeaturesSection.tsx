@@ -1,4 +1,4 @@
-import { Brain, Terminal, Wrench, Code, BookOpen, Download } from "lucide-react";
+import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -11,36 +11,81 @@ const FeaturesSection = () => {
       title: t("features.ai.title"),
       description: t("features.ai.desc"),
       link: "/ai",
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
+      border: "border-purple-500/30",
     },
     {
       icon: Terminal,
       title: t("nav.scanner"),
       description: t("features.tools.desc"),
       link: "/scanner",
+      color: "text-red-500",
+      bg: "bg-red-500/10",
+      border: "border-red-500/30",
     },
     {
       icon: Wrench,
       title: t("features.tools.title"),
       description: t("features.tools.desc"),
       link: "/tools",
+      color: "text-cyan-500",
+      bg: "bg-cyan-500/10",
+      border: "border-cyan-500/30",
     },
     {
       icon: Code,
       title: t("features.scripts.title"),
       description: t("features.scripts.desc"),
       link: "/scripts",
+      color: "text-green-500",
+      bg: "bg-green-500/10",
+      border: "border-green-500/30",
     },
     {
       icon: BookOpen,
       title: t("features.guide.title"),
       description: t("features.guide.desc"),
       link: "/guide",
+      color: "text-yellow-500",
+      bg: "bg-yellow-500/10",
+      border: "border-yellow-500/30",
+    },
+    {
+      icon: Globe,
+      title: t("nav.webdev"),
+      description: "دليل شامل لتعلم تطوير الويب من الصفر",
+      link: "/webdev",
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/30",
+    },
+    {
+      icon: Lock,
+      title: t("nav.password"),
+      description: "افحص قوة كلمة مرورك واحصل على نصائح",
+      link: "/password-checker",
+      color: "text-orange-500",
+      bg: "bg-orange-500/10",
+      border: "border-orange-500/30",
+    },
+    {
+      icon: Mail,
+      title: t("nav.inquiry"),
+      description: "تواصل معنا وأرسل استفساراتك",
+      link: "/inquiry",
+      color: "text-pink-500",
+      bg: "bg-pink-500/10",
+      border: "border-pink-500/30",
     },
     {
       icon: Download,
       title: t("nav.download"),
       description: t("features.tools.desc"),
       link: "/download",
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/30",
     },
   ];
 
@@ -66,8 +111,8 @@ const FeaturesSection = () => {
             >
               {/* Icon */}
               <div className="mb-4 transition-transform duration-300 group-hover:scale-110">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:box-glow-sm transition-all duration-300">
-                  <feature.icon className="w-6 h-6 text-primary" />
+                <div className={`w-12 h-12 rounded-xl ${feature.bg} border ${feature.border} flex items-center justify-center group-hover:box-glow-sm transition-all duration-300`}>
+                  <feature.icon className={`w-6 h-6 ${feature.color}`} />
                 </div>
               </div>
 
