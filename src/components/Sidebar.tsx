@@ -10,6 +10,8 @@ import {
   BookOpen,
   Download,
   Globe,
+  Lock,
+  Mail,
   ChevronRight,
   ChevronLeft,
   Menu,
@@ -31,6 +33,8 @@ const navItems: NavItem[] = [
   { path: "/scripts", icon: Code, labelKey: "scripts" },
   { path: "/guide", icon: BookOpen, labelKey: "guide" },
   { path: "/webdev", icon: Globe, labelKey: "webdev" },
+  { path: "/password-checker", icon: Lock, labelKey: "password" },
+  { path: "/inquiry", icon: Mail, labelKey: "inquiry" },
   { path: "/download", icon: Download, labelKey: "download" },
 ];
 
@@ -42,6 +46,8 @@ const navLabels: Record<string, { ar: string; en: string }> = {
   scripts: { ar: "السكربتات", en: "Scripts" },
   guide: { ar: "الدليل", en: "Guide" },
   webdev: { ar: "تطوير الويب", en: "Web Dev" },
+  password: { ar: "فحص كلمة المرور", en: "Password Check" },
+  inquiry: { ar: "الاستفسارات", en: "Inquiries" },
   download: { ar: "التحميل", en: "Download" },
 };
 

@@ -29,6 +29,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.guide": "الدليل",
     "nav.download": "التحميل",
     "nav.ai": "الذكاء الاصطناعي",
+    "nav.webdev": "تطوير الويب",
+    "nav.password": "فحص كلمة المرور",
+    "nav.inquiry": "الاستفسارات",
     
     // Hero Section
     "hero.title": "Qusay Kali",
@@ -100,6 +103,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.guide": "Guide",
     "nav.download": "Download",
     "nav.ai": "AI Assistant",
+    "nav.webdev": "Web Development",
+    "nav.password": "Password Checker",
+    "nav.inquiry": "Inquiries",
     
     // Hero Section
     "hero.title": "Qusay Kali",
@@ -171,6 +177,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.guide": "Guía",
     "nav.download": "Descargar",
     "nav.ai": "Asistente IA",
+    "nav.webdev": "Desarrollo Web",
+    "nav.password": "Verificador",
+    "nav.inquiry": "Consultas",
     
     // Hero Section
     "hero.title": "Qusay Kali",
@@ -242,6 +251,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.guide": "指南",
     "nav.download": "下载",
     "nav.ai": "AI助手",
+    "nav.webdev": "网页开发",
+    "nav.password": "密码检测",
+    "nav.inquiry": "咨询",
     
     // Hero Section
     "hero.title": "Qusay Kali",
@@ -313,6 +325,9 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.guide": "गाइड",
     "nav.download": "डाउनलोड",
     "nav.ai": "AI सहायक",
+    "nav.webdev": "वेब विकास",
+    "nav.password": "पासवर्ड जांच",
+    "nav.inquiry": "पूछताछ",
     
     // Hero Section
     "hero.title": "Qusay Kali",

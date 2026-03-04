@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import PasswordStrengthChecker from "@/components/PasswordStrengthChecker";
 import { webDevCategories, WebDevCategory, WebDevTopic } from "@/data/webDevData";
 import { Copy, Check, ChevronDown, ChevronUp, Code, FileCode, Zap, FileType, GitBranch, Server, Database, Shield, Wrench, Box, Workflow, Globe, TestTube, Layers, Atom, Palette, ShieldCheck, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -48,11 +47,6 @@ const WebDevPage = () => {
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               دليل شامل لتعلم تطوير الويب من الصفر إلى الاحتراف - {webDevCategories.length} قسم و {webDevCategories.reduce((a, c) => a + c.topics.length, 0)} موضوع
             </p>
-          </div>
-
-          {/* Password Strength Checker */}
-          <div className="mb-16">
-            <PasswordStrengthChecker />
           </div>
 
           {/* Categories */}
