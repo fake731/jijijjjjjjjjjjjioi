@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Shield, Eye, EyeOff, Copy, Check } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Shield, Eye, EyeOff, Copy, Check, Lightbulb } from "lucide-react";
 
 const PasswordStrengthChecker = () => {
   const [password, setPassword] = useState("");
@@ -39,12 +38,12 @@ const PasswordStrengthChecker = () => {
   const { score, checks } = checkStrength(password);
 
   const getStrengthLabel = () => {
-    if (!password) return { label: "أدخل كلمة المرور", color: "text-muted-foreground" };
-    if (score < 30) return { label: "ضعيفة جداً 😰", color: "text-destructive" };
-    if (score < 50) return { label: "ضعيفة 😟", color: "text-destructive" };
-    if (score < 70) return { label: "متوسطة 🤔", color: "text-orange-500" };
-    if (score < 90) return { label: "قوية 💪", color: "text-green-500" };
-    return { label: "قوية جداً 🔒", color: "text-green-400" };
+    if (!password) return { label: "ادخل كلمة المرور", color: "text-muted-foreground" };
+    if (score < 30) return { label: "ضعيفة جدا", color: "text-destructive" };
+    if (score < 50) return { label: "ضعيفة", color: "text-destructive" };
+    if (score < 70) return { label: "متوسطة", color: "text-orange-500" };
+    if (score < 90) return { label: "قوية", color: "text-green-500" };
+    return { label: "قوية جدا", color: "text-green-400" };
   };
 
   const getProgressColor = () => {
@@ -58,21 +57,37 @@ const PasswordStrengthChecker = () => {
   const { label, color } = getStrengthLabel();
 
   const criteriaList = [
-    { key: "length8", label: "8 أحرف على الأقل", met: checks.length8 },
-    { key: "length12", label: "12 حرف أو أكثر", met: checks.length12 },
-    { key: "uppercase", label: "أحرف كبيرة (A-Z)", met: checks.uppercase },
-    { key: "lowercase", label: "أحرف صغيرة (a-z)", met: checks.lowercase },
-    { key: "numbers", label: "أرقام (0-9)", met: checks.numbers },
+    { key: "length8", label: "8 احرف على الاقل", met: checks.length8 },
+    { key: "length12", label: "12 حرف او اكثر", met: checks.length12 },
+    { key: "uppercase", label: "احرف كبيرة (A-Z)", met: checks.uppercase },
+    { key: "lowercase", label: "احرف صغيرة (a-z)", met: checks.lowercase },
+    { key: "numbers", label: "ارقام (0-9)", met: checks.numbers },
     { key: "special", label: "رموز خاصة (!@#$%)", met: checks.special },
     { key: "noRepeat", label: "بدون تكرار متتالي", met: checks.noRepeat },
-    { key: "mixed", label: "مزيج كامل من الأنواع", met: checks.mixed },
+    { key: "mixed", label: "مزيج كامل من الانواع", met: checks.mixed },
   ];
+
+  const getSuggestions = () => {
+    const suggestions: string[] = [];
+    if (!checks.length8) suggestions.push("اجعل كلمة المرور 8 احرف على الاقل");
+    if (!checks.length12) suggestions.push("يفضل ان تكون 12 حرف او اكثر لحماية افضل");
+    if (!checks.uppercase) suggestions.push("اضف احرف كبيرة مثل: A, B, C");
+    if (!checks.lowercase) suggestions.push("اضف احرف صغيرة مثل: a, b, c");
+    if (!checks.numbers) suggestions.push("اضف ارقام مثل: 1, 2, 3");
+    if (!checks.special) suggestions.push("اضف رموز خاصة مثل: @, #, $, %, !");
+    if (!checks.noRepeat) suggestions.push("تجنب تكرار نفس الحرف اكثر من مرتين متتاليتين");
+    if (!checks.noSequence) suggestions.push("تجنب التسلسلات مثل: 123, abc");
+    if (!checks.mixed) suggestions.push("استخدم مزيج من الاحرف الكبيرة والصغيرة والارقام والرموز");
+    return suggestions;
+  };
 
   const copyPassword = () => {
     navigator.clipboard.writeText(password);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const suggestions = password ? getSuggestions() : [];
 
   return (
     <div className="cyber-card p-8 max-w-2xl mx-auto">
@@ -92,7 +107,7 @@ const PasswordStrengthChecker = () => {
           type={showPassword ? "text" : "password"}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="أدخل كلمة المرور هنا..."
+          placeholder="ادخل كلمة المرور هنا..."
           className="w-full h-14 px-4 pr-24 rounded-xl border border-border bg-background text-foreground text-lg focus:outline-none focus:ring-2 focus:ring-ring font-mono"
           dir="ltr"
         />
@@ -137,10 +152,28 @@ const PasswordStrengthChecker = () => {
                 c.met ? "bg-green-500/10 text-green-500" : "bg-secondary text-muted-foreground"
               }`}
             >
-              <span>{c.met ? "✅" : "❌"}</span>
+              <span>{c.met ? "✓" : "✗"}</span>
               <span>{c.label}</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Suggestions */}
+      {password && suggestions.length > 0 && score < 90 && (
+        <div className="mt-6 p-5 rounded-xl bg-orange-500/10 border border-orange-500/30">
+          <div className="flex items-center gap-2 mb-3">
+            <Lightbulb className="w-5 h-5 text-orange-500" />
+            <h3 className="font-bold text-orange-500">نصائح لتحسين كلمة المرور</h3>
+          </div>
+          <ul className="space-y-2">
+            {suggestions.map((s, i) => (
+              <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                <span className="text-orange-500 mt-0.5">•</span>
+                <span>{s}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -149,11 +182,11 @@ const PasswordStrengthChecker = () => {
         <div className="mt-6 p-4 rounded-xl bg-secondary/50 border border-border/50">
           <p className="text-sm text-muted-foreground">
             <span className="font-bold text-foreground">وقت الكسر التقريبي: </span>
-            {score < 30 && "أقل من ثانية ⚡"}
-            {score >= 30 && score < 50 && "بضع دقائق ⏱️"}
-            {score >= 50 && score < 70 && "بضع ساعات إلى أيام 📅"}
-            {score >= 70 && score < 90 && "سنوات 📆"}
-            {score >= 90 && "ملايين السنين 🔐"}
+            {score < 30 && "اقل من ثانية"}
+            {score >= 30 && score < 50 && "بضع دقائق"}
+            {score >= 50 && score < 70 && "بضع ساعات الى ايام"}
+            {score >= 70 && score < 90 && "سنوات"}
+            {score >= 90 && "ملايين السنين"}
           </p>
         </div>
       )}

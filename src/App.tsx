@@ -15,6 +15,8 @@ import ScriptsPage from "./pages/ScriptsPage";
 import GuidePage from "./pages/GuidePage";
 import DownloadPage from "./pages/DownloadPage";
 import WebDevPage from "./pages/WebDevPage";
+import PasswordCheckerPage from "./pages/PasswordCheckerPage";
+import InquiryPage from "./pages/InquiryPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +66,8 @@ const AnimatedRoutes = () => {
           <Route path="/guide" element={<GuidePage />} />
           <Route path="/download" element={<DownloadPage />} />
           <Route path="/webdev" element={<WebDevPage />} />
+          <Route path="/password-checker" element={<PasswordCheckerPage />} />
+          <Route path="/inquiry" element={<InquiryPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>

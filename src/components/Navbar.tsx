@@ -16,6 +16,9 @@ const Navbar = () => {
     { label: t("nav.scripts"), path: "/scripts" },
     { label: t("nav.ai"), path: "/ai" },
     { label: t("nav.scanner"), path: "/scanner" },
+    { label: t("nav.webdev"), path: "/webdev" },
+    { label: t("nav.password"), path: "/password-checker" },
+    { label: t("nav.inquiry"), path: "/inquiry" },
     { label: t("nav.download"), path: "/download" },
   ];
 
