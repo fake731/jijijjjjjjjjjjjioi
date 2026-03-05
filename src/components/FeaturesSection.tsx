@@ -54,7 +54,7 @@ const FeaturesSection = () => {
     {
       icon: Globe,
       title: t("nav.webdev"),
-      description: "دليل شامل لتعلم تطوير الويب من الصفر",
+      description: "دليل لتعلم تطوير الويب",
       link: "/webdev",
       color: "text-blue-500",
       bg: "bg-blue-500/10",
@@ -63,7 +63,7 @@ const FeaturesSection = () => {
     {
       icon: Lock,
       title: t("nav.password"),
-      description: "افحص قوة كلمة مرورك واحصل على نصائح",
+      description: "افحص قوة كلمة مرورك",
       link: "/password-checker",
       color: "text-orange-500",
       bg: "bg-orange-500/10",
@@ -72,7 +72,7 @@ const FeaturesSection = () => {
     {
       icon: Mail,
       title: t("nav.inquiry"),
-      description: "تواصل معنا وأرسل استفساراتك",
+      description: "تواصل معنا",
       link: "/inquiry",
       color: "text-pink-500",
       bg: "bg-pink-500/10",

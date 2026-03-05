@@ -35,21 +35,21 @@ export const translations: Record<Language, Record<string, string>> = {
     
     // Hero Section
     "hero.title": "Qusay Kali",
-    "hero.subtitle": "منصة متكاملة للأمن السيبراني",
-    "hero.description": "اكتشف عالم الأمن السيبراني مع مجموعة شاملة من الأدوات والسكربتات والأدلة التعليمية",
+    "hero.subtitle": "منصة للأمن السيبراني",
+    "hero.description": "اكتشف عالم الأمن السيبراني مع أدوات وسكربتات وأدلة تعليمية",
     "hero.cta.tools": "استكشف الأدوات",
     "hero.cta.guide": "ابدأ التعلم",
     
     // Features
     "features.title": "ماذا نقدم لك؟",
-    "features.tools.title": "أدوات احترافية",
-    "features.tools.desc": "مجموعة متكاملة من أدوات الأمن السيبراني",
-    "features.scripts.title": "سكربتات جاهزة",
-    "features.scripts.desc": "أكواد برمجية جاهزة للاستخدام",
-    "features.guide.title": "دليل شامل",
-    "features.guide.desc": "تعلم خطوة بخطوة مع أدلة مفصلة",
+    "features.tools.title": "الأدوات",
+    "features.tools.desc": "أدوات الأمن السيبراني",
+    "features.scripts.title": "السكربتات",
+    "features.scripts.desc": "أكواد برمجية للاستخدام",
+    "features.guide.title": "الدليل",
+    "features.guide.desc": "تعلم خطوة بخطوة مع أدلة",
     "features.ai.title": "ذكاء اصطناعي",
-    "features.ai.desc": "مساعد ذكي للإجابة على أسئلتك",
+    "features.ai.desc": "مساعد للإجابة على أسئلتك",
     
     // CTA
     "cta.title": "جاهز للبدء؟",
@@ -73,7 +73,7 @@ export const translations: Record<Language, Record<string, string>> = {
     
     // Tools Page
     "tools.title": "الأدوات",
-    "tools.subtitle": "مجموعة احترافية من أدوات الأمن السيبراني",
+    "tools.subtitle": "أدوات الأمن السيبراني",
     "tools.search": "ابحث عن أداة...",
     "tools.categories.all": "الكل",
     "tools.categories.network": "الشبكات",
@@ -109,21 +109,21 @@ export const translations: Record<Language, Record<string, string>> = {
     
     // Hero Section
     "hero.title": "Qusay Kali",
-    "hero.subtitle": "Complete Cybersecurity Platform",
-    "hero.description": "Explore the world of cybersecurity with comprehensive tools, scripts, and educational guides",
+    "hero.subtitle": "Cybersecurity Platform",
+    "hero.description": "Explore the world of cybersecurity with tools, scripts, and educational guides",
     "hero.cta.tools": "Explore Tools",
     "hero.cta.guide": "Start Learning",
     
     // Features
     "features.title": "What We Offer",
-    "features.tools.title": "Professional Tools",
-    "features.tools.desc": "Complete set of cybersecurity tools",
-    "features.scripts.title": "Ready Scripts",
+    "features.tools.title": "Tools",
+    "features.tools.desc": "Cybersecurity tools",
+    "features.scripts.title": "Scripts",
     "features.scripts.desc": "Ready-to-use programming scripts",
-    "features.guide.title": "Comprehensive Guide",
-    "features.guide.desc": "Learn step by step with detailed guides",
+    "features.guide.title": "Guide",
+    "features.guide.desc": "Learn step by step with guides",
     "features.ai.title": "AI Assistant",
-    "features.ai.desc": "Smart assistant to answer your questions",
+    "features.ai.desc": "Assistant to answer your questions",
     
     // CTA
     "cta.title": "Ready to Start?",
@@ -147,7 +147,7 @@ export const translations: Record<Language, Record<string, string>> = {
     
     // Tools Page
     "tools.title": "Tools",
-    "tools.subtitle": "Professional cybersecurity tools collection",
+    "tools.subtitle": "Cybersecurity tools collection",
     "tools.search": "Search for a tool...",
     "tools.categories.all": "All",
     "tools.categories.network": "Network",

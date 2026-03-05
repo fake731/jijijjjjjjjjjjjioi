@@ -3763,7 +3763,7 @@ const ScriptsPage = () => {
     const watermark = `
 # ═══════════════════════════════════════════════════════════════
 # Script by: Qusay_kali
-# Instagram: @qusay_kali1
+# Instagram: @0oscp
 # Website: https://qusaykali.netlify.app/
 # ═══════════════════════════════════════════════════════════════
 

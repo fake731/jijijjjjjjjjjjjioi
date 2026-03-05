@@ -97,7 +97,7 @@ export const usePdfExport = () => {
       doc.setFontSize(8);
       doc.setTextColor(100, 100, 100);
       doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: "center" });
-      doc.text("@qusay_kali1", pageWidth - margin, pageHeight - 10, { align: "right" });
+      doc.text("@0oscp", pageWidth - margin, pageHeight - 10, { align: "right" });
     }
 
     doc.save(filename);

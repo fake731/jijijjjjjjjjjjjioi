@@ -177,19 +177,6 @@ const PasswordStrengthChecker = () => {
         </div>
       )}
 
-      {/* Time to crack estimation */}
-      {password && (
-        <div className="mt-6 p-4 rounded-xl bg-secondary/50 border border-border/50">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-bold text-foreground">وقت الكسر التقريبي: </span>
-            {score < 30 && "اقل من ثانية"}
-            {score >= 30 && score < 50 && "بضع دقائق"}
-            {score >= 50 && score < 70 && "بضع ساعات الى ايام"}
-            {score >= 70 && score < 90 && "سنوات"}
-            {score >= 90 && "ملايين السنين"}
-          </p>
-        </div>
-      )}
     </div>
   );
 };
