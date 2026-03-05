@@ -25,17 +25,17 @@ interface NavItem {
   labelKey: string;
 }
 
-const navItems: NavItem[] = [
-  { path: "/", icon: Home, labelKey: "home" },
-  { path: "/tools", icon: Terminal, labelKey: "tools" },
-  { path: "/ai", icon: MessageSquare, labelKey: "ai" },
-  { path: "/scanner", icon: Scan, labelKey: "scanner" },
-  { path: "/scripts", icon: Code, labelKey: "scripts" },
-  { path: "/guide", icon: BookOpen, labelKey: "guide" },
-  { path: "/webdev", icon: Globe, labelKey: "webdev" },
-  { path: "/password-checker", icon: Lock, labelKey: "password" },
-  { path: "/inquiry", icon: Mail, labelKey: "inquiry" },
-  { path: "/download", icon: Download, labelKey: "download" },
+const navItems: (NavItem & { color: string })[] = [
+  { path: "/", icon: Home, labelKey: "home", color: "text-cyan-500" },
+  { path: "/tools", icon: Terminal, labelKey: "tools", color: "text-red-500" },
+  { path: "/ai", icon: MessageSquare, labelKey: "ai", color: "text-purple-500" },
+  { path: "/scanner", icon: Scan, labelKey: "scanner", color: "text-yellow-500" },
+  { path: "/scripts", icon: Code, labelKey: "scripts", color: "text-green-500" },
+  { path: "/guide", icon: BookOpen, labelKey: "guide", color: "text-orange-500" },
+  { path: "/webdev", icon: Globe, labelKey: "webdev", color: "text-blue-500" },
+  { path: "/password-checker", icon: Lock, labelKey: "password", color: "text-amber-500" },
+  { path: "/inquiry", icon: Mail, labelKey: "inquiry", color: "text-pink-500" },
+  { path: "/download", icon: Download, labelKey: "download", color: "text-emerald-500" },
 ];
 
 const navLabels: Record<string, { ar: string; en: string }> = {
@@ -120,7 +120,7 @@ export const Sidebar = ({ isOpen, onToggle }: SidebarProps) => {
                   : "text-muted-foreground hover:text-primary hover:bg-primary/10"
               }`}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
+              <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? '' : item.color}`} />
               <AnimatePresence mode="wait">
                 {isOpen && (
                   <motion.span
@@ -211,7 +211,7 @@ export const MobileSidebar = ({
                         : "text-muted-foreground hover:text-primary hover:bg-primary/10"
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
+                    <Icon className={`w-5 h-5 ${isActive ? '' : item.color}`} />
                     <span className="text-sm font-medium">{label}</span>
                   </Link>
                 );

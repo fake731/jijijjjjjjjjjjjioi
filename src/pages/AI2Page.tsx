@@ -388,9 +388,7 @@ const AI2Page = () => {
     advancedMode: language === "ar" ? "وضع متقدم مفعّل" : "Advanced mode enabled",
     welcome: language === "ar" ? "مرحباً بك في النسخة المتقدمة!" : "Welcome to the Pro version!",
     askAnything: language === "ar" ? "اسألني أي سؤال - إمكانيات موسعة" : "Ask me anything - Extended capabilities",
-    advancedTip: language === "ar" 
-      ? "للأسئلة المتقدمة، تواصل مع المطور على انستغرام للحصول على كلمة السر" 
-      : "For advanced questions, contact the developer on Instagram to get the password",
+    advancedTip: "",
     typePlaceholder: language === "ar" ? "اكتب سؤالك هنا..." : "Type your question here...",
     advancedRequest: language === "ar" ? "طلب متقدم" : "Advanced Request",
     advancedDesc: language === "ar" 
@@ -406,7 +404,7 @@ const AI2Page = () => {
     addImages: language === "ar" ? `صور (${selectedImages.length}/${MAX_IMAGES})` : `Images (${selectedImages.length}/${MAX_IMAGES})`,
     addFile: language === "ar" ? "ملف" : "File",
     camera: language === "ar" ? "كاميرا" : "Camera",
-    supportedFormats: language === "ar" ? "يدعم: صور (حتى 3) + ملفات نصية • اسحب وأفلت هنا" : "Supports: Images (up to 3) + Text files • Drag & drop here",
+    supportedFormats: "",
     dropHere: language === "ar" ? "أفلت الملفات هنا" : "Drop files here",
   };
 
@@ -471,19 +469,6 @@ const AI2Page = () => {
                   <Sparkles className="w-16 h-16 mx-auto mb-4 opacity-50 text-primary" />
                   <p className="text-lg mb-2">{t.welcome}</p>
                   <p className="text-sm">{t.askAnything}</p>
-                  <p className="text-xs text-muted-foreground/70 mt-4 max-w-md mx-auto">{t.supportedFormats}</p>
-                  <div className="mt-6 flex flex-col items-center gap-3">
-                    <p className="text-xs text-muted-foreground/70 max-w-md">💡 {t.advancedTip}</p>
-                    <a
-                      href="https://www.instagram.com/qusay_kali"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"
-                    >
-                      <Instagram className="w-4 h-4" />
-                      {t.contactInstagram}
-                    </a>
-                  </div>
                 </div>
               ) : (
                 messages.map((message, index) => (
@@ -710,7 +695,7 @@ const AI2Page = () => {
             <div className="flex flex-col items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 mb-6">
               <p className="text-sm text-muted-foreground text-center">{t.passwordHint}</p>
               <a
-                href="https://www.instagram.com/qusay_kali"
+                href="https://www.instagram.com/0oscp/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"

@@ -6289,5 +6289,1433 @@ function PostList() {
       },
     ],
   },
+  {
+    id: "tailwind-advanced",
+    title: "Tailwind CSS المتقدم",
+    icon: "Palette",
+    color: "text-sky-500",
+    topics: [
+      {
+        title: "التخصيص والإعدادات",
+        content: `// tailwind.config.ts
+import type { Config } from 'tailwindcss';
+
+export default {
+  content: ['./src/**/*.{ts,tsx}'],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          500: '#0ea5e9',
+          900: '#0c4a6e',
+        },
+      },
+      fontFamily: {
+        cairo: ['Cairo', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
+      },
+      animation: {
+        'slide-in': 'slideIn 0.3s ease-out',
+        'fade-up': 'fadeUp 0.5s ease-out',
+        'spin-slow': 'spin 3s linear infinite',
+        'bounce-slow': 'bounce 2s infinite',
+      },
+      keyframes: {
+        slideIn: {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        fadeUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'cyber-grid': 'linear-gradient(rgba(0,0,0,.1) 1px, transparent 1px)',
+      },
+      screens: {
+        'xs': '475px',
+        '3xl': '1920px',
+      },
+      borderRadius: {
+        '4xl': '2rem',
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('tailwindcss-animate'),
+  ],
+} satisfies Config;`,
+      },
+      {
+        title: "أنماط مخصصة ومكونات",
+        content: `<!-- أنماط Tailwind المتقدمة -->
+
+<!-- Gradient Text -->
+<h1 class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
+           bg-clip-text text-transparent text-5xl font-bold">
+  عنوان متدرج الألوان
+</h1>
+
+<!-- Glass Morphism -->
+<div class="bg-white/10 backdrop-blur-lg border border-white/20 
+            rounded-2xl p-6 shadow-xl">
+  بطاقة زجاجية
+</div>
+
+<!-- Neon Glow Effect -->
+<button class="px-6 py-3 bg-cyan-500 text-black font-bold rounded-lg
+               shadow-[0_0_20px_rgba(0,255,255,0.5)]
+               hover:shadow-[0_0_40px_rgba(0,255,255,0.8)]
+               transition-shadow duration-300">
+  زر متوهج
+</button>
+
+<!-- Animated Border -->
+<div class="relative p-[2px] rounded-xl bg-gradient-to-r 
+            from-blue-500 via-purple-500 to-pink-500
+            animate-[spin_3s_linear_infinite]">
+  <div class="bg-gray-900 rounded-xl p-6">
+    محتوى مع حدود متحركة
+  </div>
+</div>
+
+<!-- Responsive Grid Layout -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+            gap-4 md:gap-6 lg:gap-8">
+  <div class="col-span-1 sm:col-span-2 lg:col-span-1">عنصر</div>
+</div>
+
+<!-- Dark Mode Support -->
+<div class="bg-white dark:bg-gray-900 
+            text-gray-900 dark:text-white
+            border border-gray-200 dark:border-gray-700
+            transition-colors duration-300">
+  يتغير مع الوضع المظلم
+</div>
+
+<!-- Group & Peer Modifiers -->
+<div class="group cursor-pointer">
+  <img class="group-hover:scale-110 transition-transform" />
+  <p class="group-hover:text-blue-500">نص يتغير عند hover على الأب</p>
+</div>
+
+<input class="peer" type="checkbox" />
+<label class="peer-checked:text-green-500">يتغير حسب checkbox</label>
+
+<!-- Container Queries -->
+<div class="@container">
+  <div class="@lg:flex @lg:gap-4">
+    <div class="@lg:w-1/2">عنصر</div>
+  </div>
+</div>
+
+<!-- Arbitrary Values -->
+<div class="top-[117px] w-[calc(100%-2rem)] bg-[#1a1b2e]
+            grid-cols-[1fr_2fr_1fr] text-[clamp(1rem,2vw,2rem)]">
+  قيم مخصصة
+</div>`,
+      },
+    ],
+  },
+  {
+    id: "auth-patterns",
+    title: "أنماط المصادقة (Authentication)",
+    icon: "ShieldCheck",
+    color: "text-emerald-500",
+    topics: [
+      {
+        title: "JWT Authentication",
+        content: `// ============ JWT Authentication كامل ============
+
+// --- Server Side (Node.js/Express) ---
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+// توليد Tokens
+function generateTokens(userId) {
+  const accessToken = jwt.sign(
+    { userId, type: 'access' },
+    JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+  
+  const refreshToken = jwt.sign(
+    { userId, type: 'refresh' },
+    JWT_REFRESH_SECRET,
+    { expiresIn: '7d' }
+  );
+  
+  return { accessToken, refreshToken };
+}
+
+// تسجيل حساب جديد
+app.post('/api/auth/register', async (req, res) => {
+  const { email, password, name } = req.body;
+  
+  // التحقق من عدم وجود المستخدم
+  const existing = await User.findOne({ email });
+  if (existing) return res.status(409).json({ error: 'البريد مستخدم' });
+  
+  // تشفير كلمة المرور
+  const hashedPassword = await bcrypt.hash(password, 12);
+  
+  // إنشاء المستخدم
+  const user = await User.create({ email, password: hashedPassword, name });
+  
+  // توليد Tokens
+  const tokens = generateTokens(user.id);
+  
+  // حفظ Refresh Token في HttpOnly Cookie
+  res.cookie('refreshToken', tokens.refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 أيام
+  });
+  
+  res.json({ accessToken: tokens.accessToken, user: { id: user.id, name, email } });
+});
+
+// تسجيل الدخول
+app.post('/api/auth/login', async (req, res) => {
+  const { email, password } = req.body;
+  
+  const user = await User.findOne({ email });
+  if (!user) return res.status(401).json({ error: 'بيانات غير صحيحة' });
+  
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) return res.status(401).json({ error: 'بيانات غير صحيحة' });
+  
+  const tokens = generateTokens(user.id);
+  
+  res.cookie('refreshToken', tokens.refreshToken, {
+    httpOnly: true, secure: true, sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+  
+  res.json({ accessToken: tokens.accessToken });
+});
+
+// تجديد Access Token
+app.post('/api/auth/refresh', async (req, res) => {
+  const { refreshToken } = req.cookies;
+  if (!refreshToken) return res.status(401).json({ error: 'غير مصرح' });
+  
+  try {
+    const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
+    const tokens = generateTokens(decoded.userId);
+    
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true, secure: true, sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    
+    res.json({ accessToken: tokens.accessToken });
+  } catch (err) {
+    res.status(403).json({ error: 'Token غير صالح' });
+  }
+});
+
+// Middleware للحماية
+function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'غير مصرح' });
+  
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch (err) {
+    res.status(403).json({ error: 'Token منتهي أو غير صالح' });
+  }
+}
+
+// --- Client Side (React) ---
+// useAuth Hook
+function useAuth() {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('accessToken'));
+  
+  const login = async (email, password) => {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    setToken(data.accessToken);
+    localStorage.setItem('accessToken', data.accessToken);
+  };
+  
+  const refreshToken = async () => {
+    const res = await fetch('/api/auth/refresh', {
+      method: 'POST',
+      credentials: 'include',
+    });
+    const data = await res.json();
+    setToken(data.accessToken);
+    localStorage.setItem('accessToken', data.accessToken);
+  };
+  
+  const logout = () => {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem('accessToken');
+  };
+  
+  return { user, token, login, logout, refreshToken };
+}`,
+      },
+      {
+        title: "OAuth 2.0 و Social Login",
+        content: `// ============ OAuth 2.0 مع Google ============
+
+// --- Server (Express + Passport) ---
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: '/auth/google/callback',
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      let user = await User.findOne({ googleId: profile.id });
+      
+      if (!user) {
+        user = await User.create({
+          googleId: profile.id,
+          email: profile.emails[0].value,
+          name: profile.displayName,
+          avatar: profile.photos[0].value,
+        });
+      }
+      
+      return done(null, user);
+    } catch (err) {
+      return done(err, null);
+    }
+  }
+));
+
+// Routes
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    const token = generateTokens(req.user.id);
+    res.redirect(\`/auth/success?token=\${token.accessToken}\`);
+  }
+);
+
+// --- Client (React) ---
+function SocialLogin() {
+  const handleGoogleLogin = () => {
+    window.location.href = '/auth/google';
+  };
+  
+  const handleGitHubLogin = () => {
+    window.location.href = '/auth/github';
+  };
+  
+  return (
+    <div className="space-y-3">
+      <button
+        onClick={handleGoogleLogin}
+        className="w-full flex items-center justify-center gap-3 px-4 py-3 
+                   border rounded-lg hover:bg-gray-50 transition"
+      >
+        <GoogleIcon />
+        <span>تسجيل بواسطة Google</span>
+      </button>
+      
+      <button
+        onClick={handleGitHubLogin}
+        className="w-full flex items-center justify-center gap-3 px-4 py-3 
+                   bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition"
+      >
+        <GitHubIcon />
+        <span>تسجيل بواسطة GitHub</span>
+      </button>
+    </div>
+  );
+}
+
+// Protected Route Component
+function ProtectedRoute({ children }) {
+  const { token, refreshToken } = useAuth();
+  const [isValid, setIsValid] = useState(null);
+  
+  useEffect(() => {
+    async function verify() {
+      if (!token) {
+        setIsValid(false);
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/verify', {
+          headers: { Authorization: \`Bearer \${token}\` },
+        });
+        if (res.ok) {
+          setIsValid(true);
+        } else {
+          await refreshToken();
+          setIsValid(true);
+        }
+      } catch {
+        setIsValid(false);
+      }
+    }
+    verify();
+  }, [token]);
+  
+  if (isValid === null) return <LoadingSpinner />;
+  if (!isValid) return <Navigate to="/login" />;
+  return children;
+}`,
+      },
+    ],
+  },
+  {
+    id: "deployment",
+    title: "النشر والاستضافة (Deployment)",
+    icon: "Globe",
+    color: "text-teal-500",
+    topics: [
+      {
+        title: "Vercel و Netlify و Railway",
+        content: `// ============ Vercel Deployment ============
+
+// vercel.json
+{
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "@database-url",
+    "JWT_SECRET": "@jwt-secret"
+  }
+}
+
+// الأوامر
+// npm i -g vercel
+// vercel            # نشر preview
+// vercel --prod     # نشر production
+
+// ============ Netlify ============
+
+// netlify.toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+// Netlify Functions (Serverless)
+// netlify/functions/api.ts
+export default async (req, context) => {
+  const { name } = await req.json();
+  return new Response(JSON.stringify({ message: \`مرحباً \${name}\` }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+};
+
+// ============ Docker Deployment ============
+
+# Dockerfile (Multi-stage)
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+# nginx.conf
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+    index index.html;
+    
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    
+    location /assets {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+    
+    gzip on;
+    gzip_types text/css application/javascript application/json;
+}
+
+# docker-compose.yml
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+  
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: myapp
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:`,
+      },
+      {
+        title: "CI/CD Pipeline كامل",
+        content: `# ============ GitHub Actions CI/CD ============
+
+# .github/workflows/deploy.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # 1. فحص الكود
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: \${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run type-check
+
+  # 2. الاختبارات
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: \${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test -- --coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+
+  # 3. البناء
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: \${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: dist/
+
+  # 4. النشر
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: dist/
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: \${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: \${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: \${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+
+  # 5. إشعار بالنتيجة
+  notify:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always()
+    steps:
+      - name: Notify Success
+        if: needs.deploy.result == 'success'
+        run: echo "✅ تم النشر بنجاح"
+      - name: Notify Failure
+        if: needs.deploy.result == 'failure'
+        run: echo "❌ فشل النشر"`,
+      },
+    ],
+  },
+  {
+    id: "database-advanced",
+    title: "قواعد البيانات المتقدمة",
+    icon: "Database",
+    color: "text-amber-500",
+    topics: [
+      {
+        title: "PostgreSQL المتقدم",
+        content: `-- ============ PostgreSQL المتقدم ============
+
+-- إنشاء جدول مع أعمدة متقدمة
+CREATE TABLE products (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL CHECK (price > 0),
+    tags TEXT[] DEFAULT '{}',
+    metadata JSONB DEFAULT '{}',
+    status VARCHAR(20) DEFAULT 'active' 
+        CHECK (status IN ('active', 'inactive', 'archived')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    search_vector TSVECTOR
+);
+
+-- فهارس متقدمة
+CREATE INDEX idx_products_tags ON products USING GIN (tags);
+CREATE INDEX idx_products_metadata ON products USING GIN (metadata jsonb_path_ops);
+CREATE INDEX idx_products_search ON products USING GIN (search_vector);
+CREATE INDEX idx_products_price ON products (price) WHERE status = 'active';
+
+-- Trigger لتحديث updated_at
+CREATE OR REPLACE FUNCTION update_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON products
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+-- Full Text Search
+UPDATE products SET search_vector = 
+    to_tsvector('arabic', coalesce(name, '') || ' ' || coalesce(description, ''));
+
+-- بحث نصي كامل
+SELECT * FROM products 
+WHERE search_vector @@ to_tsquery('arabic', 'هاتف & ذكي');
+
+-- JSONB Queries
+SELECT * FROM products 
+WHERE metadata->>'brand' = 'Apple'
+AND (metadata->'specs'->>'ram')::int >= 8;
+
+-- Array Operations
+SELECT * FROM products WHERE 'electronics' = ANY(tags);
+INSERT INTO products (name, tags) VALUES ('Phone', ARRAY['electronics', 'mobile']);
+
+-- Window Functions
+SELECT 
+    name, price,
+    RANK() OVER (ORDER BY price DESC) as price_rank,
+    AVG(price) OVER () as avg_price,
+    price - LAG(price) OVER (ORDER BY price) as price_diff
+FROM products;
+
+-- CTE (Common Table Expressions)
+WITH ranked_products AS (
+    SELECT *, ROW_NUMBER() OVER (PARTITION BY status ORDER BY price DESC) as rn
+    FROM products
+)
+SELECT * FROM ranked_products WHERE rn <= 5;
+
+-- Recursive CTE (شجرة التصنيفات)
+WITH RECURSIVE category_tree AS (
+    SELECT id, name, parent_id, 1 as depth
+    FROM categories WHERE parent_id IS NULL
+    UNION ALL
+    SELECT c.id, c.name, c.parent_id, ct.depth + 1
+    FROM categories c
+    JOIN category_tree ct ON c.parent_id = ct.id
+)
+SELECT * FROM category_tree ORDER BY depth;
+
+-- Materialized Views
+CREATE MATERIALIZED VIEW product_stats AS
+SELECT 
+    status,
+    COUNT(*) as count,
+    AVG(price) as avg_price,
+    MAX(price) as max_price
+FROM products
+GROUP BY status;
+
+REFRESH MATERIALIZED VIEW CONCURRENTLY product_stats;`,
+      },
+      {
+        title: "Prisma ORM",
+        content: `// ============ Prisma ORM ============
+// npm install prisma @prisma/client
+// npx prisma init
+
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(USER)
+  posts     Post[]
+  profile   Profile?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+  @@index([email])
+}
+
+model Post {
+  id        String     @id @default(uuid())
+  title     String
+  content   String?
+  published Boolean    @default(false)
+  author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  String     @map("author_id")
+  tags      Tag[]
+  comments  Comment[]
+  createdAt DateTime   @default(now())
+
+  @@map("posts")
+  @@index([authorId])
+}
+
+model Profile {
+  id     String  @id @default(uuid())
+  bio    String?
+  avatar String?
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String  @unique @map("user_id")
+}
+
+model Tag {
+  id    String @id @default(uuid())
+  name  String @unique
+  posts Post[]
+}
+
+model Comment {
+  id       String   @id @default(uuid())
+  text     String
+  post     Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   String
+  authorId String
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+// --- استخدام Prisma Client ---
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
+// إنشاء مستخدم مع بروفايل
+const user = await prisma.user.create({
+  data: {
+    email: 'ahmed@example.com',
+    name: 'أحمد',
+    password: hashedPassword,
+    profile: {
+      create: { bio: 'مطور ويب' },
+    },
+  },
+  include: { profile: true },
+});
+
+// بحث متقدم
+const posts = await prisma.post.findMany({
+  where: {
+    AND: [
+      { published: true },
+      { author: { role: 'ADMIN' } },
+      { tags: { some: { name: 'javascript' } } },
+    ],
+  },
+  include: {
+    author: { select: { name: true, email: true } },
+    tags: true,
+    _count: { select: { comments: true } },
+  },
+  orderBy: { createdAt: 'desc' },
+  take: 10,
+  skip: 0,
+});
+
+// Transaction
+const [post, notification] = await prisma.$transaction([
+  prisma.post.create({ data: { title: 'مقال جديد', authorId: userId } }),
+  prisma.notification.create({ data: { userId, message: 'تم نشر مقال' } }),
+]);
+
+// Aggregation
+const stats = await prisma.post.aggregate({
+  _count: true,
+  _avg: { likes: true },
+  where: { published: true },
+});
+
+// الأوامر:
+// npx prisma migrate dev --name init
+// npx prisma generate
+// npx prisma studio
+// npx prisma db seed`,
+      },
+    ],
+  },
+  {
+    id: "accessibility",
+    title: "الوصولية (Accessibility)",
+    icon: "Globe",
+    color: "text-indigo-500",
+    topics: [
+      {
+        title: "WCAG و ARIA",
+        content: `<!-- ============ أساسيات الوصولية ============ -->
+
+<!-- 1. Semantic HTML (الأساس) -->
+<header role="banner">
+  <nav aria-label="القائمة الرئيسية">
+    <ul>
+      <li><a href="/" aria-current="page">الرئيسية</a></li>
+      <li><a href="/about">عن الموقع</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main role="main">
+  <article>
+    <h1>عنوان المقال</h1>
+    <p>المحتوى...</p>
+  </article>
+</main>
+
+<!-- 2. الصور -->
+<img src="logo.png" alt="شعار الشركة">
+<img src="decoration.png" alt="" role="presentation"> <!-- صورة زخرفية -->
+
+<!-- 3. النماذج -->
+<form>
+  <div>
+    <label for="email">البريد الإلكتروني *</label>
+    <input 
+      type="email" 
+      id="email" 
+      name="email"
+      required
+      aria-required="true"
+      aria-describedby="email-help email-error"
+    >
+    <span id="email-help" class="help-text">سنستخدمه للتواصل معك</span>
+    <span id="email-error" class="error" role="alert" aria-live="polite">
+      <!-- رسالة الخطأ -->
+    </span>
+  </div>
+</form>
+
+<!-- 4. أزرار -->
+<button 
+  aria-label="إغلاق القائمة"
+  aria-expanded="false"
+  aria-controls="mobile-menu"
+>
+  <svg aria-hidden="true"><!-- أيقونة --></svg>
+</button>
+
+<!-- 5. Modals -->
+<dialog 
+  role="dialog" 
+  aria-modal="true"
+  aria-labelledby="dialog-title"
+>
+  <h2 id="dialog-title">عنوان النافذة</h2>
+  <p>المحتوى</p>
+  <button autofocus>إغلاق</button>
+</dialog>
+
+<!-- 6. Live Regions (تحديثات ديناميكية) -->
+<div aria-live="polite" aria-atomic="true">
+  <!-- المحتوى المتغير ديناميكياً -->
+  تم حفظ التغييرات بنجاح
+</div>
+
+<div role="alert">
+  خطأ: لم يتم الحفظ
+</div>
+
+<div role="status">
+  جاري التحميل...
+</div>
+
+<!-- 7. Skip Links -->
+<a href="#main-content" class="sr-only focus:not-sr-only 
+   focus:absolute focus:top-4 focus:right-4 
+   focus:bg-blue-600 focus:text-white focus:p-4 
+   focus:z-50 focus:rounded-lg">
+  انتقل إلى المحتوى الرئيسي
+</a>
+
+<!-- 8. Focus Management -->
+<style>
+/* Focus Visible */
+:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* تباين الألوان - نسبة 4.5:1 للنص العادي */
+/* نسبة 3:1 للنص الكبير (18px+) */
+.good-contrast { color: #1a1a1a; background: #ffffff; }
+.bad-contrast { color: #999999; background: #ffffff; } /* ❌ */
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Forced Colors (High Contrast Mode) */
+@media (forced-colors: active) {
+  .button { border: 2px solid ButtonText; }
+}
+</style>
+
+<!-- WCAG 2.1 المستويات -->
+<!-- A: الحد الأدنى (مطلوب) -->
+<!-- AA: الموصى به (معيار الصناعة) -->
+<!-- AAA: الأعلى (مثالي) -->`,
+      },
+    ],
+  },
+  {
+    id: "security-advanced",
+    title: "أمان الويب المتقدم",
+    icon: "ShieldCheck",
+    color: "text-red-600",
+    topics: [
+      {
+        title: "حماية Frontend و Backend",
+        content: `// ============ أمان الويب المتقدم ============
+
+// 1. Content Security Policy (CSP)
+// في Express
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', [
+    "default-src 'self'",
+    "script-src 'self' 'nonce-abc123'",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: https:",
+    "connect-src 'self' https://api.example.com",
+    "font-src 'self' https://fonts.googleapis.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join('; '));
+  next();
+});
+
+// 2. Security Headers
+app.use(helmet({
+  contentSecurityPolicy: true,
+  crossOriginEmbedderPolicy: true,
+  crossOriginOpenerPolicy: true,
+  crossOriginResourcePolicy: { policy: 'same-site' },
+  dnsPrefetchControl: true,
+  frameguard: { action: 'deny' },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  noSniff: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  xssFilter: true,
+}));
+
+// 3. Rate Limiting
+const rateLimit = require('express-rate-limit');
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 دقيقة
+  max: 100, // 100 طلب
+  message: { error: 'عدد الطلبات كثير. حاول لاحقاً' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api/', limiter);
+
+// Login Rate Limiting (أكثر صرامة)
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5, // 5 محاولات فقط
+  skipSuccessfulRequests: true,
+});
+app.use('/api/auth/login', loginLimiter);
+
+// 4. Input Validation (Zod)
+import { z } from 'zod';
+
+const userSchema = z.object({
+  email: z.string().email('بريد غير صالح'),
+  password: z.string()
+    .min(8, 'كلمة المرور قصيرة')
+    .regex(/[A-Z]/, 'يجب أن تحتوي على حرف كبير')
+    .regex(/[0-9]/, 'يجب أن تحتوي على رقم')
+    .regex(/[^a-zA-Z0-9]/, 'يجب أن تحتوي على رمز'),
+  name: z.string().min(2).max(50).regex(/^[\\u0600-\\u06FFa-zA-Z ]+$/),
+});
+
+app.post('/api/register', (req, res) => {
+  const result = userSchema.safeParse(req.body);
+  if (!result.success) {
+    return res.status(400).json({ errors: result.error.flatten() });
+  }
+  // ... المتابعة
+});
+
+// 5. SQL Injection Prevention
+// ❌ خطير
+// db.query(\`SELECT * FROM users WHERE id = \${req.params.id}\`);
+
+// ✅ آمن - Parameterized Queries
+// db.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
+
+// 6. XSS Prevention في React
+// React يحمي تلقائياً من XSS في JSX
+// لكن احذر من:
+// ❌ dangerouslySetInnerHTML={{ __html: userInput }}
+// ✅ استخدم DOMPurify إذا كنت تحتاج HTML
+import DOMPurify from 'dompurify';
+const cleanHTML = DOMPurify.sanitize(userInput);
+
+// 7. CSRF Protection
+const csrf = require('csurf');
+app.use(csrf({ cookie: { httpOnly: true, secure: true } }));
+
+app.get('/form', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+// 8. Secrets Management
+// لا تخزن الأسرار في الكود أبداً!
+// استخدم environment variables
+// .env (لا ترفعها لـ Git!)
+DATABASE_URL=postgresql://user:pass@localhost:5432/db
+JWT_SECRET=super-secret-key-here
+API_KEY=your-api-key
+
+// .gitignore
+.env
+.env.local
+.env.production`,
+      },
+    ],
+  },
+  {
+    id: "react-patterns",
+    title: "React Patterns المتقدمة",
+    icon: "Atom",
+    color: "text-cyan-400",
+    topics: [
+      {
+        title: "Custom Hooks و Patterns",
+        content: `// ============ React Patterns المتقدمة ============
+
+// 1. Custom Hook - useLocalStorage
+function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  const setValue = (value: T | ((val: T) => T)) => {
+    const valueToStore = value instanceof Function ? value(storedValue) : value;
+    setStoredValue(valueToStore);
+    window.localStorage.setItem(key, JSON.stringify(valueToStore));
+  };
+
+  return [storedValue, setValue] as const;
+}
+
+// 2. Custom Hook - useDebounce
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  
+  return debouncedValue;
+}
+
+// 3. Custom Hook - useFetch
+function useFetch<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+        const json = await res.json();
+        setData(json);
+        setError(null);
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          setError(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchData();
+    return () => controller.abort();
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+// 4. Compound Components Pattern
+const Tabs = ({ children, defaultTab }) => {
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  
+  return (
+    <TabsContext.Provider value={{ activeTab, setActiveTab }}>
+      <div className="tabs">{children}</div>
+    </TabsContext.Provider>
+  );
+};
+
+Tabs.List = ({ children }) => (
+  <div className="flex gap-2">{children}</div>
+);
+
+Tabs.Tab = ({ value, children }) => {
+  const { activeTab, setActiveTab } = useContext(TabsContext);
+  return (
+    <button
+      className={activeTab === value ? 'active' : ''}
+      onClick={() => setActiveTab(value)}
+    >
+      {children}
+    </button>
+  );
+};
+
+Tabs.Panel = ({ value, children }) => {
+  const { activeTab } = useContext(TabsContext);
+  if (activeTab !== value) return null;
+  return <div>{children}</div>;
+};
+
+// استخدام
+<Tabs defaultTab="tab1">
+  <Tabs.List>
+    <Tabs.Tab value="tab1">التبويب 1</Tabs.Tab>
+    <Tabs.Tab value="tab2">التبويب 2</Tabs.Tab>
+  </Tabs.List>
+  <Tabs.Panel value="tab1">محتوى 1</Tabs.Panel>
+  <Tabs.Panel value="tab2">محتوى 2</Tabs.Panel>
+</Tabs>
+
+// 5. Render Props Pattern
+function MouseTracker({ render }) {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  
+  useEffect(() => {
+    const handleMove = (e) => setPosition({ x: e.clientX, y: e.clientY });
+    window.addEventListener('mousemove', handleMove);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, []);
+  
+  return render(position);
+}
+
+// استخدام
+<MouseTracker render={({ x, y }) => (
+  <div>الماوس في: {x}, {y}</div>
+)} />
+
+// 6. Error Boundary
+class ErrorBoundary extends React.Component {
+  state = { hasError: false, error: null };
+  
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  
+  componentDidCatch(error, errorInfo) {
+    console.error('Error caught:', error, errorInfo);
+    // إرسال للتتبع
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-page">
+          <h2>حدث خطأ</h2>
+          <button onClick={() => this.setState({ hasError: false })}>
+            حاول مرة أخرى
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}`,
+      },
+      {
+        title: "React Query و Data Fetching",
+        content: `// ============ TanStack React Query ============
+// npm install @tanstack/react-query
+
+import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// إعداد QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      cacheTime: 30 * 60 * 1000,
+      retry: 3,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+// في App
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Router />
+    </QueryClientProvider>
+  );
+}
+
+// --- جلب البيانات ---
+function PostList() {
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      const res = await fetch('/api/posts');
+      if (!res.ok) throw new Error('فشل الجلب');
+      return res.json();
+    },
+    select: (data) => data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+  });
+
+  if (isLoading) return <Skeleton count={5} />;
+  if (error) return <ErrorMessage message={error.message} retry={refetch} />;
+
+  return data.map(post => <PostCard key={post.id} post={post} />);
+}
+
+// --- بحث مع Pagination ---
+function SearchPosts() {
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const debouncedQuery = useDebounce(query, 300);
+
+  const { data, isFetching } = useQuery({
+    queryKey: ['posts', 'search', debouncedQuery, page],
+    queryFn: () => fetch(\`/api/posts?q=\${debouncedQuery}&page=\${page}\`).then(r => r.json()),
+    keepPreviousData: true,
+    enabled: debouncedQuery.length > 0,
+  });
+
+  return (
+    <div>
+      <input value={query} onChange={e => setQuery(e.target.value)} placeholder="بحث..." />
+      {isFetching && <Spinner />}
+      {data?.posts.map(p => <PostCard key={p.id} post={p} />)}
+      <Pagination page={page} totalPages={data?.totalPages} onPageChange={setPage} />
+    </div>
+  );
+}
+
+// --- Mutations ---
+function CreatePost() {
+  const queryClient = useQueryClient();
+  
+  const mutation = useMutation({
+    mutationFn: (newPost) => fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newPost),
+    }).then(r => r.json()),
+    
+    // Optimistic Update
+    onMutate: async (newPost) => {
+      await queryClient.cancelQueries({ queryKey: ['posts'] });
+      const previousPosts = queryClient.getQueryData(['posts']);
+      
+      queryClient.setQueryData(['posts'], (old) => [
+        { ...newPost, id: Date.now(), createdAt: new Date() },
+        ...old,
+      ]);
+      
+      return { previousPosts };
+    },
+    onError: (err, newPost, context) => {
+      queryClient.setQueryData(['posts'], context.previousPosts);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+  });
+
+  const handleSubmit = (data) => {
+    mutation.mutate(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {mutation.isLoading && <p>جاري الإرسال...</p>}
+      {mutation.isError && <p>خطأ: {mutation.error.message}</p>}
+      {mutation.isSuccess && <p>تم النشر!</p>}
+    </form>
+  );
+}
+
+// --- Infinite Scroll ---
+function InfinitePostList() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['posts', 'infinite'],
+    queryFn: ({ pageParam = 1 }) => 
+      fetch(\`/api/posts?page=\${pageParam}&limit=20\`).then(r => r.json()),
+    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,
+  });
+
+  return (
+    <div>
+      {data?.pages.map(page =>
+        page.posts.map(post => <PostCard key={post.id} post={post} />)
+      )}
+      {hasNextPage && (
+        <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+          {isFetchingNextPage ? 'جاري التحميل...' : 'تحميل المزيد'}
+        </button>
+      )}
+    </div>
+  );
+}`,
+      },
+    ],
+  },
 ];
 
