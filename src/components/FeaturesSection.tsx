@@ -18,7 +18,7 @@ const FeaturesSection = () => {
     {
       icon: Terminal,
       title: t("nav.scanner"),
-      description: t("features.tools.desc"),
+      description: "اكتب أوامر كالي لينكس",
       link: "/scanner",
       color: "text-red-500",
       bg: "bg-red-500/10",

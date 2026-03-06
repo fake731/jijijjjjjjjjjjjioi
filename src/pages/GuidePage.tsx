@@ -1356,51 +1356,6 @@ const GuidePage = () => {
             ))}
           </div>
 
-          {/* Tips Section */}
-          <div className="max-w-6xl mx-auto mt-16">
-            <div className="cyber-card p-10">
-              <h3 className="text-3xl font-bold text-primary mb-8 text-center">نصائح ذهبية للمبتدئين</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
-                    <BookOpen className="w-10 h-10 text-primary" />
-                  </div>
-                  <h4 className="text-xl font-bold text-foreground mb-3">تعلم الأساسيات</h4>
-                  <p className="text-muted-foreground text-base leading-relaxed">ابدأ بتعلم الشبكات، لينكس، والبرمجة قبل التعمق في الأمن السيبراني</p>
-                </div>
-                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
-                    <Target className="w-10 h-10 text-primary" />
-                  </div>
-                  <h4 className="text-xl font-bold text-foreground mb-3">تدرب باستمرار</h4>
-                  <p className="text-muted-foreground text-base leading-relaxed">استخدم منصات مثل HackTheBox و TryHackMe للتدريب العملي يومياً</p>
-                </div>
-                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
-                    <Shield className="w-10 h-10 text-primary" />
-                  </div>
-                  <h4 className="text-xl font-bold text-foreground mb-3">كن أخلاقياً</h4>
-                  <p className="text-muted-foreground text-base leading-relaxed">استخدم معرفتك لحماية الأنظمة واحترم القوانين دائماً</p>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
-                    <Users className="w-10 h-10 text-primary" />
-                  </div>
-                  <h4 className="text-xl font-bold text-foreground mb-3">انضم للمجتمعات</h4>
-                  <p className="text-muted-foreground text-base leading-relaxed">شارك في المجتمعات وتواصل مع المحترفين لتسريع تعلمك</p>
-                </div>
-                <div className="p-8 rounded-2xl bg-secondary/30 text-center">
-                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto mb-5">
-                    <Zap className="w-10 h-10 text-primary" />
-                  </div>
-                  <h4 className="text-xl font-bold text-foreground mb-3">لا تتوقف</h4>
-                  <p className="text-muted-foreground text-base leading-relaxed">هذا المجال يتطور باستمرار - التعلم المستمر هو مفتاح النجاح</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
         
         {/* End of content */}
