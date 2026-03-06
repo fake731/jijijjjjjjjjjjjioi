@@ -25,7 +25,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.home": "الرئيسية",
     "nav.tools": "الأدوات",
     "nav.scripts": "السكربتات",
-    "nav.scanner": "الماسح",
+    "nav.scanner": "اكتب اوامر",
     "nav.guide": "الدليل",
     "nav.download": "التحميل",
     "nav.ai": "الذكاء الاصطناعي",
