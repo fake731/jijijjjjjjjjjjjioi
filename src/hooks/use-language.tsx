@@ -173,7 +173,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.home": "Inicio",
     "nav.tools": "Herramientas",
     "nav.scripts": "Scripts",
-    "nav.scanner": "Escáner",
+    "nav.scanner": "Comandos",
     "nav.guide": "Guía",
     "nav.download": "Descargar",
     "nav.ai": "Asistente IA",
