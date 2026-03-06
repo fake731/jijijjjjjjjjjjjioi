@@ -99,7 +99,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.home": "Home",
     "nav.tools": "Tools",
     "nav.scripts": "Scripts",
-    "nav.scanner": "Scanner",
+    "nav.scanner": "Commands",
     "nav.guide": "Guide",
     "nav.download": "Download",
     "nav.ai": "AI Assistant",
