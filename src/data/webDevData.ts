@@ -7717,5 +7717,985 @@ function InfinitePostList() {
       },
     ],
   },
+  {
+    id: "css-animations",
+    title: "CSS Animations و Transitions",
+    icon: "Palette",
+    color: "text-pink-500",
+    topics: [
+      {
+        title: "أساسيات Transitions",
+        content: `/* === CSS Transitions ===
+   التحولات تسمح بتغيير القيم بسلاسة خلال فترة زمنية محددة
+*/
+
+/* --- transition الأساسي --- */
+.button {
+    background-color: #3498db;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #2980b9;
+}
+
+/* --- عدة خصائص --- */
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transform: translateY(0);
+    transition: transform 0.3s ease,
+                box-shadow 0.3s ease,
+                background-color 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* --- أنواع الحركة (Timing Functions) --- */
+.ease        { transition-timing-function: ease; }
+.ease-in     { transition-timing-function: ease-in; }
+.ease-out    { transition-timing-function: ease-out; }
+.ease-in-out { transition-timing-function: ease-in-out; }
+.linear      { transition-timing-function: linear; }
+
+/* --- cubic-bezier مخصص --- */
+.custom-ease {
+    transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* --- أمثلة عملية --- */
+
+/* تأثير التلاشي */
+.fade-element {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.fade-element.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* شريط تقدم متحرك */
+.progress-bar {
+    width: 0%;
+    height: 8px;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+.progress-bar.complete {
+    width: 100%;
+}
+
+/* قائمة منسدلة */
+.dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+}
+.dropdown.open .dropdown-menu {
+    max-height: 500px;
+}`,
+      },
+      {
+        title: "Keyframe Animations",
+        content: `/* === @keyframes ===
+   تعريف حركات مخصصة بالكامل
+*/
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.element {
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+/* حركة متعددة المراحل */
+@keyframes bounce {
+    0%   { transform: translateY(0); }
+    25%  { transform: translateY(-30px); }
+    50%  { transform: translateY(0); }
+    75%  { transform: translateY(-15px); }
+    100% { transform: translateY(0); }
+}
+
+.bouncing {
+    animation: bounce 1s ease infinite;
+}
+
+/* حركة دوران */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #eee;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* حركة كتابة */
+@keyframes typing {
+    from { width: 0; }
+    to   { width: 100%; }
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+.typing-text {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid;
+    animation: typing 3s steps(30) forwards,
+               blink 0.7s step-end infinite;
+}
+
+/* خصائص animation الكاملة */
+.animated {
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    animation-timing-function: ease;
+    animation-delay: 0.5s;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
+    /* أو بسطر واحد */
+    animation: fadeIn 1s ease 0.5s 1 normal forwards running;
+}
+
+/* حركة تموج */
+@keyframes ripple {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(4); opacity: 0; }
+}
+
+/* حركة Morphing */
+@keyframes morph {
+    0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    50%  { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+}
+
+.morphing-shape {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    animation: morph 8s ease-in-out infinite;
+}
+
+/* تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}`,
+      },
+      {
+        title: "Transform و 3D",
+        content: `/* === CSS Transform === */
+
+/* Transform 2D */
+.move    { transform: translate(50px, 100px); }
+.rotate  { transform: rotate(45deg); }
+.scale   { transform: scale(1.5); }
+.skew    { transform: skew(10deg, 5deg); }
+
+/* دمج عدة تحويلات */
+.combined {
+    transform: translateX(50px) rotate(45deg) scale(1.2);
+}
+
+/* Transform Origin */
+.element {
+    transform-origin: center center;
+    transform-origin: top left;
+}
+
+/* Transform 3D */
+.container-3d {
+    perspective: 1000px;
+}
+
+.card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.card-3d:hover {
+    transform: rotateY(180deg);
+}
+
+/* بطاقة قابلة للقلب (Flip Card) */
+.flip-card {
+    width: 300px;
+    height: 200px;
+    perspective: 1000px;
+}
+
+.flip-card-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    position: relative;
+}
+
+.flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
+/* تأثير 3D Tilt */
+.tilt-card {
+    transform: perspective(1000px) rotateX(0) rotateY(0);
+    transition: transform 0.3s ease;
+}
+
+.tilt-card:hover {
+    transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);
+}
+
+/* تأثير العمق المتحرك */
+@keyframes float3D {
+    0%, 100% {
+        transform: perspective(1000px) translateZ(0) rotateX(0);
+    }
+    50% {
+        transform: perspective(1000px) translateZ(30px) rotateX(2deg);
+    }
+}
+
+.floating-3d {
+    animation: float3D 4s ease-in-out infinite;
+}`,
+      },
+    ],
+  },
+  {
+    id: "responsive-design",
+    title: "التصميم المتجاوب (Responsive)",
+    icon: "Layers",
+    color: "text-teal-500",
+    topics: [
+      {
+        title: "Media Queries",
+        content: `/* === Media Queries === */
+
+/* Mobile First - الافتراضي للموبايل */
+.container {
+    padding: 16px;
+    font-size: 14px;
+}
+
+/* أجهزة لوحية (768px+) */
+@media (min-width: 768px) {
+    .container {
+        padding: 24px;
+        font-size: 16px;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+}
+
+/* لابتوب (1024px+) */
+@media (min-width: 1024px) {
+    .container {
+        padding: 32px;
+        max-width: 960px;
+    }
+}
+
+/* شاشات كبيرة (1280px+) */
+@media (min-width: 1280px) {
+    .container { max-width: 1200px; }
+}
+
+/* استعلامات متقدمة */
+@media (orientation: landscape) {
+    .hero { height: 100vh; }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root { --bg: #1a1a1a; --text: #fff; }
+}
+
+@media print {
+    .no-print { display: none; }
+    body { color: black; background: white; }
+}
+
+/* Container Queries (جديد) */
+.card-container {
+    container-type: inline-size;
+    container-name: card;
+}
+
+@container card (min-width: 400px) {
+    .card-content {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+    }
+}`,
+      },
+      {
+        title: "Grid و Flexbox المتجاوب",
+        content: `/* === Responsive Grid === */
+
+/* شبكة متجاوبة بدون Media Queries */
+.auto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+/* شبكة مع breakpoints */
+.product-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+    .product-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+    .product-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+}
+
+@media (min-width: 1280px) {
+    .product-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Layout كامل متجاوب */
+.page-layout {
+    display: grid;
+    min-height: 100vh;
+    grid-template-areas: "header" "main" "footer";
+    grid-template-rows: auto 1fr auto;
+}
+
+@media (min-width: 768px) {
+    .page-layout {
+        grid-template-areas:
+            "header header"
+            "sidebar main"
+            "footer footer";
+        grid-template-columns: 250px 1fr;
+    }
+}
+
+/* Flexbox متجاوب */
+.flex-responsive {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.flex-responsive > * {
+    flex: 1 1 300px;
+}
+
+/* خطوط متجاوبة (clamp) */
+h1 { font-size: clamp(1.5rem, 5vw, 3rem); }
+p  { font-size: clamp(0.875rem, 2vw, 1.125rem); }
+
+/* مسافات متجاوبة */
+section {
+    padding: clamp(2rem, 5vw, 6rem) clamp(1rem, 3vw, 4rem);
+}
+
+/* صور متجاوبة */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}`,
+      },
+    ],
+  },
+  {
+    id: "sass-preprocessor",
+    title: "Sass/SCSS",
+    icon: "Palette",
+    color: "text-rose-500",
+    topics: [
+      {
+        title: "أساسيات SCSS",
+        content: `// === SCSS - مُعالج CSS المتقدم ===
+
+// --- المتغيرات ---
+$primary-color: #3498db;
+$font-size-base: 16px;
+$spacing: 8px;
+
+// --- التداخل (Nesting) ---
+.navbar {
+    background: white;
+    padding: 16px;
+    
+    .logo {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .nav-links {
+        display: flex;
+        gap: 16px;
+        
+        a {
+            color: #333;
+            &:hover { color: $primary-color; }
+            &.active { font-weight: bold; }
+        }
+    }
+    
+    // & لبناء أسماء BEM
+    &__item { padding: $spacing; }
+    &--dark { background: #333; }
+}
+
+// --- الحسابات ---
+.container {
+    width: 100% - 40px;
+    padding: $spacing * 2;
+    font-size: $font-size-base * 1.5;
+}
+
+// --- Interpolation ---
+$property: 'color';
+$side: 'top';
+.element {
+    #{$property}: red;
+    margin-#{$side}: 10px;
+}`,
+      },
+      {
+        title: "Mixins و Functions و الحلقات",
+        content: `// === Mixins ===
+
+@mixin flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero { @include flex-center; min-height: 100vh; }
+
+// Mixin مع معاملات
+@mixin button($bg, $text: white, $radius: 8px) {
+    background-color: $bg;
+    color: $text;
+    border: none;
+    border-radius: $radius;
+    padding: 12px 24px;
+    &:hover { background-color: darken($bg, 10%); }
+}
+
+.btn-primary { @include button(#3498db); }
+.btn-danger  { @include button(#e74c3c, white, 12px); }
+
+// Mixin للـ Responsive
+@mixin respond-to($bp) {
+    @if $bp == 'mobile'  { @media (max-width: 767px) { @content; } }
+    @else if $bp == 'tablet'  { @media (min-width: 768px) { @content; } }
+    @else if $bp == 'desktop' { @media (min-width: 1024px) { @content; } }
+}
+
+.grid {
+    grid-template-columns: 1fr;
+    @include respond-to('tablet')  { grid-template-columns: repeat(2, 1fr); }
+    @include respond-to('desktop') { grid-template-columns: repeat(3, 1fr); }
+}
+
+// === Functions ===
+@function rem($px) { @return $px / 16 * 1rem; }
+.element { font-size: rem(24); padding: rem(16); }
+
+// === الحلقات ===
+@for $i from 1 through 5 {
+    .mt-#{$i} { margin-top: $i * 8px; }
+}
+
+$colors: ('primary': #3498db, 'success': #2ecc71, 'danger': #e74c3c);
+@each $name, $color in $colors {
+    .text-#{$name} { color: $color; }
+    .bg-#{$name}   { background-color: $color; }
+    .btn-#{$name}  {
+        background-color: $color;
+        &:hover { background-color: darken($color, 10%); }
+    }
+}
+
+// نظام Grid كامل
+$grid-columns: 12;
+@for $i from 1 through $grid-columns {
+    .col-#{$i} {
+        flex: 0 0 percentage($i / $grid-columns);
+        max-width: percentage($i / $grid-columns);
+    }
+}
+
+// الشروط
+@mixin theme($mode) {
+    @if $mode == 'dark' { background: #1a1a1a; color: #fff; }
+    @else { background: #fff; color: #333; }
+}
+
+// @extend
+%card-base {
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.product-card { @extend %card-base; border: 1px solid #eee; }
+.user-card    { @extend %card-base; border: 2px solid #3498db; }`,
+      },
+    ],
+  },
+  {
+    id: "regex",
+    title: "التعبيرات النمطية (Regex)",
+    icon: "Wrench",
+    color: "text-amber-500",
+    topics: [
+      {
+        title: "أساسيات Regex",
+        content: `// === التعبيرات النمطية (Regular Expressions) ===
+
+// إنشاء Regex
+const regex1 = /pattern/flags;
+const regex2 = new RegExp('pattern', 'flags');
+
+// الأعلام
+/pattern/g   // بحث شامل
+/pattern/i   // تجاهل حالة الأحرف
+/pattern/m   // متعدد الأسطر
+
+// المحارف الخاصة
+.     // أي محرف
+\\d    // رقم [0-9]
+\\w    // حرف أو رقم أو _
+\\s    // مسافة بيضاء
+\\b    // حد الكلمة
+^     // بداية النص
+$     // نهاية النص
+
+// المحددات الكمية
+*      // 0 أو أكثر
++      // 1 أو أكثر
+?      // 0 أو 1
+{3}    // بالضبط 3
+{2,5}  // من 2 إلى 5
+
+// === أمثلة عملية ===
+
+// التحقق من البريد
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
+emailRegex.test('user@example.com'); // true
+
+// التحقق من رقم الهاتف
+const phoneRegex = /^(\\+?\\d{1,3})?[-.\\s]?\\d{3}[-.\\s]?\\d{3}[-.\\s]?\\d{4}$/;
+
+// استخراج أرقام
+const numbers = 'العمر 25 والطول 180'.match(/\\d+/g);
+// ['25', '180']
+
+// استبدال
+const cleaned = '  Hello   World  '.replace(/\\s+/g, ' ').trim();
+// 'Hello World'
+
+// كلمة مرور قوية (8+ أحرف، حرف كبير، صغير، رقم، رمز)
+const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$/;
+
+// مجموعات الالتقاط
+const dateRegex = /(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;
+const match = '2024-01-15'.match(dateRegex);
+console.log(match.groups.year);  // '2024'
+
+// Lookahead
+const priceRegex = /\\d+(?=\\$)/g;
+'100$ و 200$'.match(priceRegex); // ['100', '200']
+
+// تنسيق أرقام بفواصل
+function formatNumber(num) {
+    return num.toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');
+}
+formatNumber(1234567); // '1,234,567'
+
+// تحويل camelCase لـ kebab-case
+function toKebab(str) {
+    return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+toKebab('backgroundColor'); // 'background-color'
+
+// إزالة HTML tags
+function stripHTML(html) {
+    return html.replace(/<[^>]*>/g, '');
+}`,
+      },
+    ],
+  },
+  {
+    id: "npm-packages",
+    title: "مكتبات NPM الأساسية",
+    icon: "Box",
+    color: "text-red-500",
+    topics: [
+      {
+        title: "إدارة المشاريع مع NPM",
+        content: `// === NPM - مدير حزم Node.js ===
+
+// أوامر أساسية
+// npm init -y                    إنشاء مشروع
+// npm install package-name       تثبيت حزمة
+// npm i package-name --save-dev  تطوير فقط
+// npm i -g package-name          عالمي
+// npm uninstall package-name     إلغاء تثبيت
+// npm update                     تحديث الحزم
+// npm outdated                   عرض الحزم القديمة
+// npm run dev                    تشغيل سكربت
+
+// === package.json ===
+/*
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --fix",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "react": "^18.2.0",      // ^ = minor + patch
+    "axios": "~1.6.0"        // ~ = patch فقط
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "eslint": "^8.0.0"
+  }
+}
+*/
+
+// أنواع الإصدارات
+// ^1.2.3 → يقبل 1.x.x
+// ~1.2.3 → يقبل 1.2.x
+// 1.2.3  → الإصدار المحدد فقط
+
+// بدائل NPM
+// yarn add package-name
+// pnpm add package-name
+// bun add package-name`,
+      },
+      {
+        title: "مكتبات شائعة ومفيدة",
+        content: `// === مكتبات NPM الأكثر استخداماً ===
+
+// --- 1. Axios - HTTP Client ---
+import axios from 'axios';
+
+const response = await axios.get('/api/users');
+await axios.post('/api/users', { name: 'أحمد' });
+
+const api = axios.create({
+    baseURL: 'https://api.example.com',
+    timeout: 10000,
+    headers: { 'Authorization': 'Bearer token' }
+});
+
+// Interceptors
+api.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 401) {
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+
+// --- 2. date-fns ---
+import { format, addDays, differenceInDays } from 'date-fns';
+import { ar } from 'date-fns/locale';
+
+format(new Date(), 'yyyy-MM-dd');
+format(new Date(), 'EEEE d MMMM yyyy', { locale: ar });
+addDays(new Date(), 7);
+
+// --- 3. Zod - التحقق من البيانات ---
+import { z } from 'zod';
+
+const UserSchema = z.object({
+    name: z.string().min(2, 'الاسم قصير جداً'),
+    email: z.string().email('بريد غير صالح'),
+    age: z.number().min(18, 'يجب أن يكون 18+'),
+    role: z.enum(['admin', 'user', 'moderator']),
+});
+
+type User = z.infer<typeof UserSchema>;
+
+const result = UserSchema.safeParse(data);
+if (result.success) {
+    console.log(result.data);
+} else {
+    console.log(result.error.errors);
+}
+
+// --- 4. Lodash ---
+import { debounce, throttle, cloneDeep, groupBy } from 'lodash';
+
+const search = debounce((query) => fetchResults(query), 300);
+const handleScroll = throttle(() => checkPosition(), 100);
+const copy = cloneDeep(originalObject);
+const grouped = groupBy(users, 'role');
+
+// --- 5. uuid ---
+import { v4 as uuidv4 } from 'uuid';
+const id = uuidv4(); // 'a1b2c3d4-...'`,
+      },
+    ],
+  },
+  {
+    id: "web-apis",
+    title: "واجهات المتصفح (Web APIs)",
+    icon: "Globe",
+    color: "text-indigo-500",
+    topics: [
+      {
+        title: "Fetch API و DOM",
+        content: `// === Fetch API ===
+
+// GET
+const response = await fetch('https://api.example.com/data');
+const data = await response.json();
+
+// POST
+await fetch('/api/users', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'أحمد' })
+});
+
+// Upload ملف
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+await fetch('/api/upload', { method: 'POST', body: formData });
+
+// === DOM API ===
+
+// اختيار العناصر
+document.getElementById('myId');
+document.querySelector('.my-class');
+document.querySelectorAll('.items');
+
+// إنشاء وتعديل
+const div = document.createElement('div');
+div.textContent = 'محتوى جديد';
+div.className = 'card';
+parent.appendChild(div);
+
+// الأحداث
+button.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+});
+
+// Event Delegation
+document.querySelector('.list').addEventListener('click', (e) => {
+    if (e.target.matches('.list-item')) {
+        console.log('تم النقر على:', e.target.textContent);
+    }
+});`,
+      },
+      {
+        title: "LocalStorage و APIs حديثة",
+        content: `// === Web Storage ===
+
+// LocalStorage - تخزين دائم
+localStorage.setItem('theme', 'dark');
+const theme = localStorage.getItem('theme');
+localStorage.removeItem('theme');
+
+// تخزين كائنات
+localStorage.setItem('user', JSON.stringify({ name: 'أحمد' }));
+const user = JSON.parse(localStorage.getItem('user'));
+
+// SessionStorage - تخزين مؤقت
+sessionStorage.setItem('token', 'abc123');
+
+// === Intersection Observer ===
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.animate-on-scroll').forEach(el => {
+    observer.observe(el);
+});
+
+// === Clipboard API ===
+async function copyToClipboard(text) {
+    await navigator.clipboard.writeText(text);
+}
+
+// === Geolocation API ===
+navigator.geolocation.getCurrentPosition(
+    (pos) => console.log(pos.coords.latitude, pos.coords.longitude),
+    (err) => console.error(err.message)
+);
+
+// === Notification API ===
+async function sendNotification(title, body) {
+    if (Notification.permission !== 'granted') {
+        await Notification.requestPermission();
+    }
+    if (Notification.permission === 'granted') {
+        new Notification(title, { body });
+    }
+}
+
+// === URLSearchParams ===
+const params = new URLSearchParams(window.location.search);
+const page = params.get('page');
+params.set('sort', 'date');
+const newURL = \`?\${params.toString()}\`;`,
+      },
+    ],
+  },
+  {
+    id: "error-handling",
+    title: "معالجة الأخطاء (Error Handling)",
+    icon: "ShieldCheck",
+    color: "text-red-400",
+    topics: [
+      {
+        title: "أنماط معالجة الأخطاء",
+        content: `// === معالجة الأخطاء في JavaScript ===
+
+// try...catch...finally
+try {
+    const data = JSON.parse(invalidJSON);
+} catch (error) {
+    if (error instanceof SyntaxError) {
+        console.error('خطأ في JSON:', error.message);
+    } else if (error instanceof TypeError) {
+        console.error('خطأ في النوع:', error.message);
+    }
+} finally {
+    cleanup();
+}
+
+// أخطاء مخصصة
+class AppError extends Error {
+    constructor(message, statusCode, code) {
+        super(message);
+        this.name = 'AppError';
+        this.statusCode = statusCode;
+        this.code = code;
+    }
+}
+
+class NotFoundError extends AppError {
+    constructor(resource) {
+        super(\`\${resource} غير موجود\`, 404, 'NOT_FOUND');
+    }
+}
+
+// معالجة Async/Await
+async function fetchData(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new AppError('فشل الجلب', response.status, 'FETCH_ERROR');
+        }
+        return await response.json();
+    } catch (error) {
+        if (error instanceof TypeError) {
+            showErrorMessage('لا يوجد اتصال');
+        } else {
+            showErrorMessage('حدث خطأ');
+        }
+        return null;
+    }
+}
+
+// Error Boundary في React
+class ErrorBoundary extends React.Component {
+    state = { hasError: false, error: null };
+    
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+    
+    componentDidCatch(error, info) {
+        logErrorToService(error, info);
+    }
+    
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div>
+                    <h2>حدث خطأ!</h2>
+                    <button onClick={() => this.setState({ hasError: false })}>
+                        حاول مرة أخرى
+                    </button>
+                </div>
+            );
+        }
+        return this.props.children;
+    }
+}
+
+// نمط Result (بدون throw)
+function divide(a, b) {
+    if (b === 0) return { success: false, error: 'لا يمكن القسمة على صفر' };
+    return { success: true, data: a / b };
+}`,
+      },
+    ],
+  },
 ];
 
