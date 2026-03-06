@@ -247,7 +247,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.home": "首页",
     "nav.tools": "工具",
     "nav.scripts": "脚本",
-    "nav.scanner": "扫描器",
+    "nav.scanner": "命令",
     "nav.guide": "指南",
     "nav.download": "下载",
     "nav.ai": "AI助手",
