@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { webDevCategories, WebDevCategory, WebDevTopic } from "@/data/webDevData";
-import { Copy, Check, ChevronDown, ChevronUp, Code, FileCode, Zap, FileType, GitBranch, Server, Database, Shield, Wrench, Box, Workflow, Globe, TestTube, Layers, Atom, Palette, ShieldCheck, Lock } from "lucide-react";
+import { Copy, Check, ChevronDown, ChevronUp, Code, FileCode, Zap, FileType, GitBranch, Server, Database, Shield, Wrench, Box, Workflow, Globe, TestTube, Layers, Atom, Palette, ShieldCheck, Lock, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Input } from "@/components/ui/input";
 
 const iconMap: Record<string, React.ElementType> = {
   FileCode, Palette, Zap, FileType, Atom, GitBranch, Server, Database, ShieldCheck, Wrench, Box, Workflow, Globe, TestTube, Layers,
@@ -13,6 +14,22 @@ const WebDevPage = () => {
   const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [openTopic, setOpenTopic] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredCategories = useMemo(() => {
+    if (!searchQuery.trim()) return webDevCategories;
+    const q = searchQuery.toLowerCase();
+    return webDevCategories
+      .map((cat) => {
+        const matchedTopics = cat.topics.filter(
+          (t) => t.title.toLowerCase().includes(q) || t.content.toLowerCase().includes(q)
+        );
+        if (cat.title.toLowerCase().includes(q)) return cat;
+        if (matchedTopics.length > 0) return { ...cat, topics: matchedTopics };
+        return null;
+      })
+      .filter(Boolean) as WebDevCategory[];
+  }, [searchQuery]);
 
   const copyCode = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
@@ -29,6 +46,8 @@ const WebDevPage = () => {
     setOpenTopic(prev => prev === id ? null : id);
   };
 
+  const totalTopics = webDevCategories.reduce((a, c) => a + c.topics.length, 0);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -44,20 +63,35 @@ const WebDevPage = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-primary text-glow mb-4">
               تطوير الويب
             </h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              دليل شامل لتعلم تطوير الويب من الصفر إلى الاحتراف - {webDevCategories.length} قسم و {webDevCategories.reduce((a, c) => a + c.topics.length, 0)} موضوع
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
+              دليل لتعلم تطوير الويب - {webDevCategories.length} قسم و {totalTopics} موضوع
             </p>
+
+            {/* Search */}
+            <div className="max-w-xl mx-auto relative">
+              <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="ابحث عن موضوع..."
+                className="pr-12 h-12 text-base bg-card border-border/50 focus:border-primary/50"
+              />
+            </div>
           </div>
 
           {/* Categories */}
           <div className="max-w-5xl mx-auto space-y-4">
-            {webDevCategories.map((category) => {
+            {filteredCategories.length === 0 && (
+              <div className="text-center py-16 text-muted-foreground">
+                لا توجد نتائج لـ "{searchQuery}"
+              </div>
+            )}
+            {filteredCategories.map((category) => {
               const IconComp = iconMap[category.icon] || Code;
               const isOpen = openCategory === category.id;
 
               return (
                 <div key={category.id} className="cyber-card overflow-hidden">
-                  {/* Category Header */}
                   <button
                     onClick={() => toggleCategory(category.id)}
                     className="w-full flex items-center justify-between p-6 hover:bg-primary/5 transition-colors"
@@ -78,7 +112,6 @@ const WebDevPage = () => {
                     )}
                   </button>
 
-                  {/* Topics */}
                   <AnimatePresence>
                     {isOpen && (
                       <motion.div

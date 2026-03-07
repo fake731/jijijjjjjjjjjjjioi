@@ -164,7 +164,7 @@ const InquirySection = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-sm font-medium">
-                    رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span>
+                    رقم الهاتف
                   </Label>
                   <Input
                     id="phone"
@@ -197,7 +197,7 @@ const InquirySection = () => {
 
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">
-                    ملف مرفق <span className="text-muted-foreground text-xs">(اختياري - حد أقصى 5MB)</span>
+                    ملف مرفق
                   </Label>
                   {!file ? (
                     <div className="relative">

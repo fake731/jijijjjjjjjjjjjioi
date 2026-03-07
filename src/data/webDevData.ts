@@ -8697,5 +8697,2057 @@ function divide(a, b) {
       },
     ],
   },
+  {
+    id: "vuejs",
+    title: "Vue.js",
+    icon: "Atom",
+    color: "text-emerald-500",
+    topics: [
+      {
+        title: "إنشاء مشروع Vue.js",
+        content: `// تثبيت Vue.js
+// npm create vue@latest my-app
+// cd my-app && npm install && npm run dev
+
+// ملف main.js - نقطة البداية
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+
+const app = createApp(App)
+app.use(router)
+app.mount('#app')
+
+// هيكل المشروع:
+// src/
+//   main.js        - نقطة الدخول
+//   App.vue        - المكون الرئيسي
+//   components/    - المكونات
+//   views/         - الصفحات
+//   router/        - التوجيه
+//   stores/        - Pinia stores
+//   assets/        - الملفات الثابتة`,
+      },
+      {
+        title: "المكونات (Components)",
+        content: `<!-- مكون Vue بسيط -->
+<template>
+  <div class="card">
+    <h2>{{ title }}</h2>
+    <p>{{ description }}</p>
+    <button @click="handleClick">{{ buttonText }}</button>
+    <span>عدد النقرات: {{ count }}</span>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue'
+
+// الخصائص (Props)
+const props = defineProps({
+  title: { type: String, required: true },
+  description: { type: String, default: 'لا يوجد وصف' }
+})
+
+// الأحداث (Emits)
+const emit = defineEmits(['clicked'])
+
+// البيانات التفاعلية
+const count = ref(0)
+
+// الخصائص المحسوبة
+const buttonText = computed(() => {
+  return count.value > 0 ? 'اضغط مرة أخرى' : 'اضغط هنا'
+})
+
+// الدوال
+function handleClick() {
+  count.value++
+  emit('clicked', count.value)
+}
+</script>
+
+<style scoped>
+.card {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+</style>`,
+      },
+      {
+        title: "التوجيه (Vue Router)",
+        content: `// router/index.js
+import { createRouter, createWebHistory } from 'vue-router'
+
+const routes = [
+  {
+    path: '/',
+    name: 'home',
+    component: () => import('../views/HomeView.vue')
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import('../views/AboutView.vue')
+  },
+  {
+    path: '/user/:id',
+    name: 'user',
+    component: () => import('../views/UserView.vue'),
+    props: true  // تمرير المعاملات كـ props
+  },
+  {
+    path: '/dashboard',
+    component: () => import('../views/Dashboard.vue'),
+    // حماية المسار
+    beforeEnter: (to, from) => {
+      const isAuth = localStorage.getItem('token')
+      if (!isAuth) return { name: 'login' }
+    },
+    children: [
+      { path: '', component: () => import('../views/DashHome.vue') },
+      { path: 'settings', component: () => import('../views/Settings.vue') }
+    ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('../views/NotFound.vue')
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
+
+// حارس التنقل العام
+router.beforeEach((to, from) => {
+  document.title = to.meta.title || 'تطبيقي'
+})
+
+export default router`,
+      },
+      {
+        title: "إدارة الحالة (Pinia)",
+        content: `// stores/counter.js - مخزن Pinia
+import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
+
+// طريقة Composition API
+export const useCounterStore = defineStore('counter', () => {
+  // الحالة
+  const count = ref(0)
+  const name = ref('مستخدم')
+
+  // Getters
+  const doubleCount = computed(() => count.value * 2)
+  const greeting = computed(() => 'مرحباً ' + name.value)
+
+  // Actions
+  function increment() {
+    count.value++
+  }
+
+  function decrement() {
+    if (count.value > 0) count.value--
+  }
+
+  async function fetchData() {
+    const res = await fetch('/api/data')
+    const data = await res.json()
+    count.value = data.count
+  }
+
+  return { count, name, doubleCount, greeting, increment, decrement, fetchData }
+})
+
+// الاستخدام في مكون:
+// <script setup>
+// import { useCounterStore } from '@/stores/counter'
+// const store = useCounterStore()
+// store.increment()
+// console.log(store.doubleCount)
+// </script>`,
+      },
+      {
+        title: "التوجيهات (Directives)",
+        content: `<!-- التوجيهات المدمجة -->
+<template>
+  <!-- v-if / v-else-if / v-else - عرض شرطي -->
+  <div v-if="status === 'loading'">جاري التحميل...</div>
+  <div v-else-if="status === 'error'">حدث خطأ</div>
+  <div v-else>تم التحميل بنجاح</div>
+
+  <!-- v-show - إظهار/إخفاء بـ CSS -->
+  <div v-show="isVisible">هذا يظهر ويختفي</div>
+
+  <!-- v-for - حلقة تكرار -->
+  <ul>
+    <li v-for="(item, index) in items" :key="item.id">
+      {{ index + 1 }}. {{ item.name }}
+    </li>
+  </ul>
+
+  <!-- v-model - ربط ثنائي -->
+  <input v-model="username" placeholder="اسم المستخدم" />
+  <input v-model.number="age" type="number" />
+  <input v-model.trim="email" />
+  <textarea v-model.lazy="message"></textarea>
+
+  <!-- v-bind - ربط الخصائص -->
+  <img :src="imageUrl" :alt="imageAlt" />
+  <div :class="{ active: isActive, 'text-bold': isBold }"></div>
+  <div :style="{ color: textColor, fontSize: size + 'px' }"></div>
+
+  <!-- v-on - الأحداث -->
+  <button @click="handleClick">اضغط</button>
+  <button @click.prevent="submit">إرسال</button>
+  <input @keyup.enter="search" />
+  <div @click.stop="innerClick">منع الانتشار</div>
+
+  <!-- v-html - عرض HTML -->
+  <div v-html="rawHtml"></div>
+
+  <!-- v-memo - تحسين الأداء -->
+  <div v-memo="[valueA, valueB]">محتوى مخزن مؤقتاً</div>
+</template>`,
+      },
+      {
+        title: "Composables (دوال مخصصة)",
+        content: `// composables/useFetch.js
+import { ref, watchEffect } from 'vue'
+
+export function useFetch(url) {
+  const data = ref(null)
+  const error = ref(null)
+  const loading = ref(true)
+
+  async function fetchData() {
+    loading.value = true
+    error.value = null
+    try {
+      const res = await fetch(url.value || url)
+      if (!res.ok) throw new Error('فشل في جلب البيانات')
+      data.value = await res.json()
+    } catch (e) {
+      error.value = e.message
+    } finally {
+      loading.value = false
+    }
+  }
+
+  watchEffect(fetchData)
+
+  return { data, error, loading, refetch: fetchData }
+}
+
+// composables/useLocalStorage.js
+export function useLocalStorage(key, defaultValue) {
+  const stored = localStorage.getItem(key)
+  const data = ref(stored ? JSON.parse(stored) : defaultValue)
+
+  watch(data, (newVal) => {
+    localStorage.setItem(key, JSON.stringify(newVal))
+  }, { deep: true })
+
+  return data
+}
+
+// composables/useMousePosition.js
+export function useMousePosition() {
+  const x = ref(0)
+  const y = ref(0)
+
+  function update(e) {
+    x.value = e.pageX
+    y.value = e.pageY
+  }
+
+  onMounted(() => window.addEventListener('mousemove', update))
+  onUnmounted(() => window.removeEventListener('mousemove', update))
+
+  return { x, y }
+}`,
+      },
+      {
+        title: "Watchers و Lifecycle",
+        content: `<script setup>
+import { ref, watch, watchEffect, onMounted, onUnmounted, onUpdated } from 'vue'
+
+const searchQuery = ref('')
+const results = ref([])
+const count = ref(0)
+
+// مراقب بسيط
+watch(searchQuery, (newVal, oldVal) => {
+  console.log('تغير البحث من', oldVal, 'إلى', newVal)
+})
+
+// مراقب مع خيارات
+watch(searchQuery, async (query) => {
+  if (query.length < 3) return
+  const res = await fetch('/api/search?q=' + query)
+  results.value = await res.json()
+}, {
+  debounce: 300,    // تأخير
+  immediate: false  // لا تنفذ فوراً
+})
+
+// مراقبة عدة قيم
+watch([searchQuery, count], ([newQuery, newCount]) => {
+  console.log('تغير:', newQuery, newCount)
+})
+
+// مراقبة عميقة للكائنات
+const user = ref({ name: '', settings: { theme: 'dark' } })
+watch(user, (newUser) => {
+  console.log('تغير المستخدم:', newUser)
+}, { deep: true })
+
+// watchEffect - يتتبع تلقائياً
+watchEffect(() => {
+  console.log('القيمة الحالية:', searchQuery.value)
+  document.title = searchQuery.value || 'الرئيسية'
+})
+
+// دورة الحياة
+onMounted(() => {
+  console.log('تم تحميل المكون')
+  fetchInitialData()
+})
+
+onUpdated(() => {
+  console.log('تم تحديث المكون')
+})
+
+onUnmounted(() => {
+  console.log('تم إزالة المكون')
+  // تنظيف المؤقتات والمستمعين
+})
+</script>`,
+      },
+      {
+        title: "الانتقالات والحركات",
+        content: `<!-- انتقالات Vue المدمجة -->
+<template>
+  <button @click="show = !show">تبديل</button>
+
+  <!-- انتقال عنصر واحد -->
+  <Transition name="fade">
+    <div v-if="show" class="box">محتوى متحرك</div>
+  </Transition>
+
+  <!-- انتقال مع JavaScript hooks -->
+  <Transition
+    @before-enter="onBeforeEnter"
+    @enter="onEnter"
+    @leave="onLeave"
+  >
+    <div v-if="show">محتوى</div>
+  </Transition>
+
+  <!-- انتقال قائمة -->
+  <TransitionGroup name="list" tag="ul">
+    <li v-for="item in items" :key="item.id">
+      {{ item.text }}
+    </li>
+  </TransitionGroup>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+const show = ref(true)
+
+function onBeforeEnter(el) {
+  el.style.opacity = 0
+  el.style.transform = 'translateY(20px)'
+}
+
+function onEnter(el, done) {
+  el.offsetHeight // trigger reflow
+  el.style.transition = 'all 0.5s ease'
+  el.style.opacity = 1
+  el.style.transform = 'translateY(0)'
+  el.addEventListener('transitionend', done)
+}
+
+function onLeave(el, done) {
+  el.style.transition = 'all 0.3s ease'
+  el.style.opacity = 0
+  el.style.transform = 'translateY(-20px)'
+  el.addEventListener('transitionend', done)
+}
+</script>
+
+<style>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.list-enter-active, .list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from, .list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-move {
+  transition: transform 0.5s ease;
+}
+</style>`,
+      },
+    ],
+  },
+  {
+    id: "angular",
+    title: "Angular",
+    icon: "Atom",
+    color: "text-red-500",
+    topics: [
+      {
+        title: "إنشاء مشروع Angular",
+        content: `// تثبيت Angular CLI
+// npm install -g @angular/cli
+// ng new my-app --routing --style=scss
+// cd my-app && ng serve
+
+// هيكل المشروع:
+// src/
+//   app/
+//     app.component.ts    - المكون الرئيسي
+//     app.module.ts       - الوحدة الرئيسية
+//     app-routing.module.ts - التوجيه
+//   assets/               - ملفات ثابتة
+//   environments/         - إعدادات البيئة
+
+// app.module.ts
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [AppComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }`,
+      },
+      {
+        title: "المكونات (Components)",
+        content: `// إنشاء مكون: ng generate component user-card
+
+// user-card.component.ts
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+
+@Component({
+  selector: 'app-user-card',
+  template: \`
+    <div class="card" [class.active]="isActive">
+      <h3>{{ user.name }}</h3>
+      <p>{{ user.email }}</p>
+      <p>العمر: {{ user.age }}</p>
+      <button (click)="onSelect()">اختيار</button>
+      <button (click)="toggleActive()">
+        {{ isActive ? 'نشط' : 'غير نشط' }}
+      </button>
+    </div>
+  \`,
+  styles: [\`
+    .card { padding: 16px; border: 1px solid #ccc; border-radius: 8px; }
+    .active { border-color: #4CAF50; background: #f0fff0; }
+  \`]
+})
+export class UserCardComponent {
+  @Input() user: { name: string; email: string; age: number } = {
+    name: '', email: '', age: 0
+  };
+  @Output() selected = new EventEmitter<string>();
+
+  isActive = false;
+
+  onSelect() {
+    this.selected.emit(this.user.name);
+  }
+
+  toggleActive() {
+    this.isActive = !this.isActive;
+  }
+}
+
+// الاستخدام في القالب الأب:
+// <app-user-card
+//   [user]="currentUser"
+//   (selected)="handleSelect($event)">
+// </app-user-card>`,
+      },
+      {
+        title: "الخدمات (Services)",
+        content: `// إنشاء خدمة: ng generate service services/api
+
+// api.service.ts
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, catchError, map, of } from 'rxjs';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private baseUrl = 'https://api.example.com';
+
+  constructor(private http: HttpClient) {}
+
+  // جلب جميع المستخدمين
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>(this.baseUrl + '/users').pipe(
+      catchError(error => {
+        console.error('خطأ:', error);
+        return of([]);
+      })
+    );
+  }
+
+  // جلب مستخدم واحد
+  getUser(id: number): Observable<User> {
+    return this.http.get<User>(this.baseUrl + '/users/' + id);
+  }
+
+  // إضافة مستخدم
+  createUser(user: Partial<User>): Observable<User> {
+    return this.http.post<User>(this.baseUrl + '/users', user, {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+    });
+  }
+
+  // تحديث مستخدم
+  updateUser(id: number, data: Partial<User>): Observable<User> {
+    return this.http.put<User>(this.baseUrl + '/users/' + id, data);
+  }
+
+  // حذف مستخدم
+  deleteUser(id: number): Observable<void> {
+    return this.http.delete<void>(this.baseUrl + '/users/' + id);
+  }
+}
+
+// الاستخدام في مكون:
+// constructor(private apiService: ApiService) {}
+// ngOnInit() {
+//   this.apiService.getUsers().subscribe(users => {
+//     this.users = users;
+//   });
+// }`,
+      },
+      {
+        title: "التوجيه (Routing)",
+        content: `// app-routing.module.ts
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
+
+const routes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'about', component: AboutComponent },
+  {
+    path: 'user/:id',
+    component: UserComponent,
+    // حماية المسار
+    canActivate: [AuthGuard]
+  },
+  {
+    // التحميل الكسول
+    path: 'admin',
+    loadChildren: () => import('./admin/admin.module')
+      .then(m => m.AdminModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'products',
+    component: ProductsComponent,
+    children: [
+      { path: ':id', component: ProductDetailComponent },
+      { path: ':id/reviews', component: ReviewsComponent }
+    ]
+  },
+  { path: '**', component: NotFoundComponent }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+// auth.guard.ts
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+
+@Injectable({ providedIn: 'root' })
+export class AuthGuard implements CanActivate {
+  constructor(private router: Router) {}
+
+  canActivate(): boolean {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.router.navigate(['/login']);
+      return false;
+    }
+    return true;
+  }
+}`,
+      },
+      {
+        title: "النماذج التفاعلية (Reactive Forms)",
+        content: `// login.component.ts
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+@Component({
+  selector: 'app-login',
+  template: \`
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div>
+        <label>البريد الإلكتروني</label>
+        <input formControlName="email" type="email" />
+        <span *ngIf="loginForm.get('email')?.errors?.['required']
+              && loginForm.get('email')?.touched">
+          البريد مطلوب
+        </span>
+        <span *ngIf="loginForm.get('email')?.errors?.['email']">
+          صيغة غير صحيحة
+        </span>
+      </div>
+
+      <div>
+        <label>كلمة المرور</label>
+        <input formControlName="password" type="password" />
+        <span *ngIf="loginForm.get('password')?.errors?.['minlength']">
+          كلمة المرور يجب أن تكون 8 أحرف على الأقل
+        </span>
+      </div>
+
+      <button [disabled]="loginForm.invalid" type="submit">
+        تسجيل الدخول
+      </button>
+    </form>
+  \`
+})
+export class LoginComponent {
+  loginForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]]
+    });
+  }
+
+  onSubmit() {
+    if (this.loginForm.valid) {
+      console.log('بيانات النموذج:', this.loginForm.value);
+    }
+  }
+}`,
+      },
+      {
+        title: "Pipes (المرشحات)",
+        content: `// الـ Pipes المدمجة
+// {{ value | pipe:arg1:arg2 }}
+
+// أمثلة:
+// {{ 'مرحبا' | uppercase }}         => 'مرحبا' (لا يؤثر على العربية)
+// {{ 1234.5 | number:'1.2-2' }}     => 1,234.50
+// {{ 0.75 | percent }}              => 75%
+// {{ 1500 | currency:'SAR' }}       => SAR 1,500.00
+// {{ today | date:'fullDate' }}     => الجمعة، 7 مارس 2026
+// {{ today | date:'yyyy/MM/dd' }}   => 2026/03/07
+// {{ obj | json }}                  => عرض ككائن JSON
+// {{ items | slice:0:5 }}           => أول 5 عناصر
+// {{ text | titlecase }}            => كل كلمة تبدأ بحرف كبير
+
+// إنشاء Pipe مخصص: ng generate pipe pipes/time-ago
+
+// time-ago.pipe.ts
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({ name: 'timeAgo' })
+export class TimeAgoPipe implements PipeTransform {
+  transform(value: Date | string): string {
+    const date = new Date(value);
+    const now = new Date();
+    const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (seconds < 60) return 'الآن';
+    if (seconds < 3600) return Math.floor(seconds / 60) + ' دقيقة';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + ' ساعة';
+    if (seconds < 2592000) return Math.floor(seconds / 86400) + ' يوم';
+    return Math.floor(seconds / 2592000) + ' شهر';
+  }
+}
+
+// الاستخدام: {{ createdAt | timeAgo }}`,
+      },
+      {
+        title: "RxJS والبرمجة التفاعلية",
+        content: `import { Observable, Subject, BehaviorSubject, of, from, interval } from 'rxjs';
+import {
+  map, filter, switchMap, debounceTime, distinctUntilChanged,
+  catchError, takeUntil, tap, mergeMap, retry
+} from 'rxjs/operators';
+
+// مثال: بحث تفاعلي مع debounce
+export class SearchComponent {
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
+  results: any[] = [];
+
+  constructor(private http: HttpClient) {
+    this.searchSubject.pipe(
+      debounceTime(300),          // انتظر 300ms بعد التوقف
+      distinctUntilChanged(),     // تجاهل القيم المتكررة
+      filter(q => q.length >= 2), // حد أدنى حرفين
+      switchMap(query =>          // إلغاء الطلب السابق
+        this.http.get('/api/search?q=' + query).pipe(
+          catchError(() => of([]))  // معالجة الأخطاء
+        )
+      ),
+      takeUntil(this.destroy$)    // إلغاء عند التدمير
+    ).subscribe(results => {
+      this.results = results;
+    });
+  }
+
+  onSearch(query: string) {
+    this.searchSubject.next(query);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+}
+
+// BehaviorSubject - مخزن بسيط
+export class StateService {
+  private userSubject = new BehaviorSubject<User | null>(null);
+  user$ = this.userSubject.asObservable();
+
+  setUser(user: User) {
+    this.userSubject.next(user);
+  }
+
+  getUser(): User | null {
+    return this.userSubject.getValue();
+  }
+}`,
+      },
+    ],
+  },
+  {
+    id: "mongodb",
+    title: "MongoDB",
+    icon: "Database",
+    color: "text-green-600",
+    topics: [
+      {
+        title: "أساسيات MongoDB",
+        content: `// MongoDB - قاعدة بيانات NoSQL تعتمد على المستندات (Documents)
+// التثبيت: npm install mongodb mongoose
+
+// الاتصال بقاعدة البيانات
+const { MongoClient } = require('mongodb');
+const uri = 'mongodb://localhost:27017';
+const client = new MongoClient(uri);
+
+async function connect() {
+  await client.connect();
+  console.log('تم الاتصال بقاعدة البيانات');
+  const db = client.db('myDatabase');
+  return db;
+}
+
+// العمليات الأساسية (CRUD)
+
+// إضافة مستند واحد
+const result = await db.collection('users').insertOne({
+  name: 'أحمد',
+  email: 'ahmed@example.com',
+  age: 25,
+  createdAt: new Date()
+});
+
+// إضافة عدة مستندات
+await db.collection('users').insertMany([
+  { name: 'سارة', age: 30 },
+  { name: 'محمد', age: 22 },
+  { name: 'فاطمة', age: 28 }
+]);
+
+// القراءة
+const user = await db.collection('users').findOne({ name: 'أحمد' });
+const allUsers = await db.collection('users').find({}).toArray();
+const adults = await db.collection('users').find({ age: { $gte: 18 } }).toArray();`,
+      },
+      {
+        title: "الاستعلامات المتقدمة",
+        content: `// عوامل المقارنة
+db.collection('products').find({
+  price: { $gt: 100 },     // أكبر من
+  stock: { $gte: 10 },     // أكبر من أو يساوي
+  discount: { $lt: 50 },   // أقل من
+  rating: { $lte: 5 },     // أقل من أو يساوي
+  status: { $ne: 'deleted' }, // لا يساوي
+  category: { $in: ['electronics', 'books'] }, // ضمن القائمة
+  tags: { $nin: ['sale'] }  // ليس ضمن القائمة
+});
+
+// عوامل منطقية
+db.collection('users').find({
+  $and: [
+    { age: { $gte: 18 } },
+    { age: { $lte: 65 } }
+  ]
+});
+
+db.collection('products').find({
+  $or: [
+    { category: 'electronics' },
+    { price: { $lt: 50 } }
+  ]
+});
+
+// البحث في النصوص
+db.collection('articles').createIndex({ title: 'text', content: 'text' });
+db.collection('articles').find({ $text: { $search: 'جافاسكريبت' } });
+
+// الفرز والتحديد والتخطي
+const results = await db.collection('products')
+  .find({ category: 'electronics' })
+  .sort({ price: -1 })   // ترتيب تنازلي
+  .skip(10)               // تخطي 10 نتائج
+  .limit(5)               // عرض 5 فقط
+  .project({ name: 1, price: 1, _id: 0 }) // الحقول المطلوبة
+  .toArray();
+
+// التحديث
+await db.collection('users').updateOne(
+  { _id: userId },
+  {
+    $set: { name: 'اسم جديد' },
+    $inc: { loginCount: 1 },
+    $push: { tags: 'premium' },
+    $currentDate: { updatedAt: true }
+  }
+);
+
+// الحذف
+await db.collection('users').deleteOne({ _id: userId });
+await db.collection('logs').deleteMany({ date: { $lt: new Date('2024-01-01') } });`,
+      },
+      {
+        title: "Mongoose (ORM)",
+        content: `// تعريف Schema و Model مع Mongoose
+const mongoose = require('mongoose');
+
+// الاتصال
+mongoose.connect('mongodb://localhost:27017/myapp');
+
+// تعريف المخطط
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'الاسم مطلوب'],
+    trim: true,
+    minlength: [2, 'الاسم قصير جداً'],
+    maxlength: [50, 'الاسم طويل جداً']
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    match: [/^\\S+@\\S+\\.\\S+$/, 'بريد إلكتروني غير صالح']
+  },
+  password: { type: String, required: true, select: false },
+  role: {
+    type: String,
+    enum: ['user', 'admin', 'moderator'],
+    default: 'user'
+  },
+  age: { type: Number, min: 13, max: 120 },
+  isActive: { type: Boolean, default: true },
+  tags: [String],
+  profile: {
+    bio: String,
+    avatar: String,
+    social: {
+      twitter: String,
+      github: String
+    }
+  }
+}, {
+  timestamps: true,  // createdAt, updatedAt
+  toJSON: { virtuals: true }
+});
+
+// حقل افتراضي
+userSchema.virtual('displayName').get(function() {
+  return this.name + ' (' + this.role + ')';
+});
+
+// Middleware
+userSchema.pre('save', async function(next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 12);
+  }
+  next();
+});
+
+// طرق مخصصة
+userSchema.methods.comparePassword = async function(candidate) {
+  return bcrypt.compare(candidate, this.password);
+};
+
+userSchema.statics.findByEmail = function(email) {
+  return this.findOne({ email });
+};
+
+const User = mongoose.model('User', userSchema);
+
+// الاستخدام
+const user = await User.create({ name: 'أحمد', email: 'a@b.com', password: '123456' });
+const users = await User.find({ isActive: true }).sort('-createdAt').limit(10);
+await User.findByIdAndUpdate(id, { name: 'اسم جديد' }, { new: true });`,
+      },
+      {
+        title: "التجميع (Aggregation Pipeline)",
+        content: `// Aggregation - عمليات متقدمة على البيانات
+const results = await db.collection('orders').aggregate([
+  // المرحلة 1: التصفية
+  { $match: {
+    status: 'completed',
+    createdAt: { $gte: new Date('2024-01-01') }
+  }},
+
+  // المرحلة 2: الربط مع جدول آخر
+  { $lookup: {
+    from: 'users',
+    localField: 'userId',
+    foreignField: '_id',
+    as: 'user'
+  }},
+
+  // المرحلة 3: فك المصفوفة
+  { $unwind: '$user' },
+
+  // المرحلة 4: التجميع
+  { $group: {
+    _id: '$user.name',
+    totalOrders: { $sum: 1 },
+    totalSpent: { $sum: '$total' },
+    avgOrder: { $avg: '$total' },
+    maxOrder: { $max: '$total' },
+    products: { $push: '$productName' }
+  }},
+
+  // المرحلة 5: إضافة حقول محسوبة
+  { $addFields: {
+    avgFormatted: { $round: ['$avgOrder', 2] },
+    isVIP: { $gte: ['$totalSpent', 1000] }
+  }},
+
+  // المرحلة 6: الفرز
+  { $sort: { totalSpent: -1 } },
+
+  // المرحلة 7: التحديد
+  { $limit: 10 },
+
+  // المرحلة 8: إعادة تشكيل النتيجة
+  { $project: {
+    customerName: '$_id',
+    totalOrders: 1,
+    totalSpent: 1,
+    avgFormatted: 1,
+    isVIP: 1,
+    _id: 0
+  }}
+]).toArray();
+
+// مثال: إحصائيات يومية
+const dailyStats = await db.collection('visits').aggregate([
+  { $group: {
+    _id: { $dateToString: { format: '%Y-%m-%d', date: '$timestamp' } },
+    visitors: { $addToSet: '$userId' },
+    pageViews: { $sum: 1 }
+  }},
+  { $addFields: { uniqueVisitors: { $size: '$visitors' } } },
+  { $sort: { _id: -1 } }
+]).toArray();`,
+      },
+      {
+        title: "الفهارس والأداء",
+        content: `// الفهارس - تسريع الاستعلامات
+// فهرس بسيط
+db.collection('users').createIndex({ email: 1 });  // تصاعدي
+db.collection('users').createIndex({ age: -1 });    // تنازلي
+
+// فهرس فريد
+db.collection('users').createIndex(
+  { email: 1 },
+  { unique: true }
+);
+
+// فهرس مركب
+db.collection('orders').createIndex(
+  { userId: 1, createdAt: -1 }
+);
+
+// فهرس نصي للبحث
+db.collection('articles').createIndex(
+  { title: 'text', content: 'text' },
+  { weights: { title: 10, content: 5 }, default_language: 'arabic' }
+);
+
+// فهرس TTL - حذف تلقائي
+db.collection('sessions').createIndex(
+  { expiresAt: 1 },
+  { expireAfterSeconds: 0 }  // يحذف عندما يصل التاريخ
+);
+
+// فهرس جزئي
+db.collection('users').createIndex(
+  { email: 1 },
+  { partialFilterExpression: { isActive: true } }
+);
+
+// تحليل أداء الاستعلام
+const explain = await db.collection('users')
+  .find({ age: { $gt: 25 } })
+  .explain('executionStats');
+
+console.log('مدة التنفيذ:', explain.executionStats.executionTimeMillis, 'ms');
+console.log('المستندات الممسوحة:', explain.executionStats.totalDocsExamined);
+console.log('استخدم فهرس:', explain.executionStats.executionStages.stage);
+
+// عرض جميع الفهارس
+const indexes = await db.collection('users').indexes();
+console.log(indexes);`,
+      },
+      {
+        title: "العلاقات والمراجع",
+        content: `// طريقة 1: التضمين (Embedding) - للبيانات المرتبطة بقوة
+const orderSchema = new mongoose.Schema({
+  orderNumber: String,
+  customer: {
+    name: String,
+    email: String,
+    address: {
+      street: String,
+      city: String,
+      country: String
+    }
+  },
+  items: [{
+    productName: String,
+    quantity: Number,
+    price: Number
+  }],
+  total: Number
+});
+
+// طريقة 2: المراجع (References) - للبيانات المستقلة
+const postSchema = new mongoose.Schema({
+  title: String,
+  content: String,
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  comments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment'
+  }],
+  tags: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tag'
+  }]
+});
+
+// جلب مع populate
+const post = await Post.findById(postId)
+  .populate('author', 'name email avatar')  // اسم وبريد فقط
+  .populate({
+    path: 'comments',
+    populate: { path: 'user', select: 'name' }, // populate متداخل
+    options: { sort: { createdAt: -1 }, limit: 10 }
+  })
+  .populate('tags', 'name color');
+
+// متى تستخدم التضمين ومتى المراجع؟
+// التضمين: بيانات لا تتغير كثيراً، تُقرأ مع الأب دائماً
+// المراجع: بيانات مستقلة، تتغير باستمرار، تُستخدم في أماكن متعددة`,
+      },
+    ],
+  },
+  {
+    id: "redis",
+    title: "Redis",
+    icon: "Database",
+    color: "text-red-600",
+    topics: [
+      {
+        title: "أساسيات Redis",
+        content: `// Redis - قاعدة بيانات في الذاكرة (In-Memory)
+// سريعة جداً - تُستخدم للتخزين المؤقت والجلسات وقوائم الانتظار
+// التثبيت: npm install redis ioredis
+
+// الاتصال بـ Redis
+const Redis = require('ioredis');
+const redis = new Redis({
+  host: 'localhost',
+  port: 6379,
+  password: 'your-password',  // اختياري
+  db: 0                        // رقم قاعدة البيانات
+});
+
+// === أنواع البيانات الأساسية ===
+
+// 1. النصوص (Strings)
+await redis.set('name', 'أحمد');
+await redis.set('counter', 0);
+const name = await redis.get('name');    // 'أحمد'
+await redis.incr('counter');              // 1
+await redis.incrby('counter', 5);         // 6
+await redis.decr('counter');              // 5
+
+// مع انتهاء الصلاحية
+await redis.set('token', 'abc123', 'EX', 3600);  // ينتهي بعد ساعة
+await redis.setex('session', 1800, 'data');       // ينتهي بعد 30 دقيقة
+
+// التحقق من الوجود
+const exists = await redis.exists('name');  // 1 (موجود) أو 0
+const ttl = await redis.ttl('token');       // الوقت المتبقي بالثواني
+
+// حذف
+await redis.del('name');
+await redis.del('key1', 'key2', 'key3');  // حذف متعدد`,
+      },
+      {
+        title: "هياكل البيانات المتقدمة",
+        content: `// 2. القوائم (Lists) - مرتبة، تسمح بالتكرار
+await redis.lpush('tasks', 'مهمة 1', 'مهمة 2');  // إضافة من اليسار
+await redis.rpush('tasks', 'مهمة 3');              // إضافة من اليمين
+const tasks = await redis.lrange('tasks', 0, -1);  // جلب الكل
+await redis.lpop('tasks');   // إزالة من اليسار
+await redis.rpop('tasks');   // إزالة من اليمين
+const len = await redis.llen('tasks');  // طول القائمة
+
+// 3. المجموعات (Sets) - فريدة، غير مرتبة
+await redis.sadd('tags', 'javascript', 'python', 'rust');
+await redis.sadd('tags', 'javascript');  // لن يُضاف (موجود)
+const tags = await redis.smembers('tags');  // كل العناصر
+const isMember = await redis.sismember('tags', 'python');  // 1
+await redis.srem('tags', 'rust');  // حذف عنصر
+
+// عمليات المجموعات
+await redis.sadd('set1', 'a', 'b', 'c');
+await redis.sadd('set2', 'b', 'c', 'd');
+const union = await redis.sunion('set1', 'set2');       // a,b,c,d
+const inter = await redis.sinter('set1', 'set2');       // b,c
+const diff = await redis.sdiff('set1', 'set2');          // a
+
+// 4. المجموعات المرتبة (Sorted Sets)
+await redis.zadd('leaderboard', 100, 'player1');
+await redis.zadd('leaderboard', 250, 'player2');
+await redis.zadd('leaderboard', 180, 'player3');
+const top = await redis.zrevrange('leaderboard', 0, 2, 'WITHSCORES');
+await redis.zincrby('leaderboard', 10, 'player1');  // زيادة النقاط
+
+// 5. الهاش (Hashes) - كائنات
+await redis.hset('user:1', 'name', 'أحمد', 'age', '25', 'email', 'a@b.com');
+const userName = await redis.hget('user:1', 'name');
+const user = await redis.hgetall('user:1');  // كل الحقول
+await redis.hincrby('user:1', 'age', 1);    // زيادة العمر`,
+      },
+      {
+        title: "التخزين المؤقت (Caching)",
+        content: `// نمط Cache-Aside الشائع
+async function getUser(userId) {
+  const cacheKey = 'user:' + userId;
+
+  // 1. تحقق من الكاش أولاً
+  const cached = await redis.get(cacheKey);
+  if (cached) {
+    console.log('من الكاش');
+    return JSON.parse(cached);
+  }
+
+  // 2. إذا غير موجود، اجلب من قاعدة البيانات
+  const user = await db.collection('users').findOne({ _id: userId });
+
+  // 3. خزّن في الكاش
+  if (user) {
+    await redis.setex(cacheKey, 3600, JSON.stringify(user));  // ساعة
+  }
+
+  return user;
+}
+
+// إبطال الكاش عند التحديث
+async function updateUser(userId, data) {
+  await db.collection('users').updateOne({ _id: userId }, { $set: data });
+  await redis.del('user:' + userId);  // حذف الكاش القديم
+}
+
+// نمط Write-Through
+async function createProduct(product) {
+  const result = await db.collection('products').insertOne(product);
+  // خزّن فوراً في الكاش
+  await redis.setex(
+    'product:' + result.insertedId,
+    7200,
+    JSON.stringify(product)
+  );
+  // أبطل كاش القائمة
+  await redis.del('products:list');
+  return result;
+}
+
+// كاش لنتائج API
+const express = require('express');
+const app = express();
+
+function cacheMiddleware(duration) {
+  return async (req, res, next) => {
+    const key = 'api:' + req.originalUrl;
+    const cached = await redis.get(key);
+    if (cached) {
+      return res.json(JSON.parse(cached));
+    }
+    // احفظ الدالة الأصلية
+    const originalJson = res.json.bind(res);
+    res.json = async (data) => {
+      await redis.setex(key, duration, JSON.stringify(data));
+      return originalJson(data);
+    };
+    next();
+  };
+}
+
+app.get('/api/products', cacheMiddleware(300), async (req, res) => {
+  const products = await db.collection('products').find().toArray();
+  res.json(products);
+});`,
+      },
+      {
+        title: "الجلسات وتحديد المعدل",
+        content: `// إدارة الجلسات مع Redis
+const session = require('express-session');
+const RedisStore = require('connect-redis').default;
+
+app.use(session({
+  store: new RedisStore({ client: redis }),
+  secret: 'my-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000  // يوم واحد
+  }
+}));
+
+// تحديد المعدل (Rate Limiting)
+async function rateLimiter(req, res, next) {
+  const ip = req.ip;
+  const key = 'ratelimit:' + ip;
+  const limit = 100;       // 100 طلب
+  const window = 60;       // في 60 ثانية
+
+  const current = await redis.incr(key);
+
+  if (current === 1) {
+    await redis.expire(key, window);
+  }
+
+  if (current > limit) {
+    return res.status(429).json({
+      error: 'تجاوزت الحد المسموح. حاول بعد قليل',
+      retryAfter: await redis.ttl(key)
+    });
+  }
+
+  res.setHeader('X-RateLimit-Limit', limit);
+  res.setHeader('X-RateLimit-Remaining', Math.max(0, limit - current));
+  next();
+}
+
+app.use('/api/', rateLimiter);
+
+// نظام تحديد معدل متقدم (Sliding Window)
+async function slidingWindowLimiter(userId, action, limit, windowSec) {
+  const key = 'limit:' + action + ':' + userId;
+  const now = Date.now();
+  const windowStart = now - (windowSec * 1000);
+
+  // أزل الطلبات القديمة
+  await redis.zremrangebyscore(key, 0, windowStart);
+  // عدّ الطلبات الحالية
+  const count = await redis.zcard(key);
+
+  if (count >= limit) return false;
+
+  // أضف الطلب الجديد
+  await redis.zadd(key, now, now.toString());
+  await redis.expire(key, windowSec);
+  return true;
+}`,
+      },
+      {
+        title: "Pub/Sub والإشعارات الفورية",
+        content: `// Pub/Sub - نظام النشر والاشتراك
+// مفيد للإشعارات الفورية والتواصل بين الخدمات
+
+// الناشر (Publisher)
+const publisher = new Redis();
+
+async function publishNotification(channel, message) {
+  await publisher.publish(channel, JSON.stringify(message));
+}
+
+// أمثلة على النشر
+publishNotification('notifications', {
+  type: 'new_message',
+  userId: 'user123',
+  content: 'لديك رسالة جديدة'
+});
+
+publishNotification('orders', {
+  type: 'order_placed',
+  orderId: 'ORD-001',
+  total: 150.00
+});
+
+// المشترك (Subscriber)
+const subscriber = new Redis();
+
+subscriber.subscribe('notifications', 'orders');
+
+subscriber.on('message', (channel, message) => {
+  const data = JSON.parse(message);
+  console.log('قناة:', channel);
+  console.log('رسالة:', data);
+
+  switch (channel) {
+    case 'notifications':
+      sendPushNotification(data);
+      break;
+    case 'orders':
+      processOrder(data);
+      break;
+  }
+});
+
+// Pattern Subscribe - الاشتراك بنمط
+subscriber.psubscribe('user:*:events');
+
+subscriber.on('pmessage', (pattern, channel, message) => {
+  // channel مثلاً: user:123:events
+  const userId = channel.split(':')[1];
+  console.log('حدث للمستخدم', userId, ':', message);
+});
+
+// استخدام مع WebSocket
+const io = require('socket.io')(server);
+
+subscriber.subscribe('chat');
+subscriber.on('message', (channel, message) => {
+  if (channel === 'chat') {
+    io.emit('new_message', JSON.parse(message));
+  }
+});`,
+      },
+      {
+        title: "قوائم الانتظار (Job Queues)",
+        content: `// قوائم الانتظار مع Bull (مبني على Redis)
+// npm install bull
+
+const Queue = require('bull');
+
+// إنشاء قائمة
+const emailQueue = new Queue('email', {
+  redis: { host: 'localhost', port: 6379 }
+});
+
+// إضافة مهمة
+await emailQueue.add('send-welcome', {
+  to: 'user@example.com',
+  subject: 'مرحباً بك',
+  template: 'welcome'
+}, {
+  attempts: 3,           // محاولات إعادة
+  backoff: {
+    type: 'exponential',
+    delay: 2000           // تأخير متزايد
+  },
+  priority: 1,           // أولوية عالية
+  delay: 5000,           // تأخير 5 ثوان
+  removeOnComplete: true
+});
+
+// إضافة مهمة متكررة
+await emailQueue.add('daily-report', { type: 'daily' }, {
+  repeat: { cron: '0 9 * * *' }  // كل يوم الساعة 9
+});
+
+// معالجة المهام
+emailQueue.process('send-welcome', async (job) => {
+  console.log('إرسال بريد إلى:', job.data.to);
+  await sendEmail(job.data);
+  return { sent: true };
+});
+
+// أحداث القائمة
+emailQueue.on('completed', (job, result) => {
+  console.log('تم إكمال المهمة:', job.id);
+});
+
+emailQueue.on('failed', (job, err) => {
+  console.error('فشلت المهمة:', job.id, err.message);
+});
+
+// لوحة تحكم المهام
+const { createBullBoard } = require('@bull-board/api');
+const { BullAdapter } = require('@bull-board/api/bullAdapter');
+const { ExpressAdapter } = require('@bull-board/express');
+
+const serverAdapter = new ExpressAdapter();
+createBullBoard({
+  queues: [new BullAdapter(emailQueue)],
+  serverAdapter
+});
+app.use('/admin/queues', serverAdapter.getRouter());`,
+      },
+    ],
+  },
+  {
+    id: "design-patterns",
+    title: "أنماط التصميم (Design Patterns)",
+    icon: "Workflow",
+    color: "text-violet-500",
+    topics: [
+      {
+        title: "Singleton Pattern",
+        content: `// نمط المفرد - كائن واحد فقط في التطبيق بالكامل
+// يُستخدم لـ: إعدادات التطبيق، اتصال قاعدة البيانات، Logger
+
+// JavaScript
+class Database {
+  static instance = null;
+
+  constructor() {
+    if (Database.instance) {
+      return Database.instance;
+    }
+    this.connection = null;
+    Database.instance = this;
+  }
+
+  async connect(uri) {
+    if (!this.connection) {
+      this.connection = await createConnection(uri);
+      console.log('تم الاتصال بقاعدة البيانات');
+    }
+    return this.connection;
+  }
+
+  getConnection() {
+    if (!this.connection) {
+      throw new Error('لم يتم الاتصال بعد');
+    }
+    return this.connection;
+  }
+}
+
+// الاستخدام - نفس الكائن دائماً
+const db1 = new Database();
+const db2 = new Database();
+console.log(db1 === db2);  // true
+
+// TypeScript مع أمان أكثر
+class AppConfig {
+  private static instance: AppConfig;
+  private settings: Map<string, any> = new Map();
+
+  private constructor() {}  // منع الإنشاء الخارجي
+
+  static getInstance(): AppConfig {
+    if (!AppConfig.instance) {
+      AppConfig.instance = new AppConfig();
+    }
+    return AppConfig.instance;
+  }
+
+  set(key: string, value: any) {
+    this.settings.set(key, value);
+  }
+
+  get(key: string) {
+    return this.settings.get(key);
+  }
+}
+
+const config = AppConfig.getInstance();
+config.set('theme', 'dark');`,
+      },
+      {
+        title: "Observer Pattern",
+        content: `// نمط المراقب - إشعار عدة مستمعين عند حدوث تغيير
+// يُستخدم لـ: أحداث UI، الإشعارات، تحديثات البيانات
+
+class EventEmitter {
+  constructor() {
+    this.listeners = {};
+  }
+
+  // الاشتراك في حدث
+  on(event, callback) {
+    if (!this.listeners[event]) {
+      this.listeners[event] = [];
+    }
+    this.listeners[event].push(callback);
+    // إرجاع دالة إلغاء الاشتراك
+    return () => this.off(event, callback);
+  }
+
+  // إلغاء الاشتراك
+  off(event, callback) {
+    if (this.listeners[event]) {
+      this.listeners[event] = this.listeners[event]
+        .filter(cb => cb !== callback);
+    }
+  }
+
+  // الاشتراك مرة واحدة فقط
+  once(event, callback) {
+    const wrapper = (...args) => {
+      callback(...args);
+      this.off(event, wrapper);
+    };
+    this.on(event, wrapper);
+  }
+
+  // إطلاق الحدث
+  emit(event, ...args) {
+    if (this.listeners[event]) {
+      this.listeners[event].forEach(cb => cb(...args));
+    }
+  }
+}
+
+// مثال عملي: نظام إشعارات
+const notifications = new EventEmitter();
+
+// مشتركون
+notifications.on('new_order', (order) => {
+  console.log('إرسال بريد للعميل:', order.email);
+});
+
+notifications.on('new_order', (order) => {
+  console.log('تحديث المخزون:', order.productId);
+});
+
+notifications.on('new_order', (order) => {
+  console.log('إرسال إشعار للإدارة');
+});
+
+// إطلاق الحدث
+notifications.emit('new_order', {
+  id: 'ORD-001',
+  email: 'user@example.com',
+  productId: 'P-100',
+  total: 250
+});`,
+      },
+      {
+        title: "Factory Pattern",
+        content: `// نمط المصنع - إنشاء كائنات بدون تحديد الكلاس مباشرة
+// يُستخدم لـ: إنشاء كائنات مختلفة بناءً على شروط
+
+// مصنع بسيط
+class NotificationFactory {
+  static create(type, message) {
+    switch (type) {
+      case 'email':
+        return new EmailNotification(message);
+      case 'sms':
+        return new SMSNotification(message);
+      case 'push':
+        return new PushNotification(message);
+      default:
+        throw new Error('نوع إشعار غير معروف: ' + type);
+    }
+  }
+}
+
+class EmailNotification {
+  constructor(message) {
+    this.message = message;
+    this.type = 'email';
+  }
+  send(to) {
+    console.log('إرسال بريد إلى ' + to + ': ' + this.message);
+  }
+}
+
+class SMSNotification {
+  constructor(message) {
+    this.message = message;
+    this.type = 'sms';
+  }
+  send(to) {
+    console.log('إرسال رسالة نصية إلى ' + to + ': ' + this.message);
+  }
+}
+
+class PushNotification {
+  constructor(message) {
+    this.message = message;
+    this.type = 'push';
+  }
+  send(to) {
+    console.log('إرسال إشعار فوري إلى ' + to + ': ' + this.message);
+  }
+}
+
+// الاستخدام
+const notification = NotificationFactory.create('email', 'مرحباً بك!');
+notification.send('user@example.com');
+
+// مصنع مع تسجيل ديناميكي
+class PaymentFactory {
+  static providers = new Map();
+
+  static register(name, ProviderClass) {
+    this.providers.set(name, ProviderClass);
+  }
+
+  static create(name, config) {
+    const Provider = this.providers.get(name);
+    if (!Provider) throw new Error('مزود دفع غير مسجل: ' + name);
+    return new Provider(config);
+  }
+}
+
+// تسجيل مزودي الدفع
+PaymentFactory.register('stripe', StripePayment);
+PaymentFactory.register('paypal', PayPalPayment);
+
+// إنشاء
+const payment = PaymentFactory.create('stripe', { key: 'sk_...' });`,
+      },
+      {
+        title: "Strategy Pattern",
+        content: `// نمط الاستراتيجية - تبديل الخوارزميات في وقت التشغيل
+// يُستخدم لـ: طرق الدفع، خوارزميات الفرز، التحقق
+
+// تعريف الاستراتيجيات
+const sortStrategies = {
+  bubble: (arr) => {
+    const result = [...arr];
+    for (let i = 0; i < result.length; i++) {
+      for (let j = 0; j < result.length - i - 1; j++) {
+        if (result[j] > result[j + 1]) {
+          [result[j], result[j + 1]] = [result[j + 1], result[j]];
+        }
+      }
+    }
+    return result;
+  },
+  quick: (arr) => {
+    if (arr.length <= 1) return arr;
+    const pivot = arr[0];
+    const left = arr.slice(1).filter(x => x <= pivot);
+    const right = arr.slice(1).filter(x => x > pivot);
+    return [...sortStrategies.quick(left), pivot, ...sortStrategies.quick(right)];
+  },
+  merge: (arr) => {
+    if (arr.length <= 1) return arr;
+    const mid = Math.floor(arr.length / 2);
+    const left = sortStrategies.merge(arr.slice(0, mid));
+    const right = sortStrategies.merge(arr.slice(mid));
+    return mergeSorted(left, right);
+  }
+};
+
+// سياق الاستخدام
+class Sorter {
+  constructor(strategy = 'quick') {
+    this.strategy = strategy;
+  }
+
+  setStrategy(strategy) {
+    this.strategy = strategy;
+  }
+
+  sort(data) {
+    console.log('الفرز بـ:', this.strategy);
+    return sortStrategies[this.strategy](data);
+  }
+}
+
+// مثال عملي: التحقق من البيانات
+const validators = {
+  email: (value) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value),
+  phone: (value) => /^\\+?[0-9]{10,15}$/.test(value),
+  url: (value) => {
+    try { new URL(value); return true; } catch { return false; }
+  },
+  password: (value) => value.length >= 8 && /[A-Z]/.test(value) && /[0-9]/.test(value)
+};
+
+function validate(value, type) {
+  const validator = validators[type];
+  if (!validator) throw new Error('نوع تحقق غير معروف');
+  return validator(value);
+}
+
+console.log(validate('test@email.com', 'email'));  // true
+console.log(validate('MyPass123', 'password'));    // true`,
+      },
+      {
+        title: "Middleware Pattern",
+        content: `// نمط الوسيط - سلسلة من العمليات تمر عبرها البيانات
+// يُستخدم في: Express.js، Redux، معالجة الطلبات
+
+// تطبيق بسيط للـ Middleware
+class Pipeline {
+  constructor() {
+    this.middlewares = [];
+  }
+
+  use(fn) {
+    this.middlewares.push(fn);
+    return this;  // للتسلسل
+  }
+
+  async execute(context) {
+    let index = 0;
+
+    const next = async () => {
+      if (index < this.middlewares.length) {
+        const middleware = this.middlewares[index++];
+        await middleware(context, next);
+      }
+    };
+
+    await next();
+    return context;
+  }
+}
+
+// مثال: معالجة طلب HTTP
+const pipeline = new Pipeline();
+
+// 1. تسجيل الطلب
+pipeline.use(async (ctx, next) => {
+  console.log('بداية:', ctx.method, ctx.url);
+  const start = Date.now();
+  await next();
+  console.log('المدة:', Date.now() - start, 'ms');
+});
+
+// 2. التحقق من المصادقة
+pipeline.use(async (ctx, next) => {
+  const token = ctx.headers.authorization;
+  if (!token) {
+    ctx.status = 401;
+    ctx.body = { error: 'غير مصرح' };
+    return;  // لا تكمل
+  }
+  ctx.user = verifyToken(token);
+  await next();
+});
+
+// 3. التحقق من الصلاحيات
+pipeline.use(async (ctx, next) => {
+  if (ctx.user.role !== 'admin') {
+    ctx.status = 403;
+    ctx.body = { error: 'لا تملك الصلاحية' };
+    return;
+  }
+  await next();
+});
+
+// 4. المعالجة
+pipeline.use(async (ctx, next) => {
+  ctx.body = { data: 'نتيجة العملية' };
+  ctx.status = 200;
+});
+
+// التنفيذ
+const result = await pipeline.execute({
+  method: 'GET',
+  url: '/api/admin/users',
+  headers: { authorization: 'Bearer token123' }
+});`,
+      },
+      {
+        title: "Decorator Pattern",
+        content: `// نمط المزخرف - إضافة سلوك جديد لكائن بدون تعديله
+// يُستخدم لـ: التسجيل، التخزين المؤقت، التحقق
+
+// دوال مزخرفة
+function withLogging(fn) {
+  return function(...args) {
+    console.log('استدعاء:', fn.name, 'بالمعاملات:', args);
+    const result = fn.apply(this, args);
+    console.log('النتيجة:', result);
+    return result;
+  };
+}
+
+function withCache(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      console.log('من الكاش');
+      return cache.get(key);
+    }
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+function withRetry(fn, maxRetries = 3) {
+  return async function(...args) {
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        return await fn.apply(this, args);
+      } catch (error) {
+        console.log('محاولة', i + 1, 'فشلت:', error.message);
+        if (i === maxRetries - 1) throw error;
+        await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+      }
+    }
+  };
+}
+
+// الاستخدام
+function calculatePrice(quantity, unitPrice) {
+  return quantity * unitPrice;
+}
+
+const loggedCalculate = withLogging(calculatePrice);
+const cachedCalculate = withCache(calculatePrice);
+
+loggedCalculate(5, 100);
+// استدعاء: calculatePrice بالمعاملات: [5, 100]
+// النتيجة: 500
+
+// مع async
+const fetchData = withRetry(async (url) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('فشل الطلب');
+  return res.json();
+}, 3);
+
+// TypeScript Decorators (تجريبي)
+function Log(target: any, key: string, descriptor: PropertyDescriptor) {
+  const original = descriptor.value;
+  descriptor.value = function(...args: any[]) {
+    console.log('استدعاء ' + key);
+    return original.apply(this, args);
+  };
+}
+
+class UserService {
+  @Log
+  getUser(id: string) {
+    return { id, name: 'أحمد' };
+  }
+}`,
+      },
+      {
+        title: "Repository Pattern",
+        content: `// نمط المستودع - فصل منطق الوصول للبيانات عن منطق الأعمال
+// يُستخدم لـ: تنظيم الكود، سهولة الاختبار، تبديل قاعدة البيانات
+
+// واجهة المستودع
+class BaseRepository {
+  async findAll(filters = {}) { throw new Error('يجب تنفيذها'); }
+  async findById(id) { throw new Error('يجب تنفيذها'); }
+  async create(data) { throw new Error('يجب تنفيذها'); }
+  async update(id, data) { throw new Error('يجب تنفيذها'); }
+  async delete(id) { throw new Error('يجب تنفيذها'); }
+}
+
+// تنفيذ MongoDB
+class MongoUserRepository extends BaseRepository {
+  constructor(db) {
+    super();
+    this.collection = db.collection('users');
+  }
+
+  async findAll(filters = {}) {
+    return this.collection.find(filters).toArray();
+  }
+
+  async findById(id) {
+    return this.collection.findOne({ _id: new ObjectId(id) });
+  }
+
+  async findByEmail(email) {
+    return this.collection.findOne({ email });
+  }
+
+  async create(data) {
+    const result = await this.collection.insertOne({
+      ...data,
+      createdAt: new Date()
+    });
+    return { id: result.insertedId, ...data };
+  }
+
+  async update(id, data) {
+    await this.collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { ...data, updatedAt: new Date() } }
+    );
+    return this.findById(id);
+  }
+
+  async delete(id) {
+    await this.collection.deleteOne({ _id: new ObjectId(id) });
+  }
+}
+
+// خدمة الأعمال - لا تعرف نوع قاعدة البيانات
+class UserService {
+  constructor(userRepo) {
+    this.userRepo = userRepo;
+  }
+
+  async registerUser(data) {
+    // منطق الأعمال
+    const existing = await this.userRepo.findByEmail(data.email);
+    if (existing) throw new Error('البريد مسجل مسبقاً');
+
+    data.password = await hashPassword(data.password);
+    return this.userRepo.create(data);
+  }
+
+  async getUserProfile(id) {
+    const user = await this.userRepo.findById(id);
+    if (!user) throw new Error('المستخدم غير موجود');
+    delete user.password;
+    return user;
+  }
+}
+
+// الاستخدام
+const userRepo = new MongoUserRepository(db);
+const userService = new UserService(userRepo);
+const user = await userService.registerUser({
+  name: 'أحمد', email: 'a@b.com', password: '123456'
+});`,
+      },
+      {
+        title: "Module Pattern و SOLID",
+        content: `// نمط الوحدة - تنظيم الكود في وحدات مستقلة
+// مبادئ SOLID في JavaScript
+
+// S - مبدأ المسؤولية الواحدة
+// كل كلاس يقوم بمهمة واحدة فقط
+
+// خطأ: كلاس يفعل كل شيء
+class BadUserManager {
+  createUser() { /* ... */ }
+  sendEmail() { /* ... */ }
+  generateReport() { /* ... */ }
+  validateData() { /* ... */ }
+}
+
+// صحيح: كل كلاس مسؤول عن شيء واحد
+class UserService { createUser() { /* ... */ } }
+class EmailService { sendEmail() { /* ... */ } }
+class ReportService { generateReport() { /* ... */ } }
+class ValidationService { validateData() { /* ... */ } }
+
+// O - مبدأ الفتح/الإغلاق
+// مفتوح للتوسيع، مغلق للتعديل
+
+// خطأ: تعديل الكلاس لكل نوع جديد
+class BadPriceCalculator {
+  calculate(type, amount) {
+    if (type === 'regular') return amount;
+    if (type === 'premium') return amount * 0.9;
+    if (type === 'vip') return amount * 0.8;
+    // لكل نوع جديد نعدل الكود!
+  }
+}
+
+// صحيح: التوسيع بدون تعديل
+const discountStrategies = {
+  regular: (amount) => amount,
+  premium: (amount) => amount * 0.9,
+  vip: (amount) => amount * 0.8,
+};
+
+function calculatePrice(type, amount) {
+  const strategy = discountStrategies[type];
+  if (!strategy) throw new Error('نوع غير معروف');
+  return strategy(amount);
+}
+
+// إضافة نوع جديد بدون تعديل:
+discountStrategies.enterprise = (amount) => amount * 0.7;
+
+// D - مبدأ عكس الاعتماد
+// الاعتماد على التجريد وليس التفاصيل
+
+// خطأ: اعتماد مباشر
+class OrderService {
+  constructor() {
+    this.db = new MySQLDatabase();  // مرتبط بـ MySQL
+  }
+}
+
+// صحيح: حقن الاعتماد
+class OrderService {
+  constructor(database) {
+    this.db = database;  // أي قاعدة بيانات
+  }
+}
+
+// يمكن استخدام أي تنفيذ
+const service1 = new OrderService(new MySQLDatabase());
+const service2 = new OrderService(new MongoDatabase());
+const service3 = new OrderService(new InMemoryDatabase());  // للاختبار`,
+      },
+    ],
+  },
 ];
 
