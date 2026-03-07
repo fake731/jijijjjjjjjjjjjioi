@@ -164,7 +164,7 @@ const InquirySection = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-sm font-medium">
-                    رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span>
+                    رقم الهاتف
                   </Label>
                   <Input
                     id="phone"

@@ -42,7 +42,7 @@ const navLabels: Record<string, { ar: string; en: string }> = {
   home: { ar: "الرئيسية", en: "Home" },
   tools: { ar: "الأدوات", en: "Tools" },
   ai: { ar: "المساعد", en: "AI" },
-  scanner: { ar: "اكتب اوامر", en: "Commands" },
+  scanner: { ar: "الاوامر", en: "Commands" },
   scripts: { ar: "السكربتات", en: "Scripts" },
   guide: { ar: "الدليل", en: "Guide" },
   webdev: { ar: "تطوير الويب", en: "Web Dev" },
