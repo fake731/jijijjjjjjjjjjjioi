@@ -8697,7 +8697,6 @@ function divide(a, b) {
       },
     ],
   },
-  },
   {
     id: "vuejs",
     title: "Vue.js",
