@@ -155,6 +155,8 @@ const AuthPage = () => {
           return;
         }
 
+        const deviceType = getDeviceType();
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -166,6 +168,7 @@ const AuthPage = () => {
               country: country.trim(),
               city: city.trim() || null,
               phone: phone.trim() || null,
+              device_type: deviceType,
               privacy_accepted: true,
               privacy_accepted_at: new Date().toISOString(),
             },
