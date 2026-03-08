@@ -27,6 +27,11 @@ const DeveloperPage = () => {
   const [stats, setStats] = useState({ totalUsers: 0, totalVisits: 0, totalAiChats: 0 });
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [notifTitle, setNotifTitle] = useState("");
+  const [notifMessage, setNotifMessage] = useState("");
+  const [notifTarget, setNotifTarget] = useState("all");
+  const [sendingNotif, setSendingNotif] = useState(false);
+  const [sentNotifications, setSentNotifications] = useState<any[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
