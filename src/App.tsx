@@ -103,6 +103,7 @@ const AnimatedRoutes = () => {
           <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
           <Route path="/دخول-المطور" element={<DevLoginPage />} />
           <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
+          <Route path="/لوحة-التحكم" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
