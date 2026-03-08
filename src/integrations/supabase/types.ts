@@ -17,6 +17,7 @@ export type Database = {
       ai_chat_logs: {
         Row: {
           ai_version: string | null
+          conversation_id: string | null
           created_at: string
           id: string
           message: string
@@ -26,6 +27,7 @@ export type Database = {
         }
         Insert: {
           ai_version?: string | null
+          conversation_id?: string | null
           created_at?: string
           id?: string
           message: string
@@ -35,6 +37,7 @@ export type Database = {
         }
         Update: {
           ai_version?: string | null
+          conversation_id?: string | null
           created_at?: string
           id?: string
           message?: string
