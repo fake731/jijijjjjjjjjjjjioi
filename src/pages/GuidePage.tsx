@@ -289,6 +289,7 @@ const guideTopics: GuideTopic[] = [
     icon: Lock,
     title: "التشفير والحماية",
     description: "أساسيات التشفير وأنواعه وكيفية استخدامه لحماية البيانات",
+    color: "text-amber-500",
     subTopics: [
       {
         title: "أنواع التشفير",
