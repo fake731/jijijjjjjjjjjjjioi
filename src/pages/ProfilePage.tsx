@@ -197,6 +197,62 @@ const ProfilePage = () => {
               </div>
             </div>
 
+            {/* Country */}
+            <div className="space-y-2">
+              <Label className="text-foreground">البلد</Label>
+              <div className="relative">
+                <Globe className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="مثال: فلسطين"
+                  className="pr-10 bg-secondary/30 border-border/30 text-foreground"
+                  dir="auto"
+                />
+              </div>
+            </div>
+
+            {/* City */}
+            <div className="space-y-2">
+              <Label className="text-foreground">المدينة <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+              <div className="relative">
+                <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="مثال: غزة"
+                  className="pr-10 bg-secondary/30 border-border/30 text-foreground"
+                  dir="auto"
+                />
+              </div>
+            </div>
+
+            {/* Phone */}
+            <div className="space-y-2">
+              <Label className="text-foreground">رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+              <div className="relative">
+                <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+970..."
+                  className="pr-10 bg-secondary/30 border-border/30 text-foreground"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            {/* Age (read-only) */}
+            {age && (
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">العمر</Label>
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-secondary/20 border border-border/20 text-muted-foreground text-sm">
+                  <Calendar className="w-4 h-4" />
+                  <span>{age}</span>
+                </div>
+              </div>
+            )}
+
             {/* Join date */}
             <div className="space-y-2">
               <Label className="text-muted-foreground">تاريخ الانضمام</Label>

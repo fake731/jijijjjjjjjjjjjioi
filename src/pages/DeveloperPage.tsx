@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Users, Eye, MessageSquare, Shield, TrendingUp, BarChart3 } from "lucide-react";
+import { Users, Eye, MessageSquare, Shield, TrendingUp, BarChart3, Globe, MapPin, Phone, ChevronDown, ChevronUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from "recharts";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -18,6 +18,7 @@ const DeveloperPage = () => {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [visits, setVisits] = useState<any[]>([]);
   const [aiLogs, setAiLogs] = useState<any[]>([]);
+  const [expandedChat, setExpandedChat] = useState<string | null>(null);
   const [stats, setStats] = useState({ totalUsers: 0, totalVisits: 0, totalAiChats: 0 });
 
   useEffect(() => {
@@ -62,7 +63,7 @@ const DeveloperPage = () => {
     setStats({ totalUsers: p.length, totalVisits: v.length, totalAiChats: l.length });
   };
 
-  // Chart data: daily visits for last 7 days
+  // Chart data
   const dailyVisitsData = useMemo(() => {
     const days: Record<string, number> = {};
     for (let i = 6; i >= 0; i--) {
@@ -73,8 +74,7 @@ const DeveloperPage = () => {
     }
     visits.forEach((v) => {
       const d = new Date(v.visited_at);
-      const now = new Date();
-      const diff = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+      const diff = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
       if (diff < 7) {
         const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
         if (days[key] !== undefined) days[key]++;
@@ -83,7 +83,6 @@ const DeveloperPage = () => {
     return Object.entries(days).map(([name, زيارات]) => ({ name, زيارات }));
   }, [visits]);
 
-  // Chart data: top visited pages
   const topPagesData = useMemo(() => {
     const pages: Record<string, number> = {};
     visits.forEach((v) => {
@@ -91,11 +90,10 @@ const DeveloperPage = () => {
     });
     return Object.entries(pages)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
+      .slice(0, 8)
       .map(([name, value]) => ({ name: decodeURIComponent(name), value }));
   }, [visits]);
 
-  // Chart data: AI chats per day
   const dailyAiData = useMemo(() => {
     const days: Record<string, number> = {};
     for (let i = 6; i >= 0; i--) {
@@ -106,8 +104,7 @@ const DeveloperPage = () => {
     }
     aiLogs.forEach((l) => {
       const d = new Date(l.created_at);
-      const now = new Date();
-      const diff = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+      const diff = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
       if (diff < 7) {
         const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
         if (days[key] !== undefined) days[key]++;
@@ -116,7 +113,19 @@ const DeveloperPage = () => {
     return Object.entries(days).map(([name, محادثات]) => ({ name, محادثات }));
   }, [aiLogs]);
 
-  const COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "#06b6d4", "#8b5cf6", "#f59e0b", "#ef4444"];
+  // Country distribution
+  const countryData = useMemo(() => {
+    const countries: Record<string, number> = {};
+    profiles.forEach((p) => {
+      const c = p.country || "غير محدد";
+      countries[c] = (countries[c] || 0) + 1;
+    });
+    return Object.entries(countries)
+      .sort((a, b) => b[1] - a[1])
+      .map(([name, value]) => ({ name, value }));
+  }, [profiles]);
+
+  const COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "#06b6d4", "#8b5cf6", "#f59e0b", "#ef4444", "#10b981", "#ec4899"];
 
   if (authLoading || checking) {
     return (
@@ -155,52 +164,62 @@ const DeveloperPage = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card className="border-border/30 bg-card/80">
-            <CardContent className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
                 <Users className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.totalUsers}</p>
-                <p className="text-sm text-muted-foreground">إجمالي المستخدمين</p>
+                <p className="text-xs text-muted-foreground">المستخدمين</p>
               </div>
             </CardContent>
           </Card>
           <Card className="border-border/30 bg-card/80">
-            <CardContent className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center shrink-0">
                 <Eye className="w-6 h-6 text-accent-foreground" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.totalVisits}</p>
-                <p className="text-sm text-muted-foreground">إجمالي الزيارات</p>
+                <p className="text-xs text-muted-foreground">الزيارات</p>
               </div>
             </CardContent>
           </Card>
           <Card className="border-border/30 bg-card/80">
-            <CardContent className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                 <MessageSquare className="w-6 h-6 text-foreground" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.totalAiChats}</p>
-                <p className="text-sm text-muted-foreground">محادثات الذكاء الاصطناعي</p>
+                <p className="text-xs text-muted-foreground">محادثات AI</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-border/30 bg-card/80">
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Globe className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{countryData.length}</p>
+                <p className="text-xs text-muted-foreground">الدول</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Daily Visits Chart */}
+        {/* Charts Row 1 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <Card className="border-border/30 bg-card/80">
-            <CardHeader className="flex flex-row items-center gap-2">
+            <CardHeader className="flex flex-row items-center gap-2 pb-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              <CardTitle className="text-foreground text-lg">الزيارات اليومية (آخر 7 أيام)</CardTitle>
+              <CardTitle className="text-foreground text-base">الزيارات اليومية (آخر 7 أيام)</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={220}>
                 <AreaChart data={dailyVisitsData}>
                   <defs>
                     <linearGradient id="visitGrad" x1="0" y1="0" x2="0" y2="1">
@@ -209,8 +228,8 @@ const DeveloperPage = () => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
                   <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, color: "hsl(var(--foreground))" }} />
                   <Area type="monotone" dataKey="زيارات" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#visitGrad)" strokeWidth={2} />
                 </AreaChart>
@@ -218,59 +237,86 @@ const DeveloperPage = () => {
             </CardContent>
           </Card>
 
-          {/* AI Chats Chart */}
           <Card className="border-border/30 bg-card/80">
-            <CardHeader className="flex flex-row items-center gap-2">
+            <CardHeader className="flex flex-row items-center gap-2 pb-2">
               <BarChart3 className="w-5 h-5 text-primary" />
-              <CardTitle className="text-foreground text-lg">محادثات AI اليومية (آخر 7 أيام)</CardTitle>
+              <CardTitle className="text-foreground text-base">محادثات AI اليومية</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={dailyAiData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} />
                   <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, color: "hsl(var(--foreground))" }} />
                   <Bar dataKey="محادثات" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Top Pages Pie */}
-          <Card className="border-border/30 bg-card/80 lg:col-span-2">
+        {/* Charts Row 2 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Top Pages */}
+          <Card className="border-border/30 bg-card/80">
             <CardHeader>
-              <CardTitle className="text-foreground text-lg">أكثر الصفحات زيارة</CardTitle>
+              <CardTitle className="text-foreground text-base">أكثر الصفحات زيارة</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <ResponsiveContainer width="100%" height={250}>
+              <div className="space-y-3">
+                {topPagesData.map((page, i) => (
+                  <div key={i} className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                      <span className="text-sm text-foreground truncate" dir="ltr">{page.name}</span>
+                    </div>
+                    <Badge variant="secondary" className="shrink-0">{page.value}</Badge>
+                  </div>
+                ))}
+                {topPagesData.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">لا توجد بيانات</p>}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Country Distribution */}
+          <Card className="border-border/30 bg-card/80">
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" />
+              <CardTitle className="text-foreground text-base">توزيع المستخدمين حسب البلد</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {countryData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={220}>
                   <PieChart>
-                    <Pie data={topPagesData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({ name, value }) => `${name} (${value})`}>
-                      {topPagesData.map((_, index) => (
+                    <Pie data={countryData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, value }) => `${name} (${value})`}>
+                      {countryData.map((_, index) => (
                         <Cell key={index} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
                     <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, color: "hsl(var(--foreground))" }} />
                   </PieChart>
                 </ResponsiveContainer>
-              </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">لا توجد بيانات</p>
+              )}
             </CardContent>
           </Card>
         </div>
 
         {/* Data Tabs */}
         <Tabs defaultValue="users" dir="rtl">
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex-wrap h-auto gap-1">
             <TabsTrigger value="users">المستخدمين</TabsTrigger>
             <TabsTrigger value="visits">الزيارات</TabsTrigger>
             <TabsTrigger value="ai">محادثات AI</TabsTrigger>
+            <TabsTrigger value="pages">الصفحات الأكثر زيارة</TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
             <Card className="border-border/30 bg-card/80">
               <CardHeader>
-                <CardTitle className="text-foreground">المستخدمين المسجلين</CardTitle>
+                <CardTitle className="text-foreground">المستخدمين المسجلين ({profiles.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -280,6 +326,9 @@ const DeveloperPage = () => {
                         <th className="text-right p-3 text-muted-foreground font-medium">الاسم</th>
                         <th className="text-right p-3 text-muted-foreground font-medium">البريد</th>
                         <th className="text-right p-3 text-muted-foreground font-medium">العمر</th>
+                        <th className="text-right p-3 text-muted-foreground font-medium">البلد</th>
+                        <th className="text-right p-3 text-muted-foreground font-medium">المدينة</th>
+                        <th className="text-right p-3 text-muted-foreground font-medium">الهاتف</th>
                         <th className="text-right p-3 text-muted-foreground font-medium">الخصوصية</th>
                         <th className="text-right p-3 text-muted-foreground font-medium">التسجيل</th>
                       </tr>
@@ -287,9 +336,33 @@ const DeveloperPage = () => {
                     <tbody>
                       {profiles.map((p) => (
                         <tr key={p.id} className="border-b border-border/10 hover:bg-secondary/20">
-                          <td className="p-3 text-foreground">{p.display_name || "—"}</td>
+                          <td className="p-3 text-foreground font-medium">{p.display_name || "—"}</td>
                           <td className="p-3 text-foreground" dir="ltr">{p.email || "—"}</td>
                           <td className="p-3 text-foreground">{p.age || "—"}</td>
+                          <td className="p-3 text-foreground">
+                            {p.country ? (
+                              <span className="flex items-center gap-1">
+                                <Globe className="w-3 h-3 text-muted-foreground" />
+                                {p.country}
+                              </span>
+                            ) : "—"}
+                          </td>
+                          <td className="p-3 text-foreground">
+                            {p.city ? (
+                              <span className="flex items-center gap-1">
+                                <MapPin className="w-3 h-3 text-muted-foreground" />
+                                {p.city}
+                              </span>
+                            ) : "—"}
+                          </td>
+                          <td className="p-3 text-foreground" dir="ltr">
+                            {p.phone ? (
+                              <span className="flex items-center gap-1">
+                                <Phone className="w-3 h-3 text-muted-foreground" />
+                                {p.phone}
+                              </span>
+                            ) : "—"}
+                          </td>
                           <td className="p-3">
                             <Badge variant={p.privacy_accepted ? "default" : "destructive"} className="text-xs">
                               {p.privacy_accepted ? "موافق" : "غير موافق"}
@@ -313,7 +386,7 @@ const DeveloperPage = () => {
           <TabsContent value="visits">
             <Card className="border-border/30 bg-card/80">
               <CardHeader>
-                <CardTitle className="text-foreground">سجل الزيارات</CardTitle>
+                <CardTitle className="text-foreground">سجل الزيارات ({visits.length})</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
@@ -346,27 +419,82 @@ const DeveloperPage = () => {
           <TabsContent value="ai">
             <Card className="border-border/30 bg-card/80">
               <CardHeader>
-                <CardTitle className="text-foreground">محادثات الذكاء الاصطناعي</CardTitle>
+                <CardTitle className="text-foreground">محادثات الذكاء الاصطناعي ({aiLogs.length})</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {aiLogs.map((log) => (
-                    <div key={log.id} className="p-4 rounded-lg bg-secondary/20 border border-border/20 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Badge variant="outline" className="text-xs">{log.ai_version}</Badge>
-                        <span className="text-xs text-muted-foreground">
-                          {log.user_email || "مجهول"} • {new Date(log.created_at).toLocaleString("ar")}
-                        </span>
-                      </div>
-                      <p className="text-sm text-foreground"><strong>الرسالة:</strong> {log.message}</p>
-                      {log.response && (
-                        <p className="text-sm text-muted-foreground line-clamp-3"><strong>الرد:</strong> {log.response}</p>
+                    <div key={log.id} className="rounded-lg bg-secondary/20 border border-border/20 overflow-hidden">
+                      <button
+                        onClick={() => setExpandedChat(expandedChat === log.id ? null : log.id)}
+                        className="w-full p-4 flex items-center justify-between text-right hover:bg-secondary/30 transition-colors"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Badge variant="outline" className="text-xs shrink-0">{log.ai_version}</Badge>
+                          <span className="text-sm text-foreground truncate">{log.message}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-xs text-muted-foreground hidden sm:inline">
+                            {log.user_email || "مجهول"} • {new Date(log.created_at).toLocaleString("ar")}
+                          </span>
+                          {expandedChat === log.id ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                        </div>
+                      </button>
+                      {expandedChat === log.id && (
+                        <div className="px-4 pb-4 space-y-3 border-t border-border/20 pt-3">
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-1">المستخدم:</p>
+                            <p className="text-sm text-foreground bg-primary/10 rounded-lg p-3">{log.message}</p>
+                          </div>
+                          {log.response && (
+                            <div>
+                              <p className="text-xs text-muted-foreground mb-1">الرد:</p>
+                              <p className="text-sm text-muted-foreground bg-secondary/30 rounded-lg p-3 whitespace-pre-wrap">{log.response}</p>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span>{log.user_email || "مجهول"}</span>
+                            <span>•</span>
+                            <span>{new Date(log.created_at).toLocaleString("ar")}</span>
+                          </div>
+                        </div>
                       )}
                     </div>
                   ))}
                   {aiLogs.length === 0 && (
                     <p className="text-center text-muted-foreground py-8">لا يوجد محادثات مسجلة</p>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="pages">
+            <Card className="border-border/30 bg-card/80">
+              <CardHeader>
+                <CardTitle className="text-foreground">ترتيب الصفحات حسب الزيارات</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {topPagesData.map((page, i) => {
+                    const max = topPagesData[0]?.value || 1;
+                    const percent = (page.value / max) * 100;
+                    return (
+                      <div key={i} className="space-y-1">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-foreground" dir="ltr">{page.name}</span>
+                          <span className="text-muted-foreground font-medium">{page.value} زيارة</span>
+                        </div>
+                        <div className="h-2 bg-secondary/30 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all"
+                            style={{ width: `${percent}%`, backgroundColor: COLORS[i % COLORS.length] }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {topPagesData.length === 0 && <p className="text-sm text-muted-foreground text-center py-8">لا توجد بيانات</p>}
                 </div>
               </CardContent>
             </Card>

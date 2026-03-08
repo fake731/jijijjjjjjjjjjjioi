@@ -224,6 +224,64 @@ const AuthPage = () => {
                 </div>
               )}
 
+              {/* Country - signup only */}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="country" className="text-foreground">البلد</Label>
+                  <div className="relative">
+                    <Globe className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="country"
+                      type="text"
+                      placeholder="مثال: فلسطين"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                      required
+                      dir="auto"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* City - signup only (optional) */}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="city" className="text-foreground">المدينة <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+                  <div className="relative">
+                    <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="city"
+                      type="text"
+                      placeholder="مثال: غزة"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                      dir="auto"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Phone - signup only (optional) */}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-foreground">رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+                  <div className="relative">
+                    <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+970..."
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Password */}
               {mode !== "forgot" && (
                 <div className="space-y-2">
