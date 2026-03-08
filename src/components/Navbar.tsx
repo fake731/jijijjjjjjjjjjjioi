@@ -53,9 +53,26 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Theme Toggle */}
-          <div className="hidden lg:flex items-center gap-4">
+          {/* Theme Toggle & Auth */}
+          <div className="hidden lg:flex items-center gap-3">
             <ThemeToggle />
+            {user ? (
+              <button
+                onClick={signOut}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                خروج
+              </button>
+            ) : (
+              <Link
+                to="/تسجيل-الدخول"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                دخول
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
