@@ -217,10 +217,10 @@ const PasswordGenerator = ({ onTestPassword }: Props) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={user ? "مثال: Qusay" : "سجل دخول أولاً"}
+              placeholder={!loading && !user ? "سجل دخول أولاً" : "مثال: Qusay"}
               className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring font-mono"
               dir="ltr"
-              disabled={!user}
+              disabled={!loading && !user}
               maxLength={30}
             />
             <p className="text-xs text-muted-foreground">
