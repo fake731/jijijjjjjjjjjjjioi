@@ -311,10 +311,24 @@ export const DeveloperProvider = ({ children }: { children: ReactNode }) => {
     return result;
   }, [profiles, userSearch, userSort, countryFilter]);
 
+  const normalizeCountry = (value: unknown) => {
+    if (typeof value !== "string") return "غير محدد";
+    const cleaned = value.trim();
+    if (!cleaned || ["null", "undefined", "-", "غير محدد"].includes(cleaned.toLowerCase())) return "غير محدد";
+    return cleaned;
+  };
+
   const countryData = useMemo(() => {
     const countries: Record<string, { count: number; users: any[] }> = {};
-    profiles.forEach(p => { const c = p.country || "غير محدد"; if (!countries[c]) countries[c] = { count: 0, users: [] }; countries[c].count++; countries[c].users.push(p); });
-    return Object.entries(countries).sort((a, b) => b[1].count - a[1].count).map(([name, data]) => ({ name, ...data }));
+    profiles.forEach((p) => {
+      const c = normalizeCountry(p.country);
+      if (!countries[c]) countries[c] = { count: 0, users: [] };
+      countries[c].count++;
+      countries[c].users.push(p);
+    });
+    return Object.entries(countries)
+      .sort((a, b) => b[1].count - a[1].count)
+      .map(([name, data]) => ({ name, ...data }));
   }, [profiles]);
 
   const countryChartData = useMemo(() => countryData.map(c => ({ name: c.name, value: c.count })), [countryData]);
@@ -359,19 +373,7 @@ export const DeveloperProvider = ({ children }: { children: ReactNode }) => {
     return Object.entries(ranges).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value }));
   }, [profiles]);
 
-  const filteredVisits = useMemo(() => {
-    if (!visitSearch) return visits.slice(0, 100);
-    const s = visitSearch.toLowerCase();
-    return visits.filter(v => decodeURIComponent(v.page_path).toLowerCase().includes(s)).slice(0, 100);
-  }, [visits, visitSearch]);
-
-  const filteredAiLogs = useMemo(() => {
-    if (!aiSearch) return aiLogs.slice(0, 100);
-    const s = aiSearch.toLowerCase();
-    return aiLogs.filter(l => (l.message || "").toLowerCase().includes(s) || (l.user_email || "").toLowerCase().includes(s) || (l.response || "").toLowerCase().includes(s)).slice(0, 100);
-  }, [aiLogs, aiSearch]);
-
-  const uniqueCountries = useMemo(() => Array.from(new Set(profiles.map(p => p.country || "غير محدد"))).sort(), [profiles]);
+  const uniqueCountries = useMemo(() => Array.from(new Set(profiles.map(p => normalizeCountry(p.country)))).sort(), [profiles]);
 
   const todayStats = useMemo(() => {
     const today = new Date().toDateString();
