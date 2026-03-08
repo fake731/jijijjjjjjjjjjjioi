@@ -351,45 +351,45 @@
     --cyber-border: 30 16% 84%;
   }
 
-  /* Yellow Theme - Dark Mode — Golden */
+  /* Yellow Theme - Dark Mode */
   .dark.theme-yellow {
-    --foreground: 45 100% 55%;
-    --card-foreground: 45 100% 55%;
-    --popover-foreground: 45 100% 55%;
-    --primary: 45 100% 50%;
-    --primary-foreground: 45 100% 8%;
-    --secondary-foreground: 45 85% 65%;
-    --muted-foreground: 45 50% 55%;
-    --accent: 45 90% 45%;
-    --accent-foreground: 45 100% 8%;
-    --border: 45 60% 30%;
-    --ring: 45 100% 50%;
-    --cyber-cyan: 45 100% 50%;
-    --cyber-cyan-glow: 45 100% 60%;
-    --cyber-border: 45 60% 30%;
+    --foreground: 50 100% 55%;
+    --card-foreground: 50 100% 55%;
+    --popover-foreground: 50 100% 55%;
+    --primary: 50 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary-foreground: 50 90% 65%;
+    --muted-foreground: 50 50% 58%;
+    --accent: 50 95% 48%;
+    --accent-foreground: 0 0% 0%;
+    --border: 50 60% 30%;
+    --ring: 50 100% 50%;
+    --cyber-cyan: 50 100% 50%;
+    --cyber-cyan-glow: 50 100% 62%;
+    --cyber-border: 50 60% 30%;
   }
 
-  /* Yellow Theme - Light Mode — Elegant Gold */
+  /* Yellow Theme - Light Mode */
   .light.theme-yellow {
-    --background: 42 25% 95%;
-    --card: 42 20% 98%;
-    --foreground: 38 40% 25%;
-    --card-foreground: 38 40% 25%;
-    --popover-foreground: 38 40% 25%;
-    --primary: 38 70% 42%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 42 18% 90%;
-    --secondary-foreground: 38 35% 33%;
-    --muted: 42 12% 87%;
-    --muted-foreground: 38 22% 48%;
-    --accent: 38 65% 38%;
-    --accent-foreground: 0 0% 100%;
-    --border: 42 16% 84%;
-    --input: 42 10% 92%;
-    --ring: 38 70% 42%;
-    --cyber-cyan: 38 70% 42%;
-    --cyber-cyan-glow: 38 75% 52%;
-    --cyber-border: 42 16% 84%;
+    --background: 48 30% 95%;
+    --card: 48 22% 98%;
+    --foreground: 40 45% 22%;
+    --card-foreground: 40 45% 22%;
+    --popover-foreground: 40 45% 22%;
+    --primary: 48 90% 45%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 48 20% 90%;
+    --secondary-foreground: 40 38% 30%;
+    --muted: 48 14% 87%;
+    --muted-foreground: 40 22% 45%;
+    --accent: 48 85% 42%;
+    --accent-foreground: 0 0% 0%;
+    --border: 48 18% 84%;
+    --input: 48 12% 92%;
+    --ring: 48 90% 45%;
+    --cyber-cyan: 48 90% 45%;
+    --cyber-cyan-glow: 48 92% 55%;
+    --cyber-border: 48 18% 84%;
   }
 }
 
