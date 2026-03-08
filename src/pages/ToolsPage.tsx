@@ -1,9 +1,11 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ChevronDown, ChevronUp, Copy, Check, Search, Download, LayoutGrid, List, Terminal, Globe } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, Check, Search, Download, LayoutGrid, List, Terminal, Globe, Lock } from "lucide-react";
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { tools, toolIcons, Tool } from "@/data/toolsData";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 // Color mapping for tool icons based on tool category/type
 const toolColors: Record<string, string> = {
@@ -104,20 +106,32 @@ const toolColors: Record<string, string> = {
 };
 
 const ToolsPage = () => {
+  const { user } = useAuth();
   const [expandedTool, setExpandedTool] = useState<number | null>(0);
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [viewMode, setViewMode] = useState<"expanded" | "compact">("expanded");
 
+  const requireAuth = (action: () => void) => {
+    if (!user) {
+      toast.error("سجل دخول أولاً لاستخدام هذه الميزة");
+      return;
+    }
+    action();
+  };
+
   const copyCommand = (command: string) => {
-    navigator.clipboard.writeText(command);
-    setCopiedCommand(command);
-    setTimeout(() => setCopiedCommand(null), 2000);
+    requireAuth(() => {
+      navigator.clipboard.writeText(command);
+      setCopiedCommand(command);
+      setTimeout(() => setCopiedCommand(null), 2000);
+    });
   };
 
   const downloadTool = (tool: Tool) => {
-    const watermark = `# ═══════════════════════════════════════════════════════════════
+    requireAuth(() => {
+      const watermark = `# ═══════════════════════════════════════════════════════════════
 # Tool: ${tool.name}
 # By: Qusay_kali
 # Instagram: @0oscp
@@ -131,21 +145,21 @@ const ToolsPage = () => {
 # ═══════════════════════════════════════════════════════════════
 
 `;
-    
-    const commands = tool.commands.map((cmd, i) => 
-      `# ${language === "ar" ? "الخطوة" : "Step"} ${i + 1}: ${language === "ar" ? cmd.description.ar : cmd.description.en}\n${cmd.command}\n`
-    ).join('\n');
-    
-    const content = watermark + commands;
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${tool.name.toLowerCase().replace(/\s+/g, '-')}-commands.sh`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const commands = tool.commands.map((cmd, i) => 
+        `# ${language === "ar" ? "الخطوة" : "Step"} ${i + 1}: ${language === "ar" ? cmd.description.ar : cmd.description.en}\n${cmd.command}\n`
+      ).join('\n');
+      
+      const content = watermark + commands;
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tool.name.toLowerCase().replace(/\s+/g, '-')}-commands.sh`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
   };
 
   const filteredTools = useMemo(() => {
@@ -363,8 +377,11 @@ const ToolsPage = () => {
                                 <button
                                   onClick={() => copyCommand(cmd.command)}
                                   className="p-1 rounded hover:bg-primary/20 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
+                                  title={!user ? "سجل دخول للنسخ" : "نسخ"}
                                 >
-                                  {copiedCommand === cmd.command ? (
+                                  {!user ? (
+                                    <Lock className="w-3 h-3 text-muted-foreground" />
+                                  ) : copiedCommand === cmd.command ? (
                                     <Check className="w-3 h-3 text-primary" />
                                   ) : (
                                     <Copy className="w-3 h-3 text-muted-foreground" />
