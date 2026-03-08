@@ -257,35 +257,35 @@ const QuickSearch = () => {
                   <p className="text-xs text-muted-foreground mb-3">روابط سريعة</p>
                   <div className="flex flex-wrap gap-2">
                     <button
-                      onClick={() => navigate("/scanner")}
+                      onClick={() => navigate("/الاوامر")}
                       className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
                     >
                       <Terminal className="w-4 h-4 text-primary" />
                       <span>أوامر كالي</span>
                     </button>
                     <button
-                      onClick={() => navigate("/tools")}
+                      onClick={() => navigate("/الادوات")}
                       className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
                     >
                       <Wrench className="w-4 h-4 text-primary" />
                       <span>الأدوات</span>
                     </button>
                     <button
-                      onClick={() => navigate("/scripts")}
+                      onClick={() => navigate("/السكربتات")}
                       className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
                     >
                       <FileCode className="w-4 h-4 text-primary" />
                       <span>السكربتات</span>
                     </button>
                     <button
-                      onClick={() => navigate("/guide")}
+                      onClick={() => navigate("/الدليل")}
                       className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
                     >
                       <BookOpen className="w-4 h-4 text-primary" />
                       <span>الدليل الكامل</span>
                     </button>
                     <button
-                      onClick={() => navigate("/download")}
+                      onClick={() => navigate("/التحميل")}
                       className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
                     >
                       <Download className="w-4 h-4 text-primary" />

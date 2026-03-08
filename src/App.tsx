@@ -58,16 +58,16 @@ const AnimatedRoutes = () => {
       >
         <Routes location={location}>
           <Route path="/" element={<Index />} />
-          <Route path="/ai" element={<AIPage />} />
-          <Route path="/ai2" element={<AI2Page />} />
-          <Route path="/tools" element={<ToolsPage />} />
-          <Route path="/scanner" element={<ScannerPage />} />
-          <Route path="/scripts" element={<ScriptsPage />} />
-          <Route path="/guide" element={<GuidePage />} />
-          <Route path="/download" element={<DownloadPage />} />
-          <Route path="/webdev" element={<WebDevPage />} />
-          <Route path="/password-checker" element={<PasswordCheckerPage />} />
-          <Route path="/inquiry" element={<InquiryPage />} />
+          <Route path="/الذكاء" element={<AIPage />} />
+          <Route path="/الذكاء2" element={<AI2Page />} />
+          <Route path="/الادوات" element={<ToolsPage />} />
+          <Route path="/الاوامر" element={<ScannerPage />} />
+          <Route path="/السكربتات" element={<ScriptsPage />} />
+          <Route path="/الدليل" element={<GuidePage />} />
+          <Route path="/التحميل" element={<DownloadPage />} />
+          <Route path="/تطوير-الويب" element={<WebDevPage />} />
+          <Route path="/فحص-كلمة-المرور" element={<PasswordCheckerPage />} />
+          <Route path="/الاستفسارات" element={<InquiryPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
