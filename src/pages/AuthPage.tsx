@@ -14,7 +14,7 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 
 const AuthPage = () => {
-  const [mode, setMode] = useState<"login" | "signup" | "forgot" | "email-sent">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot" | "email-sent" | "reset-sent">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
@@ -132,8 +132,7 @@ const AuthPage = () => {
           redirectTo: `${window.location.origin}/إعادة-كلمة-المرور`,
         });
         if (error) throw error;
-        toast.success("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
-        setMode("login");
+        setMode("reset-sent");
       } else if (mode === "signup") {
         if (!privacyAccepted) {
           toast.error("يجب الموافقة على سياسة الخصوصية للمتابعة");
@@ -210,6 +209,7 @@ const AuthPage = () => {
 
   const getTitle = () => {
     if (mode === "email-sent") return "تحقق من بريدك الإلكتروني";
+    if (mode === "reset-sent") return "تحقق من بريدك الإلكتروني";
     if (mode === "forgot") return "نسيت كلمة المرور";
     if (mode === "signup") return "إنشاء حساب";
     return "تسجيل الدخول";
@@ -217,6 +217,7 @@ const AuthPage = () => {
 
   const getDescription = () => {
     if (mode === "email-sent") return "تم إرسال رابط التأكيد إلى بريدك الإلكتروني";
+    if (mode === "reset-sent") return "تم إرسال رابط إعادة تعيين كلمة المرور";
     if (mode === "forgot") return "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور";
     if (mode === "signup") return "أنشئ حسابك الجديد للوصول لجميع الميزات";
     return "أدخل بياناتك لتسجيل الدخول";
@@ -235,7 +236,60 @@ const AuthPage = () => {
             <CardDescription className="text-muted-foreground">{getDescription()}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {mode === "email-sent" ? (
+            {mode === "reset-sent" ? (
+              <div className="space-y-6">
+                <div className="flex justify-center">
+                  <div className="w-20 h-20 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center">
+                    <Mail className="w-10 h-10 text-primary" />
+                  </div>
+                </div>
+
+                <div className="bg-secondary/30 rounded-xl p-5 space-y-4">
+                  <h3 className="text-sm font-bold text-foreground text-center">خطوات إعادة تعيين كلمة المرور:</h3>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-primary font-bold text-xs">1</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-foreground font-medium">افتح بريدك الإلكتروني</p>
+                        <p className="text-xs text-muted-foreground">{email}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-primary font-bold text-xs">2</span>
+                      </div>
+                      <div>
+                        <p className="text-sm text-foreground font-medium">اضغط على الرابط في الرسالة</p>
+                        <p className="text-xs text-muted-foreground">تحقق من صندوق الوارد أو مجلد Spam</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <CheckCircle2 className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-foreground font-medium">أدخل كلمة المرور الجديدة</p>
+                        <p className="text-xs text-muted-foreground">سيتم توجيهك تلقائياً لصفحة إعادة التعيين</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Button onClick={() => setMode("login")} className="w-full h-12 gap-2">
+                  <ArrowRight className="w-4 h-4" />
+                  العودة لتسجيل الدخول
+                </Button>
+
+                <p className="text-xs text-center text-muted-foreground/60">
+                  لم يصلك الإيميل؟ تحقق من مجلد Spam أو حاول مرة أخرى
+                </p>
+              </div>
+            ) : mode === "email-sent" ? (
               <div className="space-y-6">
                 <div className="flex justify-center">
                   <div className="w-20 h-20 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
