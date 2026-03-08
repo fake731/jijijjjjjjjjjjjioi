@@ -1,9 +1,11 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ChevronDown, ChevronUp, Copy, Check, Search, Download, LayoutGrid, List, Terminal, Globe } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, Check, Search, Download, LayoutGrid, List, Terminal, Globe, Lock } from "lucide-react";
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { tools, toolIcons, Tool } from "@/data/toolsData";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 // Color mapping for tool icons based on tool category/type
 const toolColors: Record<string, string> = {
