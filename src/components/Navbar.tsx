@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, UserCircle, Shield, Bell } from "lucide-react";
+import { Menu, X, LogIn, LogOut, UserCircle, Shield, Bell, LayoutDashboard } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
