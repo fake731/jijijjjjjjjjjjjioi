@@ -73,7 +73,9 @@ const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
+    <>
+      <PageVisitTracker />
+      <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
         initial="initial"
