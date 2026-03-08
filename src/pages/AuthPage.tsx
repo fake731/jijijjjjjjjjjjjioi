@@ -129,7 +129,7 @@ const AuthPage = () => {
         navigate("/");
       } else if (mode === "forgot") {
         // Use published URL so the reset link opens the real site, not Lovable preview
-        const siteOrigin = "https://jijijjjjjjjjjjjioi.lovable.app";
+        const siteOrigin = "https://qusayk.netlify.app";
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${siteOrigin}/إعادة-كلمة-المرور`,
         });
