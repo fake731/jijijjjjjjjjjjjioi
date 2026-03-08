@@ -87,12 +87,12 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
             {user ? (
-              <button
-                onClick={signOut}
-                className="w-10 h-10 rounded-xl bg-destructive/10 border border-destructive/30 flex items-center justify-center"
+              <Link
+                to="/الملف-الشخصي"
+                className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center"
               >
-                <LogOut className="w-4 h-4 text-destructive" />
-              </button>
+                <UserCircle className="w-5 h-5 text-primary" />
+              </Link>
             ) : (
               <Link
                 to="/تسجيل-الدخول"
