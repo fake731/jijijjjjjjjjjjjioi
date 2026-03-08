@@ -8159,13 +8159,16 @@ img {
     color: "text-rose-500",
     topics: [
       {
-        title: "أساسيات SCSS",
+        title: "أساسيات SCSS والمتغيرات",
         content: `// === SCSS - مُعالج CSS المتقدم ===
 
 // --- المتغيرات ---
 $primary-color: #3498db;
+$secondary-color: #2ecc71;
 $font-size-base: 16px;
 $spacing: 8px;
+$border-radius: 12px;
+$shadow: 0 2px 10px rgba(0,0,0,0.1);
 
 // --- التداخل (Nesting) ---
 .navbar {
@@ -8209,7 +8212,7 @@ $side: 'top';
 }`,
       },
       {
-        title: "Mixins و Functions و الحلقات",
+        title: "Mixins المتقدمة",
         content: `// === Mixins ===
 
 @mixin flex-center {
@@ -8227,38 +8230,68 @@ $side: 'top';
     border: none;
     border-radius: $radius;
     padding: 12px 24px;
-    &:hover { background-color: darken($bg, 10%); }
+    cursor: pointer;
+    transition: all 0.3s;
+    &:hover { background-color: darken($bg, 10%); transform: translateY(-2px); }
+    &:active { transform: translateY(0); }
 }
 
 .btn-primary { @include button(#3498db); }
 .btn-danger  { @include button(#e74c3c, white, 12px); }
+.btn-success { @include button(#2ecc71); }
 
 // Mixin للـ Responsive
 @mixin respond-to($bp) {
     @if $bp == 'mobile'  { @media (max-width: 767px) { @content; } }
-    @else if $bp == 'tablet'  { @media (min-width: 768px) { @content; } }
+    @else if $bp == 'tablet'  { @media (min-width: 768px) and (max-width: 1023px) { @content; } }
     @else if $bp == 'desktop' { @media (min-width: 1024px) { @content; } }
+    @else if $bp == 'wide'    { @media (min-width: 1440px) { @content; } }
 }
 
 .grid {
     grid-template-columns: 1fr;
     @include respond-to('tablet')  { grid-template-columns: repeat(2, 1fr); }
     @include respond-to('desktop') { grid-template-columns: repeat(3, 1fr); }
+    @include respond-to('wide')    { grid-template-columns: repeat(4, 1fr); }
 }
 
-// === Functions ===
+// Mixin للظلال
+@mixin card-shadow($level: 1) {
+    @if $level == 1 { box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+    @else if $level == 2 { box-shadow: 0 4px 6px rgba(0,0,0,0.15); }
+    @else if $level == 3 { box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+}`,
+      },
+      {
+        title: "Functions و الحلقات",
+        content: `// === Functions ===
 @function rem($px) { @return $px / 16 * 1rem; }
-.element { font-size: rem(24); padding: rem(16); }
+@function em($px, $base: 16) { @return $px / $base * 1em; }
+
+.element { font-size: rem(24); padding: rem(16); margin: rem(32); }
+
+// دالة لتفتيح/تغميق الألوان
+@function tint($color, $percentage) {
+    @return mix(white, $color, $percentage);
+}
+@function shade($color, $percentage) {
+    @return mix(black, $color, $percentage);
+}
 
 // === الحلقات ===
-@for $i from 1 through 5 {
+// @for loop
+@for $i from 1 through 8 {
     .mt-#{$i} { margin-top: $i * 8px; }
+    .mb-#{$i} { margin-bottom: $i * 8px; }
+    .p-#{$i}  { padding: $i * 8px; }
 }
 
-$colors: ('primary': #3498db, 'success': #2ecc71, 'danger': #e74c3c);
+// @each loop مع Maps
+$colors: ('primary': #3498db, 'success': #2ecc71, 'danger': #e74c3c, 'warning': #f39c12);
 @each $name, $color in $colors {
     .text-#{$name} { color: $color; }
     .bg-#{$name}   { background-color: $color; }
+    .border-#{$name} { border-color: $color; }
     .btn-#{$name}  {
         background-color: $color;
         &:hover { background-color: darken($color, 10%); }
@@ -8274,21 +8307,204 @@ $grid-columns: 12;
     }
 }
 
-// الشروط
-@mixin theme($mode) {
-    @if $mode == 'dark' { background: #1a1a1a; color: #fff; }
-    @else { background: #fff; color: #333; }
+// @while loop
+$i: 1;
+@while $i <= 6 {
+    h#{$i} { font-size: rem(44 - ($i * 4)); }
+    $i: $i + 1;
+}`,
+      },
+      {
+        title: "هيكلة المشروع مع SCSS",
+        content: `// === تنظيم ملفات SCSS (7-1 Pattern) ===
+
+// هيكل المجلدات:
+// scss/
+//   abstracts/
+//     _variables.scss    - المتغيرات
+//     _mixins.scss       - الـ Mixins
+//     _functions.scss    - الدوال
+//   base/
+//     _reset.scss        - إعادة التعيين
+//     _typography.scss   - الخطوط
+//   components/
+//     _buttons.scss      - الأزرار
+//     _cards.scss        - البطاقات
+//     _forms.scss        - النماذج
+//   layout/
+//     _header.scss       - الهيدر
+//     _footer.scss       - الفوتر
+//     _grid.scss         - الشبكة
+//   pages/
+//     _home.scss         - الصفحة الرئيسية
+//   themes/
+//     _dark.scss         - الثيم الداكن
+//   main.scss            - الملف الرئيسي
+
+// === main.scss ===
+@import 'abstracts/variables';
+@import 'abstracts/mixins';
+@import 'abstracts/functions';
+@import 'base/reset';
+@import 'base/typography';
+@import 'components/buttons';
+@import 'components/cards';
+@import 'layout/header';
+@import 'layout/footer';
+@import 'pages/home';
+@import 'themes/dark';
+
+// === _variables.scss ===
+:root {
+    --primary: #{$primary-color};
+    --secondary: #{$secondary-color};
+    --font-base: #{$font-size-base};
 }
 
-// @extend
+// CSS Variables مع SCSS
+$themes: (
+    light: (bg: #fff, text: #333, primary: #3498db),
+    dark: (bg: #1a1a2e, text: #eee, primary: #00d4ff)
+);
+
+@each $theme, $map in $themes {
+    [data-theme="#{$theme}"] {
+        --bg: #{map-get($map, bg)};
+        --text: #{map-get($map, text)};
+        --primary: #{map-get($map, primary)};
+    }
+}`,
+      },
+      {
+        title: "@extend والوراثة",
+        content: `// === @extend والـ Placeholders ===
+
+// Placeholder (لا يُنتج CSS بذاته)
 %card-base {
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
 }
 
-.product-card { @extend %card-base; border: 1px solid #eee; }
-.user-card    { @extend %card-base; border: 2px solid #3498db; }`,
+%flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+%text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// استخدام @extend
+.product-card {
+    @extend %card-base;
+    border: 1px solid #eee;
+    &:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+}
+
+.user-card {
+    @extend %card-base;
+    border: 2px solid #3498db;
+    text-align: center;
+}
+
+// === الشروط المتقدمة ===
+@mixin theme-colors($mode) {
+    @if $mode == 'dark' {
+        background: #1a1a2e;
+        color: #eee;
+        --shadow: rgba(0,0,0,0.5);
+    } @else if $mode == 'light' {
+        background: #fff;
+        color: #333;
+        --shadow: rgba(0,0,0,0.1);
+    } @else if $mode == 'sepia' {
+        background: #f4ecd8;
+        color: #5b4636;
+        --shadow: rgba(91,70,54,0.1);
+    }
+}
+
+body { @include theme-colors('dark'); }
+
+// === Content Directive ===
+@mixin on-hover {
+    &:hover, &:focus {
+        @content;
+    }
+}
+
+.button {
+    background: blue;
+    @include on-hover {
+        background: darkblue;
+        transform: scale(1.05);
+    }
+}`,
+      },
+      {
+        title: "SCSS مع أطر العمل الحديثة",
+        content: `// === SCSS مع React/Vue ===
+
+// React - CSS Modules مع SCSS
+// Button.module.scss
+.button {
+    @include button($primary-color);
+    
+    &--large {
+        padding: 16px 32px;
+        font-size: rem(18);
+    }
+    
+    &--icon {
+        @extend %flex-center;
+        gap: 8px;
+    }
+}
+
+// استخدام في React:
+// import styles from './Button.module.scss';
+// <button className={styles.button}>Click</button>
+
+// === أنماط الأنيميشن ===
+@mixin fade-in($duration: 0.3s, $delay: 0s) {
+    animation: fadeIn $duration ease-in-out $delay both;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-30px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+// توليد أنيميشن تدريجي للقوائم
+@for $i from 1 through 10 {
+    .list-item:nth-child(#{$i}) {
+        @include fade-in(0.4s, $i * 0.1s);
+    }
+}
+
+// === أدوات مساعدة (Utilities) ===
+$spacings: (0: 0, 1: 4px, 2: 8px, 3: 16px, 4: 24px, 5: 32px, 6: 48px);
+$directions: (t: top, b: bottom, l: left, r: right);
+
+@each $key, $value in $spacings {
+    .m-#{$key} { margin: $value; }
+    .p-#{$key} { padding: $value; }
+    
+    @each $dir-key, $dir-value in $directions {
+        .m#{$dir-key}-#{$key} { margin-#{$dir-value}: $value; }
+        .p#{$dir-key}-#{$key} { padding-#{$dir-value}: $value; }
+    }
+}`,
       },
     ],
   },
@@ -8306,55 +8522,159 @@ $grid-columns: 12;
 const regex1 = /pattern/flags;
 const regex2 = new RegExp('pattern', 'flags');
 
-// الأعلام
-/pattern/g   // بحث شامل
-/pattern/i   // تجاهل حالة الأحرف
-/pattern/m   // متعدد الأسطر
+// الأعلام (Flags)
+/pattern/g   // بحث شامل (global)
+/pattern/i   // تجاهل حالة الأحرف (case-insensitive)
+/pattern/m   // متعدد الأسطر (multiline)
+/pattern/s   // النقطة تشمل سطر جديد (dotAll)
+/pattern/u   // يونيكود (unicode)
+/pattern/y   // لاصق (sticky)
 
 // المحارف الخاصة
-.     // أي محرف
+.     // أي محرف (ما عدا سطر جديد)
 \\d    // رقم [0-9]
-\\w    // حرف أو رقم أو _
-\\s    // مسافة بيضاء
-\\b    // حد الكلمة
-^     // بداية النص
-$     // نهاية النص
-
-// المحددات الكمية
-*      // 0 أو أكثر
+\\D    // غير رقم [^0-9]
+\\w    // حرف أو رقم أو _ [a-zA-Z0-9_]
+\\W    // عكس \\w
+\\s    // مسافة بيضاء (space, tab, newline)
+\\S    // غير مسافة بيضاء
+\\b    // حد الكلمة (word boundary)
+^     // بداية النص أو السطر
+$     // نهاية النص أو السطر`,
+      },
+      {
+        title: "المحددات الكمية والمجموعات",
+        content: `// === المحددات الكمية (Quantifiers) ===
+*      // 0 أو أكثر (جشع - greedy)
 +      // 1 أو أكثر
 ?      // 0 أو 1
-{3}    // بالضبط 3
-{2,5}  // من 2 إلى 5
+{3}    // بالضبط 3 مرات
+{2,5}  // من 2 إلى 5 مرات
+{3,}   // 3 مرات أو أكثر
 
-// === أمثلة عملية ===
+// كسول (Lazy) - أقل عدد ممكن
+*?     // 0 أو أكثر (كسول)
++?     // 1 أو أكثر (كسول)
 
-// التحقق من البريد
+// === المجموعات (Groups) ===
+(abc)     // مجموعة التقاط
+(?:abc)   // مجموعة بدون التقاط
+(?<name>abc)  // مجموعة مُسماة
+
+// === فئات المحارف (Character Classes) ===
+[abc]     // أحد هذه المحارف
+[^abc]    // أي محرف ما عدا هذه
+[a-z]     // نطاق: a إلى z
+[A-Za-z]  // كل الأحرف الإنجليزية
+[0-9]     // كل الأرقام (مثل \\d)
+
+// === التناوب (Alternation) ===
+cat|dog   // cat أو dog
+(red|blue) ball  // red ball أو blue ball
+
+// أمثلة عملية
+const hexColor = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+hexColor.test('#fff');     // true
+hexColor.test('#1a2b3c');  // true
+hexColor.test('#xyz');     // false`,
+      },
+      {
+        title: "طرق JavaScript مع Regex",
+        content: `// === طرق String مع Regex ===
+
+const text = 'مرحبا بالعالم، مرحبا بالجميع';
+
+// test() - يرجع true/false
+/مرحبا/.test(text); // true
+
+// match() - يرجع المطابقات
+text.match(/مرحبا/g); // ['مرحبا', 'مرحبا']
+
+// matchAll() - يرجع iterator
+const matches = [...text.matchAll(/مرحبا/g)];
+matches.forEach(m => console.log(m.index)); // 0, 15
+
+// search() - يرجع أول index
+text.search(/العالم/); // 10
+
+// replace() - الاستبدال
+text.replace(/مرحبا/g, 'أهلا'); // 'أهلا بالعالم، أهلا بالجميع'
+
+// replaceAll() - استبدال الكل
+'aabaa'.replaceAll('a', 'x'); // 'xxbxx'
+
+// split() - التقسيم
+'one,two,,three'.split(/,+/); // ['one', 'two', 'three']
+
+// === طرق RegExp ===
+const regex = /\\d+/g;
+let result;
+while ((result = regex.exec('abc123def456')) !== null) {
+    console.log(result[0], result.index);
+    // '123' 3
+    // '456' 9
+}`,
+      },
+      {
+        title: "أنماط التحقق الشائعة",
+        content: `// === أنماط التحقق (Validation Patterns) ===
+
+// البريد الإلكتروني
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
-emailRegex.test('user@example.com'); // true
 
-// التحقق من رقم الهاتف
-const phoneRegex = /^(\\+?\\d{1,3})?[-.\\s]?\\d{3}[-.\\s]?\\d{3}[-.\\s]?\\d{4}$/;
+// رقم الهاتف (دولي)
+const phoneRegex = /^\\+?[1-9]\\d{1,14}$/;
 
-// استخراج أرقام
-const numbers = 'العمر 25 والطول 180'.match(/\\d+/g);
-// ['25', '180']
+// رقم هاتف سعودي
+const saudiPhone = /^(\\+966|966|05)\\d{8}$/;
 
-// استبدال
-const cleaned = '  Hello   World  '.replace(/\\s+/g, ' ').trim();
-// 'Hello World'
+// عنوان URL
+const urlRegex = /^https?:\\/\\/[\\w.-]+(?:\\.[\\w.-]+)+[\\w\\-._~:/?#[\\]@!$&'()*+,;=]*$/;
 
-// كلمة مرور قوية (8+ أحرف، حرف كبير، صغير، رقم، رمز)
-const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$/;
+// عنوان IP (IPv4)
+const ipv4Regex = /^(?:(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$/;
 
-// مجموعات الالتقاط
-const dateRegex = /(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;
-const match = '2024-01-15'.match(dateRegex);
-console.log(match.groups.year);  // '2024'
+// كلمة مرور قوية
+const strongPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$/;
 
-// Lookahead
-const priceRegex = /\\d+(?=\\$)/g;
-'100$ و 200$'.match(priceRegex); // ['100', '200']
+// اسم مستخدم (3-20 حرف، أرقام، شرطة سفلية)
+const username = /^[a-zA-Z][a-zA-Z0-9_]{2,19}$/;
+
+// تاريخ YYYY-MM-DD
+const dateRegex = /^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$/;
+
+// بطاقة ائتمان (Visa, MasterCard)
+const visaRegex = /^4[0-9]{12}(?:[0-9]{3})?$/;
+const masterRegex = /^5[1-5][0-9]{14}$/;
+
+// نص عربي فقط
+const arabicOnly = /^[\\u0600-\\u06FF\\s]+$/;
+arabicOnly.test('مرحبا بالعالم'); // true`,
+      },
+      {
+        title: "Lookahead و Lookbehind",
+        content: `// === Lookahead و Lookbehind ===
+
+// Positive Lookahead (?=...)
+// يبحث عن نمط يَتبعه شيء معين
+const priceBeforeDollar = /\\d+(?=\\$)/g;
+'100$ و 200$ و 300'.match(priceBeforeDollar); // ['100', '200']
+
+// Negative Lookahead (?!...)
+// يبحث عن نمط لا يَتبعه شيء معين
+const notDollar = /\\d+(?!\\$)/g;
+'100$ و 200$ و 300'.match(notDollar); // ['10', '20', '300']
+
+// Positive Lookbehind (?<=...)
+// يبحث عن نمط يَسبقه شيء معين
+const afterDollar = /(?<=\\$)\\d+/g;
+'$100 و $200 و 300'.match(afterDollar); // ['100', '200']
+
+// Negative Lookbehind (?<!...)
+// يبحث عن نمط لا يَسبقه شيء معين
+const noPrefix = /(?<!\\$)\\d+/g;
+
+// === أمثلة عملية متقدمة ===
 
 // تنسيق أرقام بفواصل
 function formatNumber(num) {
@@ -8362,16 +8682,65 @@ function formatNumber(num) {
 }
 formatNumber(1234567); // '1,234,567'
 
-// تحويل camelCase لـ kebab-case
+// إخفاء جزء من البريد
+function maskEmail(email) {
+    return email.replace(/(?<=.{2}).+(?=@)/, '***');
+}
+maskEmail('ahmed@gmail.com'); // 'ah***@gmail.com'
+
+// استبدال الكلمات السيئة
+function censorWords(text, words) {
+    const regex = new RegExp(words.join('|'), 'gi');
+    return text.replace(regex, match => '*'.repeat(match.length));
+}`,
+      },
+      {
+        title: "مجموعات الالتقاط والتطبيقات العملية",
+        content: `// === Named Groups (مجموعات مسماة) ===
+
+const dateRegex = /(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;
+const match = '2024-01-15'.match(dateRegex);
+console.log(match.groups.year);   // '2024'
+console.log(match.groups.month);  // '01'
+console.log(match.groups.day);    // '15'
+
+// استبدال مع مجموعات مسماة
+'2024-01-15'.replace(dateRegex, '$<day>/$<month>/$<year>');
+// '15/01/2024'
+
+// === تطبيقات عملية ===
+
+// 1. تحويل camelCase لـ kebab-case
 function toKebab(str) {
     return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 toKebab('backgroundColor'); // 'background-color'
 
-// إزالة HTML tags
+// 2. إزالة HTML tags
 function stripHTML(html) {
     return html.replace(/<[^>]*>/g, '');
-}`,
+}
+
+// 3. استخراج روابط من نص HTML
+function extractLinks(html) {
+    const regex = /href=["']([^"']+)["']/g;
+    return [...html.matchAll(regex)].map(m => m[1]);
+}
+
+// 4. Syntax Highlighter بسيط
+function highlight(code) {
+    return code
+        .replace(/(const|let|var|function|return|if|else)/g, '<span class="keyword">$1</span>')
+        .replace(/("[^"]*"|'[^']*')/g, '<span class="string">$1</span>')
+        .replace(/(\\d+)/g, '<span class="number">$1</span>')
+        .replace(/(\\/\\/.*)/g, '<span class="comment">$1</span>');
+}
+
+// 5. Template Engine بسيط
+function template(str, data) {
+    return str.replace(/\\{\\{(\\w+)\\}\\}/g, (_, key) => data[key] || '');
+}
+template('مرحبا {{name}}!', { name: 'أحمد' }); // 'مرحبا أحمد!'`,
       },
     ],
   },
@@ -8382,116 +8751,293 @@ function stripHTML(html) {
     color: "text-red-500",
     topics: [
       {
-        title: "إدارة المشاريع مع NPM",
+        title: "أوامر NPM الأساسية",
         content: `// === NPM - مدير حزم Node.js ===
 
-// أوامر أساسية
-// npm init -y                    إنشاء مشروع
-// npm install package-name       تثبيت حزمة
-// npm i package-name --save-dev  تطوير فقط
-// npm i -g package-name          عالمي
-// npm uninstall package-name     إلغاء تثبيت
-// npm update                     تحديث الحزم
-// npm outdated                   عرض الحزم القديمة
-// npm run dev                    تشغيل سكربت
+// إنشاء مشروع جديد
+// npm init -y                      إنشاء مشروع بإعدادات افتراضية
+// npm init vite@latest my-app      إنشاء مشروع Vite
+// npm create next-app@latest       إنشاء مشروع Next.js
 
-// === package.json ===
-/*
+// === تثبيت الحزم ===
+// npm install package-name         تثبيت حزمة (اختصار: npm i)
+// npm i package-name --save-dev    تطوير فقط (اختصار: -D)
+// npm i -g package-name            تثبيت عالمي
+// npm i package@2.0.0              إصدار محدد
+// npm i package@latest             آخر إصدار
+
+// === إدارة الحزم ===
+// npm uninstall package-name       إلغاء تثبيت
+// npm update                       تحديث كل الحزم
+// npm update package-name          تحديث حزمة محددة
+// npm outdated                     عرض الحزم القديمة
+// npm list --depth=0               قائمة الحزم المثبتة
+// npm audit                        فحص الثغرات الأمنية
+// npm audit fix                    إصلاح الثغرات تلقائياً
+
+// === تشغيل السكربتات ===
+// npm run dev                      تشغيل سكربت dev
+// npm run build                    بناء المشروع
+// npm test                         تشغيل الاختبارات (اختصار)
+// npm start                        تشغيل المشروع (اختصار)
+// npx create-react-app my-app      تشغيل بدون تثبيت`,
+      },
+      {
+        title: "package.json بالتفصيل",
+        content: `// === هيكل package.json ===
 {
   "name": "my-project",
   "version": "1.0.0",
+  "description": "وصف المشروع",
+  "main": "index.js",
+  "type": "module",               // استخدام ES Modules
+  
+  // سكربتات التشغيل
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint . --fix",
-    "test": "vitest"
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src/ --fix",
+    "format": "prettier --write src/",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "prepare": "husky install"
   },
+  
+  // الحزم المطلوبة للإنتاج
   "dependencies": {
-    "react": "^18.2.0",      // ^ = minor + patch
-    "axios": "~1.6.0"        // ~ = patch فقط
+    "react": "^18.2.0",           // ^ = minor + patch مسموح
+    "axios": "~1.6.0",            // ~ = patch فقط
+    "express": "4.18.2"           // إصدار محدد بالضبط
   },
+  
+  // حزم التطوير فقط
   "devDependencies": {
     "vite": "^5.0.0",
+    "typescript": "^5.3.0",
     "eslint": "^8.0.0"
-  }
+  },
+  
+  // متطلبات النظام
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  
+  // إعدادات إضافية
+  "browserslist": ["> 0.5%", "not dead"],
+  "license": "MIT"
 }
-*/
 
-// أنواع الإصدارات
-// ^1.2.3 → يقبل 1.x.x
-// ~1.2.3 → يقبل 1.2.x
-// 1.2.3  → الإصدار المحدد فقط
-
-// بدائل NPM
-// yarn add package-name
-// pnpm add package-name
-// bun add package-name`,
+// === أنواع الإصدارات (SemVer) ===
+// Major.Minor.Patch → 2.1.3
+// ^2.1.3 → يقبل 2.x.x (لا يغير Major)
+// ~2.1.3 → يقبل 2.1.x (لا يغير Minor)
+// 2.1.3  → الإصدار المحدد فقط`,
       },
       {
-        title: "مكتبات شائعة ومفيدة",
-        content: `// === مكتبات NPM الأكثر استخداماً ===
+        title: "Axios - HTTP Client",
+        content: `// === Axios - مكتبة HTTP ===
+// npm install axios
 
-// --- 1. Axios - HTTP Client ---
 import axios from 'axios';
 
-const response = await axios.get('/api/users');
-await axios.post('/api/users', { name: 'أحمد' });
+// GET Request
+const { data } = await axios.get('/api/users');
+const { data: user } = await axios.get('/api/users/1');
 
+// POST Request
+await axios.post('/api/users', { name: 'أحمد', email: 'ahmed@mail.com' });
+
+// PUT / PATCH / DELETE
+await axios.put('/api/users/1', { name: 'محمد' });
+await axios.patch('/api/users/1', { name: 'محمد' });
+await axios.delete('/api/users/1');
+
+// === إنشاء Instance مخصص ===
 const api = axios.create({
-    baseURL: 'https://api.example.com',
+    baseURL: 'https://api.example.com/v1',
     timeout: 10000,
-    headers: { 'Authorization': 'Bearer token' }
+    headers: { 'Content-Type': 'application/json' }
 });
 
-// Interceptors
+// === Interceptors (معترضات) ===
+// Request Interceptor - إضافة Token تلقائياً
+api.interceptors.request.use(config => {
+    const token = localStorage.getItem('token');
+    if (token) config.headers.Authorization = \`Bearer \${token}\`;
+    return config;
+});
+
+// Response Interceptor - معالجة الأخطاء
 api.interceptors.response.use(
     response => response,
     error => {
         if (error.response?.status === 401) {
+            localStorage.removeItem('token');
             window.location.href = '/login';
+        }
+        if (error.response?.status === 429) {
+            console.warn('تجاوزت الحد المسموح');
         }
         return Promise.reject(error);
     }
 );
 
-// --- 2. date-fns ---
-import { format, addDays, differenceInDays } from 'date-fns';
-import { ar } from 'date-fns/locale';
+// رفع ملفات
+const formData = new FormData();
+formData.append('avatar', file);
+await api.post('/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: (p) => console.log(Math.round(p.loaded * 100 / p.total) + '%')
+});`,
+      },
+      {
+        title: "Zod - التحقق من البيانات",
+        content: `// === Zod - مكتبة التحقق من البيانات ===
+// npm install zod
 
-format(new Date(), 'yyyy-MM-dd');
-format(new Date(), 'EEEE d MMMM yyyy', { locale: ar });
-addDays(new Date(), 7);
-
-// --- 3. Zod - التحقق من البيانات ---
 import { z } from 'zod';
 
+// أنواع أساسية
+const StringSchema = z.string().min(2).max(100);
+const NumberSchema = z.number().min(0).max(150);
+const BoolSchema = z.boolean();
+const DateSchema = z.date();
+
+// التحقق من كائن
 const UserSchema = z.object({
-    name: z.string().min(2, 'الاسم قصير جداً'),
-    email: z.string().email('بريد غير صالح'),
-    age: z.number().min(18, 'يجب أن يكون 18+'),
+    name: z.string().min(2, 'الاسم قصير جداً').max(50),
+    email: z.string().email('بريد إلكتروني غير صالح'),
+    age: z.number().min(18, 'يجب أن يكون 18+').max(150),
     role: z.enum(['admin', 'user', 'moderator']),
+    bio: z.string().optional(),
+    avatar: z.string().url().nullable(),
+    tags: z.array(z.string()).default([]),
 });
 
+// استخراج Type تلقائياً
 type User = z.infer<typeof UserSchema>;
 
+// التحقق الآمن (لا يرمي خطأ)
 const result = UserSchema.safeParse(data);
 if (result.success) {
-    console.log(result.data);
+    console.log(result.data); // البيانات الصالحة
 } else {
-    console.log(result.error.errors);
+    console.log(result.error.errors); // قائمة الأخطاء
+    result.error.errors.forEach(err => {
+        console.log(\`\${err.path.join('.')}: \${err.message}\`);
+    });
 }
 
-// --- 4. Lodash ---
-import { debounce, throttle, cloneDeep, groupBy } from 'lodash';
+// التحقق مع Transform
+const LoginSchema = z.object({
+    email: z.string().email().transform(e => e.toLowerCase().trim()),
+    password: z.string().min(8),
+}).refine(data => data.password !== data.email, {
+    message: 'كلمة المرور لا يمكن أن تكون نفس البريد',
+    path: ['password'],
+});
 
+// دمج Schemas
+const CreateUser = UserSchema.omit({ bio: true });  // بدون bio
+const UpdateUser = UserSchema.partial();              // كل الحقول اختيارية
+const ExtendedUser = UserSchema.extend({ phone: z.string() });`,
+      },
+      {
+        title: "date-fns و Lodash",
+        content: `// === date-fns - التعامل مع التواريخ ===
+// npm install date-fns
+
+import { format, addDays, subDays, differenceInDays, 
+         isAfter, isBefore, parseISO, startOfDay } from 'date-fns';
+import { ar } from 'date-fns/locale';
+
+// التنسيق
+format(new Date(), 'yyyy-MM-dd');                    // '2024-01-15'
+format(new Date(), 'dd/MM/yyyy HH:mm');              // '15/01/2024 14:30'
+format(new Date(), 'EEEE d MMMM yyyy', { locale: ar }); // 'الاثنين 15 يناير 2024'
+
+// العمليات
+addDays(new Date(), 7);          // بعد 7 أيام
+subDays(new Date(), 30);         // قبل 30 يوم
+differenceInDays(date1, date2);  // الفرق بالأيام
+
+// المقارنة
+isAfter(date1, date2);           // هل date1 بعد date2
+isBefore(date1, date2);          // هل date1 قبل date2
+
+// === Lodash - أدوات مساعدة ===
+// npm install lodash
+
+import { debounce, throttle, cloneDeep, groupBy, 
+         uniqBy, sortBy, chunk, flatten } from 'lodash';
+
+// debounce - تأخير التنفيذ
 const search = debounce((query) => fetchResults(query), 300);
-const handleScroll = throttle(() => checkPosition(), 100);
-const copy = cloneDeep(originalObject);
-const grouped = groupBy(users, 'role');
 
-// --- 5. uuid ---
+// throttle - تحديد التكرار
+const handleScroll = throttle(() => checkPosition(), 100);
+
+// نسخ عميق
+const copy = cloneDeep(originalObject);
+
+// تجميع
+const grouped = groupBy(users, 'role');
+// { admin: [...], user: [...] }
+
+// إزالة التكرار
+const unique = uniqBy(items, 'id');
+
+// تقسيم مصفوفة
+const chunks = chunk([1,2,3,4,5,6], 2); // [[1,2],[3,4],[5,6]]
+
+// ترتيب
+const sorted = sortBy(users, ['age', 'name']);`,
+      },
+      {
+        title: "مكتبات مفيدة إضافية",
+        content: `// === مكتبات NPM أساسية إضافية ===
+
+// --- 1. uuid - توليد معرفات فريدة ---
+// npm install uuid
 import { v4 as uuidv4 } from 'uuid';
-const id = uuidv4(); // 'a1b2c3d4-...'`,
+const id = uuidv4(); // 'a1b2c3d4-e5f6-...'
+
+// --- 2. clsx / classnames - دمج CSS Classes ---
+// npm install clsx
+import clsx from 'clsx';
+const className = clsx('btn', { 'btn-active': isActive, 'btn-large': size === 'lg' });
+
+// --- 3. react-hook-form - إدارة النماذج ---
+// npm install react-hook-form @hookform/resolvers
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(UserSchema),
+});
+
+// --- 4. TanStack Query - إدارة البيانات ---
+// npm install @tanstack/react-query
+import { useQuery, useMutation } from '@tanstack/react-query';
+
+const { data, isLoading } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => fetch('/api/users').then(r => r.json()),
+    staleTime: 5 * 60 * 1000, // 5 دقائق
+});
+
+// --- 5. Framer Motion - أنيميشن ---
+// npm install framer-motion
+import { motion } from 'framer-motion';
+// <motion.div animate={{ opacity: 1 }} initial={{ opacity: 0 }} />
+
+// --- 6. بدائل NPM ---
+// pnpm: أسرع، أقل مساحة
+// yarn: بديل شائع من Facebook
+// bun: أسرع بكثير (Rust-based)
+// pnpm install / yarn add / bun add`,
       },
     ],
   },
@@ -8502,42 +9048,83 @@ const id = uuidv4(); // 'a1b2c3d4-...'`,
     color: "text-indigo-500",
     topics: [
       {
-        title: "Fetch API و DOM",
-        content: `// === Fetch API ===
+        title: "Fetch API",
+        content: `// === Fetch API - طلبات HTTP ===
 
-// GET
+// GET Request
 const response = await fetch('https://api.example.com/data');
 const data = await response.json();
 
-// POST
-await fetch('/api/users', {
+// التحقق من نجاح الطلب
+if (!response.ok) {
+    throw new Error(\`HTTP Error: \${response.status}\`);
+}
+
+// POST Request
+const res = await fetch('/api/users', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'أحمد' })
+    body: JSON.stringify({ name: 'أحمد', email: 'ahmed@mail.com' })
 });
+
+// PUT / PATCH / DELETE
+await fetch('/api/users/1', { method: 'PUT', headers: {...}, body: JSON.stringify(data) });
+await fetch('/api/users/1', { method: 'DELETE' });
 
 // Upload ملف
 const formData = new FormData();
 formData.append('file', fileInput.files[0]);
 await fetch('/api/upload', { method: 'POST', body: formData });
 
-// === DOM API ===
+// AbortController - إلغاء الطلب
+const controller = new AbortController();
+setTimeout(() => controller.abort(), 5000); // إلغاء بعد 5 ثواني
+
+try {
+    const res = await fetch('/api/data', { signal: controller.signal });
+} catch (err) {
+    if (err.name === 'AbortError') console.log('تم إلغاء الطلب');
+}
+
+// طلبات متوازية
+const [users, posts] = await Promise.all([
+    fetch('/api/users').then(r => r.json()),
+    fetch('/api/posts').then(r => r.json()),
+]);`,
+      },
+      {
+        title: "DOM API",
+        content: `// === DOM API - التعامل مع الصفحة ===
 
 // اختيار العناصر
-document.getElementById('myId');
-document.querySelector('.my-class');
-document.querySelectorAll('.items');
+const el = document.getElementById('myId');
+const first = document.querySelector('.my-class');
+const all = document.querySelectorAll('.items');
+const closest = el.closest('.parent');
 
-// إنشاء وتعديل
+// إنشاء وتعديل العناصر
 const div = document.createElement('div');
 div.textContent = 'محتوى جديد';
+div.innerHTML = '<span>HTML محتوى</span>';
 div.className = 'card';
-parent.appendChild(div);
+div.classList.add('active');
+div.classList.remove('hidden');
+div.classList.toggle('open');
+div.setAttribute('data-id', '123');
+div.style.color = 'red';
 
-// الأحداث
+// إضافة/إزالة من DOM
+parent.appendChild(div);
+parent.prepend(div);
+parent.insertBefore(newEl, referenceEl);
+el.remove();
+
+// === الأحداث (Events) ===
 button.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault();       // منع السلوك الافتراضي
+    e.stopPropagation();      // منع الانتشار
+    console.log(e.target);    // العنصر المستهدف
+    console.log(e.currentTarget); // العنصر المرتبط
 });
 
 // Event Delegation
@@ -8545,63 +9132,231 @@ document.querySelector('.list').addEventListener('click', (e) => {
     if (e.target.matches('.list-item')) {
         console.log('تم النقر على:', e.target.textContent);
     }
-});`,
+});
+
+// Custom Events
+const event = new CustomEvent('userLogin', { detail: { userId: 123 } });
+document.dispatchEvent(event);
+document.addEventListener('userLogin', (e) => console.log(e.detail));`,
       },
       {
-        title: "LocalStorage و APIs حديثة",
-        content: `// === Web Storage ===
-
-// LocalStorage - تخزين دائم
+        title: "Web Storage APIs",
+        content: `// === LocalStorage - تخزين دائم ===
 localStorage.setItem('theme', 'dark');
 const theme = localStorage.getItem('theme');
 localStorage.removeItem('theme');
+localStorage.clear(); // حذف الكل
 
-// تخزين كائنات
-localStorage.setItem('user', JSON.stringify({ name: 'أحمد' }));
+// تخزين كائنات (يجب التحويل لـ JSON)
+localStorage.setItem('user', JSON.stringify({ name: 'أحمد', age: 25 }));
 const user = JSON.parse(localStorage.getItem('user'));
 
-// SessionStorage - تخزين مؤقت
-sessionStorage.setItem('token', 'abc123');
+// Helper function آمنة
+function safeGetItem(key, defaultValue = null) {
+    try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+    } catch {
+        return defaultValue;
+    }
+}
 
-// === Intersection Observer ===
+// === SessionStorage - تخزين مؤقت (ينتهي بإغلاق التبويب) ===
+sessionStorage.setItem('token', 'abc123');
+sessionStorage.getItem('token');
+
+// === IndexedDB - قاعدة بيانات محلية ===
+const request = indexedDB.open('MyDB', 1);
+
+request.onupgradeneeded = (e) => {
+    const db = e.target.result;
+    const store = db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+    store.createIndex('email', 'email', { unique: true });
+};
+
+request.onsuccess = (e) => {
+    const db = e.target.result;
+    
+    // إضافة بيانات
+    const tx = db.transaction('users', 'readwrite');
+    tx.objectStore('users').add({ name: 'أحمد', email: 'ahmed@mail.com' });
+    
+    // قراءة بيانات
+    const getTx = db.transaction('users', 'readonly');
+    getTx.objectStore('users').get(1).onsuccess = (e) => console.log(e.target.result);
+};`,
+      },
+      {
+        title: "Intersection Observer و Resize Observer",
+        content: `// === Intersection Observer - مراقبة ظهور العناصر ===
+
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('visible');
+            // Lazy loading للصور
+            if (entry.target.dataset.src) {
+                entry.target.src = entry.target.dataset.src;
+                observer.unobserve(entry.target); // توقف عن المراقبة
+            }
         }
     });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.animate-on-scroll').forEach(el => {
-    observer.observe(el);
+}, {
+    root: null,          // null = viewport
+    rootMargin: '0px',   // هامش إضافي
+    threshold: 0.1       // نسبة الظهور (10%)
 });
 
-// === Clipboard API ===
+// مراقبة عناصر
+document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+document.querySelectorAll('img[data-src]').forEach(img => observer.observe(img));
+
+// Infinite Scroll
+const sentinel = document.querySelector('.sentinel');
+const scrollObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) loadMoreItems();
+}, { threshold: 1.0 });
+scrollObserver.observe(sentinel);
+
+// === Resize Observer - مراقبة تغير حجم العنصر ===
+const resizeObserver = new ResizeObserver((entries) => {
+    entries.forEach(entry => {
+        const { width, height } = entry.contentRect;
+        console.log(\`العرض: \${width}, الارتفاع: \${height}\`);
+        
+        // تغيير التخطيط حسب الحجم
+        if (width < 400) entry.target.classList.add('compact');
+        else entry.target.classList.remove('compact');
+    });
+});
+
+resizeObserver.observe(document.querySelector('.container'));
+
+// === MutationObserver - مراقبة تغييرات DOM ===
+const mutationObserver = new MutationObserver((mutations) => {
+    mutations.forEach(m => console.log('تغيير:', m.type, m.target));
+});
+mutationObserver.observe(document.body, { childList: true, subtree: true });`,
+      },
+      {
+        title: "Clipboard و Notification و Geolocation",
+        content: `// === Clipboard API - النسخ واللصق ===
 async function copyToClipboard(text) {
-    await navigator.clipboard.writeText(text);
+    try {
+        await navigator.clipboard.writeText(text);
+        console.log('تم النسخ!');
+    } catch (err) {
+        // Fallback للمتصفحات القديمة
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
 }
 
-// === Geolocation API ===
-navigator.geolocation.getCurrentPosition(
-    (pos) => console.log(pos.coords.latitude, pos.coords.longitude),
-    (err) => console.error(err.message)
-);
+async function pasteFromClipboard() {
+    const text = await navigator.clipboard.readText();
+    return text;
+}
 
-// === Notification API ===
-async function sendNotification(title, body) {
+// === Notification API - الإشعارات ===
+async function sendNotification(title, body, icon) {
+    if (!('Notification' in window)) return console.warn('غير مدعوم');
+    
     if (Notification.permission !== 'granted') {
-        await Notification.requestPermission();
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') return;
     }
-    if (Notification.permission === 'granted') {
-        new Notification(title, { body });
-    }
+    
+    const notification = new Notification(title, {
+        body,
+        icon: icon || '/icon.png',
+        badge: '/badge.png',
+        tag: 'my-notification', // يمنع التكرار
+    });
+    
+    notification.onclick = () => window.focus();
+    setTimeout(() => notification.close(), 5000);
 }
 
-// === URLSearchParams ===
+// === Geolocation API - الموقع الجغرافي ===
+function getCurrentLocation() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) return reject('غير مدعوم');
+        
+        navigator.geolocation.getCurrentPosition(
+            (pos) => resolve({
+                lat: pos.coords.latitude,
+                lng: pos.coords.longitude,
+                accuracy: pos.coords.accuracy
+            }),
+            (err) => reject(err.message),
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    });
+}
+
+// تتبع الموقع المستمر
+const watchId = navigator.geolocation.watchPosition(
+    (pos) => console.log(pos.coords.latitude, pos.coords.longitude),
+    (err) => console.error(err),
+    { enableHighAccuracy: true }
+);
+// navigator.geolocation.clearWatch(watchId); // إيقاف التتبع`,
+      },
+      {
+        title: "URLSearchParams و Web Workers",
+        content: `// === URLSearchParams - إدارة معاملات URL ===
 const params = new URLSearchParams(window.location.search);
-const page = params.get('page');
-params.set('sort', 'date');
-const newURL = \`?\${params.toString()}\`;`,
+
+// قراءة
+const page = params.get('page');       // قيمة page
+const tags = params.getAll('tag');      // كل قيم tag
+const hasSort = params.has('sort');     // هل يوجد sort
+
+// تعديل
+params.set('page', '2');               // تعيين/تحديث
+params.append('tag', 'javascript');     // إضافة
+params.delete('sort');                  // حذف
+
+// تحويل لـ string
+const newURL = \`\${window.location.pathname}?\${params.toString()}\`;
+window.history.pushState({}, '', newURL); // تحديث URL بدون reload
+
+// إنشاء من كائن
+const searchParams = new URLSearchParams({ page: '1', limit: '20', search: 'أحمد' });
+const url = \`/api/users?\${searchParams}\`;
+
+// === Web Workers - تشغيل في خلفية ===
+// main.js
+const worker = new Worker('worker.js');
+worker.postMessage({ type: 'CALCULATE', data: largeArray });
+worker.onmessage = (e) => console.log('النتيجة:', e.data);
+worker.onerror = (e) => console.error('خطأ:', e.message);
+
+// worker.js
+self.onmessage = (e) => {
+    const { type, data } = e.data;
+    if (type === 'CALCULATE') {
+        const result = heavyCalculation(data);
+        self.postMessage(result);
+    }
+};
+
+// === Performance API ===
+// قياس الأداء
+performance.mark('start');
+// ... عملية ما
+performance.mark('end');
+performance.measure('myOperation', 'start', 'end');
+const measure = performance.getEntriesByName('myOperation')[0];
+console.log(\`الوقت: \${measure.duration}ms\`);
+
+// === Vibration API (للموبايل) ===
+navigator.vibrate(200);           // اهتزاز 200ms
+navigator.vibrate([100, 50, 100]); // نمط اهتزاز`,
       },
     ],
   },
@@ -8612,76 +9367,202 @@ const newURL = \`?\${params.toString()}\`;`,
     color: "text-red-400",
     topics: [
       {
-        title: "أنماط معالجة الأخطاء",
-        content: `// === معالجة الأخطاء في JavaScript ===
-
-// try...catch...finally
+        title: "try...catch وأنواع الأخطاء",
+        content: `// === try...catch...finally ===
 try {
     const data = JSON.parse(invalidJSON);
+    const result = riskyOperation();
 } catch (error) {
+    // التعرف على نوع الخطأ
     if (error instanceof SyntaxError) {
-        console.error('خطأ في JSON:', error.message);
+        console.error('خطأ في الصيغة:', error.message);
     } else if (error instanceof TypeError) {
         console.error('خطأ في النوع:', error.message);
+    } else if (error instanceof RangeError) {
+        console.error('خطأ في النطاق:', error.message);
+    } else if (error instanceof ReferenceError) {
+        console.error('متغير غير معرف:', error.message);
+    } else {
+        console.error('خطأ غير متوقع:', error);
     }
 } finally {
+    // يُنفذ دائماً (سواء نجح أو فشل)
     cleanup();
+    closeConnection();
 }
 
-// أخطاء مخصصة
+// === أنواع الأخطاء المدمجة ===
+// Error          - الخطأ الأساسي
+// SyntaxError    - خطأ في الصيغة (مثل JSON غير صالح)
+// TypeError      - خطأ في النوع (مثل استدعاء null كدالة)
+// RangeError     - خطأ في النطاق (مثل مصفوفة بطول سالب)
+// ReferenceError - متغير غير معرف
+// URIError       - خطأ في URI
+// EvalError      - خطأ في eval()
+
+// رمي أخطاء مخصصة
+function divide(a, b) {
+    if (typeof a !== 'number' || typeof b !== 'number') {
+        throw new TypeError('يجب أن تكون الأرقام عددية');
+    }
+    if (b === 0) {
+        throw new RangeError('لا يمكن القسمة على صفر');
+    }
+    return a / b;
+}`,
+      },
+      {
+        title: "أخطاء مخصصة (Custom Errors)",
+        content: `// === إنشاء أخطاء مخصصة ===
+
 class AppError extends Error {
     constructor(message, statusCode, code) {
         super(message);
         this.name = 'AppError';
         this.statusCode = statusCode;
         this.code = code;
+        this.timestamp = new Date().toISOString();
     }
 }
 
 class NotFoundError extends AppError {
     constructor(resource) {
         super(\`\${resource} غير موجود\`, 404, 'NOT_FOUND');
+        this.name = 'NotFoundError';
     }
 }
 
-// معالجة Async/Await
-async function fetchData(url) {
+class ValidationError extends AppError {
+    constructor(field, message) {
+        super(message, 400, 'VALIDATION_ERROR');
+        this.name = 'ValidationError';
+        this.field = field;
+    }
+}
+
+class AuthenticationError extends AppError {
+    constructor(message = 'غير مصرح') {
+        super(message, 401, 'UNAUTHORIZED');
+        this.name = 'AuthenticationError';
+    }
+}
+
+class ForbiddenError extends AppError {
+    constructor(message = 'ممنوع الوصول') {
+        super(message, 403, 'FORBIDDEN');
+        this.name = 'ForbiddenError';
+    }
+}
+
+// استخدام
+function getUser(id) {
+    const user = database.find(u => u.id === id);
+    if (!user) throw new NotFoundError('المستخدم');
+    return user;
+}
+
+function login(email, password) {
+    if (!email) throw new ValidationError('email', 'البريد مطلوب');
+    if (!password) throw new ValidationError('password', 'كلمة المرور مطلوبة');
+    
+    const user = findByEmail(email);
+    if (!user || !verifyPassword(password, user.hash)) {
+        throw new AuthenticationError('بيانات الدخول غير صحيحة');
+    }
+    return user;
+}`,
+      },
+      {
+        title: "معالجة Async/Await",
+        content: `// === معالجة أخطاء Async/Await ===
+
+// الطريقة الأساسية
+async function fetchUser(id) {
     try {
-        const response = await fetch(url);
+        const response = await fetch(\`/api/users/\${id}\`);
         if (!response.ok) {
-            throw new AppError('فشل الجلب', response.status, 'FETCH_ERROR');
+            throw new AppError('فشل جلب المستخدم', response.status, 'FETCH_ERROR');
         }
         return await response.json();
     } catch (error) {
         if (error instanceof TypeError) {
-            showErrorMessage('لا يوجد اتصال');
+            // مشكلة في الشبكة
+            showErrorMessage('لا يوجد اتصال بالإنترنت');
+        } else if (error instanceof AppError) {
+            showErrorMessage(error.message);
         } else {
-            showErrorMessage('حدث خطأ');
+            showErrorMessage('حدث خطأ غير متوقع');
         }
         return null;
     }
 }
 
-// Error Boundary في React
+// === نمط Result (بدون throw) ===
+async function safeAsync(fn) {
+    try {
+        const data = await fn();
+        return { success: true, data, error: null };
+    } catch (error) {
+        return { success: false, data: null, error };
+    }
+}
+
+// استخدام
+const { success, data, error } = await safeAsync(() => fetchUser(123));
+if (success) {
+    renderUser(data);
+} else {
+    handleError(error);
+}
+
+// === Promise.allSettled - لا تتوقف عند أول خطأ ===
+const results = await Promise.allSettled([
+    fetch('/api/users'),
+    fetch('/api/posts'),
+    fetch('/api/comments'),
+]);
+
+results.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+        console.log(\`طلب \${index}: نجح\`, result.value);
+    } else {
+        console.log(\`طلب \${index}: فشل\`, result.reason);
+    }
+});`,
+      },
+      {
+        title: "Error Boundary في React",
+        content: `// === Error Boundary في React ===
+
+// Class Component (الطريقة الوحيدة حالياً)
 class ErrorBoundary extends React.Component {
-    state = { hasError: false, error: null };
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null, errorInfo: null };
+    }
     
     static getDerivedStateFromError(error) {
         return { hasError: true, error };
     }
     
-    componentDidCatch(error, info) {
-        logErrorToService(error, info);
+    componentDidCatch(error, errorInfo) {
+        // إرسال للخدمة الخارجية
+        logErrorToService(error, errorInfo);
+        this.setState({ errorInfo });
     }
     
     render() {
         if (this.state.hasError) {
             return (
-                <div>
+                <div className="error-container">
                     <h2>حدث خطأ!</h2>
+                    <p>{this.state.error?.message}</p>
                     <button onClick={() => this.setState({ hasError: false })}>
                         حاول مرة أخرى
                     </button>
+                    {process.env.NODE_ENV === 'development' && (
+                        <pre>{this.state.errorInfo?.componentStack}</pre>
+                    )}
                 </div>
             );
         }
@@ -8689,11 +9570,171 @@ class ErrorBoundary extends React.Component {
     }
 }
 
-// نمط Result (بدون throw)
-function divide(a, b) {
-    if (b === 0) return { success: false, error: 'لا يمكن القسمة على صفر' };
-    return { success: true, data: a / b };
+// استخدام
+// <ErrorBoundary fallback={<ErrorPage />}>
+//     <App />
+// </ErrorBoundary>
+
+// Error Boundary مع React Router
+// <Route path="/dashboard" element={
+//     <ErrorBoundary>
+//         <Dashboard />
+//     </ErrorBoundary>
+// } />
+
+// Hook مخصص لمعالجة الأخطاء
+function useErrorHandler() {
+    const [error, setError] = useState(null);
+    
+    const handleError = useCallback((err) => {
+        setError(err);
+        console.error('خطأ تم التقاطه:', err);
+    }, []);
+    
+    const clearError = useCallback(() => setError(null), []);
+    
+    return { error, handleError, clearError };
 }`,
+      },
+      {
+        title: "معالجة أخطاء API والشبكة",
+        content: `// === معالجة أخطاء API مركزية ===
+
+class ApiClient {
+    constructor(baseURL) {
+        this.baseURL = baseURL;
+    }
+    
+    async request(endpoint, options = {}) {
+        const url = \`\${this.baseURL}\${endpoint}\`;
+        
+        try {
+            const response = await fetch(url, {
+                headers: { 'Content-Type': 'application/json', ...options.headers },
+                ...options,
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                
+                switch (response.status) {
+                    case 400: throw new ValidationError('request', errorData.message || 'طلب غير صالح');
+                    case 401: throw new AuthenticationError(errorData.message);
+                    case 403: throw new ForbiddenError(errorData.message);
+                    case 404: throw new NotFoundError(errorData.resource || 'المورد');
+                    case 429: throw new AppError('تجاوزت الحد المسموح، حاول لاحقاً', 429, 'RATE_LIMIT');
+                    case 500: throw new AppError('خطأ في الخادم', 500, 'SERVER_ERROR');
+                    default:  throw new AppError('خطأ غير متوقع', response.status, 'UNKNOWN');
+                }
+            }
+            
+            return await response.json();
+        } catch (error) {
+            if (error instanceof AppError) throw error;
+            
+            // أخطاء الشبكة
+            if (error instanceof TypeError && error.message.includes('fetch')) {
+                throw new AppError('لا يوجد اتصال بالإنترنت', 0, 'NETWORK_ERROR');
+            }
+            
+            throw new AppError('خطأ غير متوقع', 0, 'UNKNOWN');
+        }
+    }
+    
+    get(endpoint) { return this.request(endpoint); }
+    post(endpoint, data) { return this.request(endpoint, { method: 'POST', body: JSON.stringify(data) }); }
+}
+
+// إعادة المحاولة التلقائية
+async function retryFetch(fn, retries = 3, delay = 1000) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await fn();
+        } catch (error) {
+            if (i === retries - 1) throw error;
+            await new Promise(r => setTimeout(r, delay * (i + 1)));
+        }
+    }
+}`,
+      },
+      {
+        title: "تسجيل الأخطاء (Error Logging)",
+        content: `// === نظام تسجيل أخطاء شامل ===
+
+class ErrorLogger {
+    static levels = { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3, FATAL: 4 };
+    
+    static log(level, message, context = {}) {
+        const entry = {
+            level,
+            message,
+            timestamp: new Date().toISOString(),
+            url: window.location.href,
+            userAgent: navigator.userAgent,
+            ...context,
+        };
+        
+        // طباعة في الكونسول
+        console[level === 'ERROR' || level === 'FATAL' ? 'error' : 'warn'](entry);
+        
+        // إرسال للخادم (للأخطاء الحرجة فقط)
+        if (this.levels[level] >= this.levels.ERROR) {
+            this.sendToServer(entry);
+        }
+    }
+    
+    static async sendToServer(entry) {
+        try {
+            await fetch('/api/logs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(entry),
+            });
+        } catch {
+            // تخزين محلياً إذا فشل الإرسال
+            const logs = JSON.parse(localStorage.getItem('errorLogs') || '[]');
+            logs.push(entry);
+            localStorage.setItem('errorLogs', JSON.stringify(logs.slice(-50)));
+        }
+    }
+}
+
+// === معالجة الأخطاء العالمية ===
+
+// أخطاء JavaScript غير الملتقطة
+window.onerror = (message, source, line, col, error) => {
+    ErrorLogger.log('ERROR', message, { source, line, col, stack: error?.stack });
+};
+
+// Promise rejections غير الملتقطة
+window.onunhandledrejection = (event) => {
+    ErrorLogger.log('ERROR', 'Unhandled Promise Rejection', {
+        reason: event.reason?.message || event.reason,
+        stack: event.reason?.stack,
+    });
+};
+
+// أخطاء تحميل الموارد
+window.addEventListener('error', (e) => {
+    if (e.target !== window) {
+        ErrorLogger.log('WARN', 'فشل تحميل مورد', {
+            element: e.target.tagName,
+            source: e.target.src || e.target.href,
+        });
+    }
+}, true);
+
+// إرسال الأخطاء المخزنة عند عودة الاتصال
+window.addEventListener('online', () => {
+    const logs = JSON.parse(localStorage.getItem('errorLogs') || '[]');
+    if (logs.length > 0) {
+        fetch('/api/logs/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(logs),
+        }).then(() => localStorage.removeItem('errorLogs'));
+    }
+});`,
       },
     ],
   },
