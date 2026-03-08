@@ -322,6 +322,12 @@ const AI2Page = () => {
         return { role: m.role, content: textContent };
       });
 
+      let currentConvId = conversationId;
+      if (!currentConvId) {
+        currentConvId = crypto.randomUUID();
+        setConversationId(currentConvId);
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       const accessToken = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
@@ -333,7 +339,7 @@ const AI2Page = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({ messages: apiMessages, language }),
+          body: JSON.stringify({ messages: apiMessages, language, conversationId: currentConvId }),
         }
       );
 
