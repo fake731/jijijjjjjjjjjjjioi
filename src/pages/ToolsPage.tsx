@@ -135,7 +135,7 @@ const ToolsPage = () => {
 # Tool: ${tool.name}
 # By: Qusay_kali
 # Instagram: @0oscp
-# Website: https://qusaykali.netlify.app/
+# Website: https://qusayk.netlify.app/
 # ═══════════════════════════════════════════════════════════════
 
 # ${language === "ar" ? tool.description.ar : tool.description.en}

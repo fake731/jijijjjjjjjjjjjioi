@@ -272,7 +272,7 @@ const PasswordGenerator = ({ onTestPassword }: Props) => {
         {/* Generate Button */}
         <button
           onClick={useNameBase ? generateFromName : generate}
-          disabled={!user || (useNameBase && !name.trim())}
+          disabled={(!loading && !user) || (useNameBase && !name.trim())}
           className="w-full h-14 rounded-xl bg-primary text-primary-foreground font-bold text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw className="w-5 h-5" />
