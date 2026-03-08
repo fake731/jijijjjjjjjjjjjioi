@@ -51,6 +51,12 @@ const DeveloperPage = () => {
   const [lastRefreshTime, setLastRefreshTime] = useState<Date>(new Date());
   const [liveEvents, setLiveEvents] = useState<Array<{ type: string; text: string; time: Date }>>([]);
   const [eventFilter, setEventFilter] = useState<"all" | "visit" | "signup" | "ai">("all");
+  // Countdown timer states
+  const [refreshIntervalDays, setRefreshIntervalDays] = useState(0);
+  const [refreshIntervalHours, setRefreshIntervalHours] = useState(0);
+  const [refreshIntervalMinutes, setRefreshIntervalMinutes] = useState(0);
+  const [refreshIntervalSeconds, setRefreshIntervalSeconds] = useState(30);
+  const [countdown, setCountdown] = useState(30);
 
   useEffect(() => {
     if (!authLoading && !user) {
