@@ -51,6 +51,22 @@ const pageVariants = {
   },
 };
 
+const PageVisitTracker = () => {
+  const location = useLocation();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("page_visits").insert({
+      user_id: user.id,
+      page_path: location.pathname,
+      user_agent: navigator.userAgent,
+    }).then(() => {});
+  }, [location.pathname, user]);
+
+  return null;
+};
+
 const AnimatedRoutes = () => {
   const location = useLocation();
 
