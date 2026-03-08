@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +16,9 @@ const AuthPage = () => {
   const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [age, setAge] = useState("");
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { user, loading: authLoading } = useAuth();
@@ -50,8 +54,45 @@ const AuthPage = () => {
         toast.success("تم تسجيل الدخول بنجاح!");
         navigate("/");
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        // Signup
+        if (!privacyAccepted) {
+          toast.error("يجب الموافقة على سياسة الخصوصية للمتابعة");
+          setLoading(false);
+          return;
+        }
+        if (!displayName.trim()) {
+          toast.error("يرجى إدخال الاسم");
+          setLoading(false);
+          return;
+        }
+        if (!age || parseInt(age) < 1 || parseInt(age) > 120) {
+          toast.error("يرجى إدخال عمر صحيح");
+          setLoading(false);
+          return;
+        }
+
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: displayName.trim(),
+            },
+          },
+        });
         if (error) throw error;
+
+        // Update profile with age and privacy consent
+        if (data.user) {
+          await supabase.from("profiles").update({
+            display_name: displayName.trim(),
+            age: parseInt(age),
+            privacy_accepted: true,
+            privacy_accepted_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }).eq("id", data.user.id);
+        }
+
         toast.success("تم إنشاء الحساب بنجاح!");
         navigate("/");
       }
@@ -59,18 +100,6 @@ const AuthPage = () => {
       toast.error(error.message || "حدث خطأ");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
-    if (error) {
-      toast.error("فشل تسجيل الدخول بـ Google");
     }
   };
 
@@ -82,7 +111,7 @@ const AuthPage = () => {
 
   const getDescription = () => {
     if (mode === "forgot") return "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور";
-    if (mode === "signup") return "أنشئ حسابك الجديد";
+    if (mode === "signup") return "أنشئ حسابك الجديد للوصول لجميع الميزات";
     return "أدخل بياناتك لتسجيل الدخول";
   };
 
@@ -99,36 +128,28 @@ const AuthPage = () => {
             <CardDescription className="text-muted-foreground">{getDescription()}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Google Login - only show for login/signup */}
-            {mode !== "forgot" && (
-              <>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full h-12 gap-3 text-foreground border-border/50 hover:bg-secondary/50"
-                  onClick={handleGoogleLogin}
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                  </svg>
-                  المتابعة مع Google
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border/30" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">أو</span>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Name - signup only */}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="displayName" className="text-foreground">الاسم</Label>
+                  <div className="relative">
+                    <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="displayName"
+                      type="text"
+                      placeholder="أدخل اسمك"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                      required
+                      dir="auto"
+                    />
                   </div>
                 </div>
-              </>
-            )}
+              )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-foreground">البريد الإلكتروني</Label>
                 <div className="relative">
@@ -146,6 +167,29 @@ const AuthPage = () => {
                 </div>
               </div>
 
+              {/* Age - signup only */}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="age" className="text-foreground">العمر</Label>
+                  <div className="relative">
+                    <Calendar className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="age"
+                      type="number"
+                      placeholder="أدخل عمرك"
+                      value={age}
+                      onChange={(e) => setAge(e.target.value)}
+                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                      required
+                      min={1}
+                      max={120}
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Password */}
               {mode !== "forgot" && (
                 <div className="space-y-2">
                   <Label htmlFor="password" className="text-foreground">كلمة المرور</Label>
@@ -173,6 +217,21 @@ const AuthPage = () => {
                 </div>
               )}
 
+              {/* Privacy Policy - signup only */}
+              {mode === "signup" && (
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/20 border border-border/20">
+                  <Checkbox
+                    id="privacy"
+                    checked={privacyAccepted}
+                    onCheckedChange={(checked) => setPrivacyAccepted(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor="privacy" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                    أوافق على <span className="text-primary font-medium">سياسة الخصوصية</span> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
+                  </label>
+                </div>
+              )}
+
               {/* Forgot password link */}
               {mode === "login" && (
                 <div className="text-left">
@@ -186,7 +245,7 @@ const AuthPage = () => {
                 </div>
               )}
 
-              <Button type="submit" className="w-full h-12 gap-2" disabled={loading}>
+              <Button type="submit" className="w-full h-12 gap-2" disabled={loading || (mode === "signup" && !privacyAccepted)}>
                 {loading ? (
                   <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
                 ) : mode === "forgot" ? (
