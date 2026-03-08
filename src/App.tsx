@@ -63,8 +63,9 @@ const AnimatedRoutes = () => {
         <Routes location={location}>
           <Route path="/" element={<Index />} />
           <Route path="/تسجيل-الدخول" element={<AuthPage />} />
-          <Route path="/الذكاء" element={<ProtectedRoute><AIPage /></ProtectedRoute>} />
-          <Route path="/الذكاء2" element={<ProtectedRoute><AI2Page /></ProtectedRoute>} />
+          <Route path="/إعادة-كلمة-المرور" element={<ResetPasswordPage />} />
+          <Route path="/الذكاء" element={<AIPage />} />
+          <Route path="/الذكاء2" element={<AI2Page />} />
           <Route path="/الادوات" element={<ToolsPage />} />
           <Route path="/الاوامر" element={<ScannerPage />} />
           <Route path="/السكربتات" element={<ScriptsPage />} />
