@@ -454,6 +454,7 @@ const guideTopics: GuideTopic[] = [
     icon: Database,
     title: "أمن تطبيقات الويب",
     description: "OWASP Top 10 وأفضل الممارسات لتطوير تطبيقات آمنة",
+    color: "text-orange-500",
     subTopics: [
       {
         title: "OWASP Top 10 - 2021",
