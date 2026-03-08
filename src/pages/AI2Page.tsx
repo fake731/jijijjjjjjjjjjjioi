@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload, Copy, Sparkles, LogIn } from "lucide-react";
+import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload, Copy, Sparkles, LogIn, History, Plus } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
@@ -49,6 +49,10 @@ const AI2Page = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<{ name: string; content: string } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [conversations, setConversations] = useState<{ id: string; firstMessage: string; date: string }[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +60,73 @@ const AI2Page = () => {
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
   const SECRET_PASSWORD = "Qusay_kali";
+
+  const fetchConversations = useCallback(async () => {
+    if (!user) return;
+    setLoadingHistory(true);
+    try {
+      const { data } = await supabase
+        .from("ai_chat_logs")
+        .select("conversation_id, message, created_at")
+        .eq("user_id", user.id)
+        .eq("ai_version", "v2")
+        .order("created_at", { ascending: false });
+
+      if (data) {
+        const convMap = new Map<string, { firstMessage: string; date: string }>();
+        for (const log of data) {
+          const cid = log.conversation_id;
+          if (!cid) continue;
+          if (!convMap.has(cid)) {
+            convMap.set(cid, {
+              firstMessage: log.message.slice(0, 60) + (log.message.length > 60 ? "..." : ""),
+              date: log.created_at,
+            });
+          }
+        }
+        setConversations(Array.from(convMap.entries()).map(([id, v]) => ({ id, ...v })));
+      }
+    } catch (err) {
+      console.error("Failed to fetch conversations:", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  }, [user]);
+
+  const loadConversation = async (cid: string) => {
+    if (!user) return;
+    try {
+      const { data } = await supabase
+        .from("ai_chat_logs")
+        .select("message, response, created_at")
+        .eq("conversation_id", cid)
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+
+      if (data) {
+        const loadedMessages: Message[] = [];
+        for (const log of data) {
+          loadedMessages.push({ role: "user", content: log.message });
+          if (log.response) loadedMessages.push({ role: "assistant", content: log.response });
+        }
+        setMessages(loadedMessages);
+        setConversationId(cid);
+        setShowHistory(false);
+      }
+    } catch (err) {
+      console.error("Failed to load conversation:", err);
+    }
+  };
+
+  const startNewConversation = () => {
+    setMessages([]);
+    setConversationId(null);
+    setShowHistory(false);
+  };
+
+  useEffect(() => {
+    if (showHistory && user) fetchConversations();
+  }, [showHistory, user, fetchConversations]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -251,6 +322,12 @@ const AI2Page = () => {
         return { role: m.role, content: textContent };
       });
 
+      let currentConvId = conversationId;
+      if (!currentConvId) {
+        currentConvId = crypto.randomUUID();
+        setConversationId(currentConvId);
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       const accessToken = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
@@ -262,7 +339,7 @@ const AI2Page = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({ messages: apiMessages, language }),
+          body: JSON.stringify({ messages: apiMessages, language, conversationId: currentConvId }),
         }
       );
 
@@ -432,9 +509,27 @@ const AI2Page = () => {
             </h1>
             <p className="text-muted-foreground">{t.subtitle}</p>
             <p className="text-xs text-primary/70 mt-1">{t.developer}</p>
-            <div className="flex items-center justify-center gap-3 mt-4">
+            <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
+              {user && (
+                <>
+                  <button
+                    onClick={startNewConversation}
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-sm hover:bg-primary/30 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {language === "ar" ? "محادثة جديدة" : "New Chat"}
+                  </button>
+                  <button
+                    onClick={() => setShowHistory(!showHistory)}
+                    className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm transition-colors ${showHistory ? 'bg-primary text-primary-foreground' : 'bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50'}`}
+                  >
+                    <History className="w-4 h-4" />
+                    {language === "ar" ? "المحادثات السابقة" : "History"}
+                  </button>
+                </>
+              )}
               {isAuthenticated && (
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary text-sm border border-primary/30">
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-sm border border-primary/30">
                   <Lock className="w-4 h-4" />
                   {t.advancedMode}
                 </span>
@@ -447,6 +542,37 @@ const AI2Page = () => {
                 {language === "ar" ? "English" : "العربية"}
               </button>
             </div>
+
+            {showHistory && (
+              <div className="mt-4 max-h-64 overflow-y-auto rounded-xl border border-border/30 bg-card/80 backdrop-blur-sm">
+                {loadingHistory ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : conversations.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8 text-sm">
+                    {language === "ar" ? "لا توجد محادثات سابقة" : "No previous conversations"}
+                  </p>
+                ) : (
+                  <div className="divide-y divide-border/20">
+                    {conversations.map((conv) => (
+                      <button
+                        key={conv.id}
+                        onClick={() => loadConversation(conv.id)}
+                        className={`w-full text-right p-3 hover:bg-secondary/50 transition-colors flex items-center justify-between gap-3 ${conversationId === conv.id ? 'bg-primary/10 border-r-2 border-primary' : ''}`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm text-foreground truncate">{conv.firstMessage}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(conv.date).toLocaleDateString("ar", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Chat Container with Drop Zone */}
