@@ -209,6 +209,7 @@ const AuthPage = () => {
 
   const getTitle = () => {
     if (mode === "email-sent") return "تحقق من بريدك الإلكتروني";
+    if (mode === "reset-sent") return "تحقق من بريدك الإلكتروني";
     if (mode === "forgot") return "نسيت كلمة المرور";
     if (mode === "signup") return "إنشاء حساب";
     return "تسجيل الدخول";
@@ -216,6 +217,7 @@ const AuthPage = () => {
 
   const getDescription = () => {
     if (mode === "email-sent") return "تم إرسال رابط التأكيد إلى بريدك الإلكتروني";
+    if (mode === "reset-sent") return "تم إرسال رابط إعادة تعيين كلمة المرور";
     if (mode === "forgot") return "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور";
     if (mode === "signup") return "أنشئ حسابك الجديد للوصول لجميع الميزات";
     return "أدخل بياناتك لتسجيل الدخول";
