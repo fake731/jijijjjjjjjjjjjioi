@@ -7,6 +7,7 @@ interface Props {
 }
 
 const PasswordStrengthChecker = ({ externalPassword }: Props) => {
+  const { user } = useAuth();
   const [password, setPassword] = useState(externalPassword || "");
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(false);
