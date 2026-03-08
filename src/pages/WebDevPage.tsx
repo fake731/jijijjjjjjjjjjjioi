@@ -64,7 +64,7 @@ const WebDevPage = () => {
               تطوير الويب
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-              دليل لتعلم تطوير الويب - {webDevCategories.length} قسم و {totalTopics} موضوع
+              تعلم تطوير الويب - {webDevCategories.length} قسم و {totalTopics} موضوع
             </p>
 
             {/* Search */}

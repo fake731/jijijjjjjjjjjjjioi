@@ -36,7 +36,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Hero Section
     "hero.title": "Qusay Kali",
     "hero.subtitle": "منصة للأمن السيبراني",
-    "hero.description": "اكتشف عالم الأمن السيبراني مع أدوات وسكربتات وأدلة تعليمية",
+    "hero.description": "منصة تعليمية متكاملة للأمن السيبراني وتطوير الويب",
     "hero.cta.tools": "استكشف الأدوات",
     "hero.cta.guide": "ابدأ التعلم",
     
@@ -53,7 +53,7 @@ export const translations: Record<Language, Record<string, string>> = {
     
     // CTA
     "cta.title": "جاهز للبدء؟",
-    "cta.description": "انضم إلينا واكتشف عالم الأمن السيبراني",
+    "cta.description": "الموقع مجاني 100%",
     "cta.button": "ابدأ الآن",
     
     // Footer

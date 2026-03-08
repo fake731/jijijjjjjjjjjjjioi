@@ -18,7 +18,7 @@ const FeaturesSection = () => {
     {
       icon: Terminal,
       title: "اوامر كالي لينكس",
-      description: "اكتب وتعلم أوامر كالي لينكس",
+      description: "تعلم أوامر كالي لينكس",
       link: "/scanner",
       color: "text-red-500",
       bg: "bg-red-500/10",
@@ -54,7 +54,7 @@ const FeaturesSection = () => {
     {
       icon: Globe,
       title: t("nav.webdev"),
-      description: "دليل لتعلم تطوير الويب",
+      description: "تعلم تطوير الويب من الصفر",
       link: "/webdev",
       color: "text-blue-500",
       bg: "bg-blue-500/10",

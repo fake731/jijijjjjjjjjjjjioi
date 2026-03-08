@@ -19,7 +19,7 @@ const InquiryPage = () => {
               الاستفسارات
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              تواصل معنا وأرسل استفساراتك - نحن هنا لمساعدتك
+              تواصل معنا وأرسل استفساراتك
             </p>
           </div>
           <InquirySection />

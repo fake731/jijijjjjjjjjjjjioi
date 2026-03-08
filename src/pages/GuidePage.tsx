@@ -1263,7 +1263,7 @@ const GuidePage = () => {
               الدليل الكامل للأمن السيبراني
             </h1>
             <p className="text-muted-foreground text-lg max-w-3xl mx-auto mb-6">
-              دليلك الشامل لتعلم الأمن السيبراني من الصفر إلى الاحتراف
+              تعلم الأمن السيبراني خطوة بخطوة
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <span className="px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">

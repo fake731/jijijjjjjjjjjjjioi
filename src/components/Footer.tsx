@@ -18,7 +18,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <p className="text-muted-foreground text-sm">
-            © 2025 Qusay_kali. {t("footer.rights")}
+            © 2026 Qusay_kali. {t("footer.rights")}
           </p>
 
           {/* Social Links */}
