@@ -960,6 +960,7 @@ const guideTopics: GuideTopic[] = [
     icon: Skull,
     title: "تحليل البرمجيات الخبيثة",
     description: "فهم وتحليل الفيروسات والبرمجيات الضارة",
+    color: "text-rose-500",
     subTopics: [
       {
         title: "أنواع البرمجيات الخبيثة",
