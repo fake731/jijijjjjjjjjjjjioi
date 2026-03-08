@@ -42,7 +42,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove("theme-blue", "theme-red", "theme-green", "theme-purple", "theme-orange");
+    root.classList.remove("theme-blue", "theme-red", "theme-green", "theme-purple", "theme-orange", "theme-yellow");
     root.classList.add(`theme-${colorTheme}`);
     localStorage.setItem("colorTheme", colorTheme);
   }, [colorTheme]);
