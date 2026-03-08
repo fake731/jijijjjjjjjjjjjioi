@@ -233,7 +233,7 @@ const AuthPage = () => {
                     className="mt-0.5"
                   />
                   <label htmlFor="privacy" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                    أوافق على <span className="text-primary font-medium">سياسة الخصوصية</span> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
+                    أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
                   </label>
                 </div>
               )}
