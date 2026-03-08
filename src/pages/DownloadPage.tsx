@@ -802,7 +802,7 @@ const DownloadPage = () => {
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
               <div className="cyber-icon-box">
-                <Download className="w-10 h-10 text-primary" />
+                <Download className="w-10 h-10 text-emerald-500" />
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 mb-4">
