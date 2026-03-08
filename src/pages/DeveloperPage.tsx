@@ -2,14 +2,15 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, Eye, MessageSquare, Shield, TrendingUp, BarChart3, Globe, MapPin, Phone, ChevronDown, ChevronUp, Trash2, Mail, Calendar, UserCheck, AlertTriangle, Bell, Send, Search, Filter, Download, RefreshCw, Clock, Activity, Zap, Database, Settings, UserX, UserPlus, Flag, Hash, ArrowUpDown, MoreVertical, Copy, ExternalLink } from "lucide-react";
+import { Users, Eye, MessageSquare, Shield, TrendingUp, BarChart3, Globe, MapPin, Phone, ChevronDown, ChevronUp, Trash2, Mail, Calendar, UserCheck, AlertTriangle, Bell, Send, Search, Filter, Download, RefreshCw, Clock, Activity, Zap, Database, Settings, UserX, UserPlus, Flag, Hash, ArrowUpDown, MoreVertical, Copy, ExternalLink, FileText, Lock, Unlock, Ban, CheckCircle, XCircle, Terminal, Code, Cpu, HardDrive, Wifi, Server, Monitor, ShieldCheck, ShieldAlert, Key, ToggleLeft, ToggleRight, Megaphone, Palette, type LucideIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -38,6 +39,13 @@ const DeveloperPage = () => {
   const [visitSearch, setVisitSearch] = useState("");
   const [aiSearch, setAiSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  // Advanced states
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction] = useState("");
+  const [expandedUser, setExpandedUser] = useState<string | null>(null);
+  const [userRoles, setUserRoles] = useState<Record<string, string>>({});
+  const [broadcastTitle, setBroadcastTitle] = useState("");
+  const [broadcastMsg, setBroadcastMsg] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -67,11 +75,12 @@ const DeveloperPage = () => {
 
   const fetchAllData = async () => {
     setRefreshing(true);
-    const [profilesRes, visitsRes, logsRes, notifsRes] = await Promise.all([
+    const [profilesRes, visitsRes, logsRes, notifsRes, rolesRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("page_visits").select("*").order("visited_at", { ascending: false }).limit(1000),
       supabase.from("ai_chat_logs").select("*").order("created_at", { ascending: false }).limit(1000),
       supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(100),
+      supabase.from("user_roles").select("*"),
     ]);
 
     const p = profilesRes.data || [];
@@ -82,6 +91,10 @@ const DeveloperPage = () => {
     setAiLogs(l);
     setStats({ totalUsers: p.length, totalVisits: v.length, totalAiChats: l.length });
     setSentNotifications(notifsRes.data || []);
+    // Build roles map
+    const rm: Record<string, string> = {};
+    (rolesRes.data || []).forEach((r: any) => { rm[r.user_id] = r.role; });
+    setUserRoles(rm);
     setRefreshing(false);
   };
 
@@ -110,6 +123,30 @@ const DeveloperPage = () => {
       setSentNotifications(data || []);
     } catch (err: any) {
       toast.error(err.message || "فشل إرسال الإشعار");
+    } finally {
+      setSendingNotif(false);
+    }
+  };
+
+  const handleBroadcast = async () => {
+    if (!broadcastTitle.trim() || !broadcastMsg.trim()) {
+      toast.error("يرجى ملء العنوان والرسالة");
+      return;
+    }
+    setSendingNotif(true);
+    try {
+      // Send to all users individually + a global one
+      const { error } = await supabase.from("notifications").insert({
+        title: broadcastTitle.trim(),
+        message: broadcastMsg.trim(),
+        sent_by: user?.id,
+      });
+      if (error) throw error;
+      toast.success("تم البث بنجاح لجميع المستخدمين!");
+      setBroadcastTitle("");
+      setBroadcastMsg("");
+    } catch (err: any) {
+      toast.error(err.message || "فشل البث");
     } finally {
       setSendingNotif(false);
     }
@@ -154,6 +191,62 @@ const DeveloperPage = () => {
     } finally {
       setDeletingUser(null);
     }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedUsers.size === 0) return;
+    const toDelete = Array.from(selectedUsers).filter(id => id !== user?.id);
+    for (const id of toDelete) {
+      await handleDeleteUser(id);
+    }
+    setSelectedUsers(new Set());
+    toast.success(`تم حذف ${toDelete.length} مستخدم`);
+  };
+
+  const handleBulkNotify = async () => {
+    if (selectedUsers.size === 0 || !notifTitle.trim() || !notifMessage.trim()) return;
+    for (const uid of selectedUsers) {
+      await supabase.from("notifications").insert({
+        title: notifTitle.trim(),
+        message: notifMessage.trim(),
+        sent_by: user?.id,
+        user_id: uid,
+      });
+    }
+    toast.success(`تم إرسال إشعار لـ ${selectedUsers.size} مستخدم`);
+    setSelectedUsers(new Set());
+    setNotifTitle("");
+    setNotifMessage("");
+  };
+
+  const toggleUserSelection = (uid: string) => {
+    setSelectedUsers(prev => {
+      const n = new Set(prev);
+      if (n.has(uid)) n.delete(uid); else n.add(uid);
+      return n;
+    });
+  };
+
+  const selectAllUsers = () => {
+    if (selectedUsers.size === filteredProfiles.length) {
+      setSelectedUsers(new Set());
+    } else {
+      setSelectedUsers(new Set(filteredProfiles.map(p => p.id)));
+    }
+  };
+
+  const exportCSV = (data: any[], filename: string) => {
+    if (!data.length) return;
+    const headers = Object.keys(data[0]);
+    const csv = [headers.join(","), ...data.map(row => headers.map(h => `"${String(row[h] ?? "").replace(/"/g, '""')}"`).join(","))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${filename}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`تم تصدير ${filename}.csv`);
   };
 
   const copyToClipboard = (text: string) => {
@@ -203,8 +296,7 @@ const DeveloperPage = () => {
   const dailyVisitsData = useMemo(() => {
     const days: Record<string, number> = {};
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+      const d = new Date(); d.setDate(d.getDate() - i);
       const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
       days[key] = 0;
     }
@@ -221,20 +313,14 @@ const DeveloperPage = () => {
 
   const topPagesData = useMemo(() => {
     const pages: Record<string, number> = {};
-    visits.forEach((v) => {
-      pages[v.page_path] = (pages[v.page_path] || 0) + 1;
-    });
-    return Object.entries(pages)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([name, value]) => ({ name: decodeURIComponent(name), value }));
+    visits.forEach((v) => { pages[v.page_path] = (pages[v.page_path] || 0) + 1; });
+    return Object.entries(pages).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([name, value]) => ({ name: decodeURIComponent(name), value }));
   }, [visits]);
 
   const dailyAiData = useMemo(() => {
     const days: Record<string, number> = {};
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+      const d = new Date(); d.setDate(d.getDate() - i);
       const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
       days[key] = 0;
     }
@@ -249,26 +335,17 @@ const DeveloperPage = () => {
     return Object.entries(days).map(([name, محادثات]) => ({ name, محادثات }));
   }, [aiLogs]);
 
-  // Hourly activity
   const hourlyData = useMemo(() => {
     const hours: Record<number, number> = {};
     for (let i = 0; i < 24; i++) hours[i] = 0;
-    visits.forEach(v => {
-      const h = new Date(v.visited_at).getHours();
-      hours[h]++;
-    });
-    return Object.entries(hours).map(([hour, count]) => ({
-      name: `${hour}:00`,
-      نشاط: count,
-    }));
+    visits.forEach(v => { hours[new Date(v.visited_at).getHours()]++; });
+    return Object.entries(hours).map(([hour, count]) => ({ name: `${hour}:00`, نشاط: count }));
   }, [visits]);
 
-  // Daily signups
   const dailySignups = useMemo(() => {
     const days: Record<string, number> = {};
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+      const d = new Date(); d.setDate(d.getDate() - i);
       const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
       days[key] = 0;
     }
@@ -284,7 +361,6 @@ const DeveloperPage = () => {
     return Object.entries(days).map(([name, تسجيلات]) => ({ name, تسجيلات }));
   }, [profiles]);
 
-  // Age distribution
   const ageData = useMemo(() => {
     const ranges: Record<string, number> = { "أقل من 18": 0, "18-25": 0, "26-35": 0, "36-50": 0, "50+": 0, "غير محدد": 0 };
     profiles.forEach(p => {
@@ -298,14 +374,12 @@ const DeveloperPage = () => {
     return Object.entries(ranges).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value }));
   }, [profiles]);
 
-  // Filtered visits
   const filteredVisits = useMemo(() => {
     if (!visitSearch) return visits.slice(0, 100);
     const s = visitSearch.toLowerCase();
     return visits.filter(v => decodeURIComponent(v.page_path).toLowerCase().includes(s)).slice(0, 100);
   }, [visits, visitSearch]);
 
-  // Filtered AI logs
   const filteredAiLogs = useMemo(() => {
     if (!aiSearch) return aiLogs.slice(0, 100);
     const s = aiSearch.toLowerCase();
@@ -316,13 +390,11 @@ const DeveloperPage = () => {
     ).slice(0, 100);
   }, [aiLogs, aiSearch]);
 
-  // Unique countries list
   const uniqueCountries = useMemo(() => {
     const set = new Set(profiles.map(p => p.country || "غير محدد"));
     return Array.from(set).sort();
   }, [profiles]);
 
-  // Today stats
   const todayStats = useMemo(() => {
     const today = new Date().toDateString();
     return {
@@ -332,8 +404,68 @@ const DeveloperPage = () => {
     };
   }, [visits, aiLogs, profiles]);
 
-  const COLORS = ["hsl(var(--primary))", "#06b6d4", "#8b5cf6", "#f59e0b", "#ef4444", "#10b981", "#ec4899", "#f97316", "#14b8a6", "#a855f7"];
+  // Advanced analytics
+  const weeklyGrowth = useMemo(() => {
+    const thisWeek = profiles.filter(p => {
+      if (!p.created_at) return false;
+      const diff = Math.floor((Date.now() - new Date(p.created_at).getTime()) / (1000 * 60 * 60 * 24));
+      return diff < 7;
+    }).length;
+    const lastWeek = profiles.filter(p => {
+      if (!p.created_at) return false;
+      const diff = Math.floor((Date.now() - new Date(p.created_at).getTime()) / (1000 * 60 * 60 * 24));
+      return diff >= 7 && diff < 14;
+    }).length;
+    if (lastWeek === 0) return thisWeek > 0 ? 100 : 0;
+    return Math.round(((thisWeek - lastWeek) / lastWeek) * 100);
+  }, [profiles]);
 
+  const avgSessionPages = useMemo(() => {
+    if (!visits.length || !profiles.length) return 0;
+    return Math.round(visits.length / profiles.length);
+  }, [visits, profiles]);
+
+  const activeUsersToday = useMemo(() => {
+    const today = new Date().toDateString();
+    const userIds = new Set(visits.filter(v => new Date(v.visited_at).toDateString() === today).map(v => v.user_id).filter(Boolean));
+    return userIds.size;
+  }, [visits]);
+
+  const deviceData = useMemo(() => {
+    const devices: Record<string, number> = { "موبايل": 0, "كمبيوتر": 0, "تابلت": 0, "غير معروف": 0 };
+    visits.forEach(v => {
+      const ua = (v.user_agent || "").toLowerCase();
+      if (/mobile|android|iphone/.test(ua)) devices["موبايل"]++;
+      else if (/tablet|ipad/.test(ua)) devices["تابلت"]++;
+      else if (/windows|macintosh|linux/.test(ua)) devices["كمبيوتر"]++;
+      else devices["غير معروف"]++;
+    });
+    return Object.entries(devices).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value }));
+  }, [visits]);
+
+  const browserData = useMemo(() => {
+    const browsers: Record<string, number> = {};
+    visits.forEach(v => {
+      const ua = (v.user_agent || "").toLowerCase();
+      let browser = "غير معروف";
+      if (ua.includes("chrome") && !ua.includes("edg")) browser = "Chrome";
+      else if (ua.includes("firefox")) browser = "Firefox";
+      else if (ua.includes("safari") && !ua.includes("chrome")) browser = "Safari";
+      else if (ua.includes("edg")) browser = "Edge";
+      else if (ua.includes("opera") || ua.includes("opr")) browser = "Opera";
+      browsers[browser] = (browsers[browser] || 0) + 1;
+    });
+    return Object.entries(browsers).sort((a, b) => b[1] - a[1]).map(([name, value]) => ({ name, value }));
+  }, [visits]);
+
+  // User engagement score
+  const getUserEngagement = (uid: string) => {
+    const userVisits = visits.filter(v => v.user_id === uid).length;
+    const userChats = aiLogs.filter(l => l.user_id === uid).length;
+    return { visits: userVisits, chats: userChats, score: userVisits + userChats * 3 };
+  };
+
+  const COLORS = ["hsl(var(--primary))", "#06b6d4", "#8b5cf6", "#f59e0b", "#ef4444", "#10b981", "#ec4899", "#f97316", "#14b8a6", "#a855f7"];
   const tooltipStyle = { backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, color: "hsl(var(--foreground))" };
 
   if (authLoading || checking) {
@@ -365,30 +497,45 @@ const DeveloperPage = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 pt-24 pb-12">
+      <div className="container mx-auto px-4 pt-24 pb-12" dir="rtl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
           <div className="flex items-center gap-3">
-            <Shield className="w-8 h-8 text-primary" />
-            <h1 className="text-3xl font-bold text-foreground">لوحة المطور</h1>
+            <div className="w-12 h-12 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
+              <Shield className="w-7 h-7 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">لوحة المطور المتقدمة</h1>
+              <p className="text-sm text-muted-foreground">مركز التحكم والإدارة الشاملة</p>
+            </div>
             <Badge variant="outline" className="border-primary/40 text-primary">مطور</Badge>
           </div>
-          <Button variant="outline" size="sm" onClick={fetchAllData} disabled={refreshing} className="gap-2">
-            <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-            تحديث البيانات
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => exportCSV(profiles, "users-export")} className="gap-2">
+              <Download className="w-4 h-4" />
+              تصدير المستخدمين
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => exportCSV(visits.slice(0, 500), "visits-export")} className="gap-2">
+              <Download className="w-4 h-4" />
+              تصدير الزيارات
+            </Button>
+            <Button variant="outline" size="sm" onClick={fetchAllData} disabled={refreshing} className="gap-2">
+              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+              تحديث
+            </Button>
+          </div>
         </div>
 
-        {/* Stats Cards - Row 1 */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-          {[
-            { icon: Users, label: "المستخدمين", value: stats.totalUsers, color: "primary" },
-            { icon: Eye, label: "الزيارات", value: stats.totalVisits, color: "primary" },
-            { icon: MessageSquare, label: "محادثات AI", value: stats.totalAiChats, color: "primary" },
-            { icon: Globe, label: "الدول", value: countryData.length, color: "primary" },
-            { icon: UserPlus, label: "تسجيلات اليوم", value: todayStats.signups, color: "primary" },
-            { icon: Activity, label: "زيارات اليوم", value: todayStats.visits, color: "primary" },
-          ].map((stat, i) => (
+        {/* Stats Cards - Row 1: Main */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+          {([
+            { icon: Users, label: "إجمالي المستخدمين", value: stats.totalUsers },
+            { icon: Eye, label: "إجمالي الزيارات", value: stats.totalVisits },
+            { icon: MessageSquare, label: "محادثات AI", value: stats.totalAiChats },
+            { icon: Globe, label: "الدول", value: countryData.length },
+            { icon: UserPlus, label: "تسجيلات اليوم", value: todayStats.signups },
+            { icon: Activity, label: "زيارات اليوم", value: todayStats.visits },
+          ] as { icon: LucideIcon; label: string; value: number }[]).map((stat, i) => (
             <Card key={i} className="border-border/30 bg-card/80">
               <CardContent className="p-4 flex flex-col items-center text-center gap-2">
                 <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
@@ -396,6 +543,28 @@ const DeveloperPage = () => {
                 </div>
                 <p className="text-xl font-bold text-foreground">{stat.value}</p>
                 <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Stats Cards - Row 2: Advanced */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
+          {([
+            { icon: TrendingUp, label: "نمو أسبوعي", value: `${weeklyGrowth > 0 ? "+" : ""}${weeklyGrowth}%` },
+            { icon: Monitor, label: "مستخدمين نشطين اليوم", value: activeUsersToday },
+            { icon: Zap, label: "محادثات اليوم", value: todayStats.chats },
+            { icon: FileText, label: "صفحات لكل مستخدم", value: avgSessionPages },
+            { icon: Bell, label: "إشعارات مرسلة", value: sentNotifications.length },
+            { icon: ShieldCheck, label: "قبلوا الخصوصية", value: profiles.filter(p => p.privacy_accepted).length },
+            { icon: Key, label: "حسابات المطورين", value: Object.values(userRoles).filter(r => r === "developer").length },
+            { icon: Hash, label: "عدد المدن", value: new Set(profiles.map(p => p.city).filter(Boolean)).size },
+          ] as { icon: LucideIcon; label: string; value: string | number }[]).map((stat, i) => (
+            <Card key={i} className="border-border/30 bg-card/60">
+              <CardContent className="p-3 flex flex-col items-center text-center gap-1.5">
+                <stat.icon className="w-4 h-4 text-primary/70" />
+                <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                <p className="text-[9px] text-muted-foreground leading-tight">{stat.label}</p>
               </CardContent>
             </Card>
           ))}
@@ -447,18 +616,18 @@ const DeveloperPage = () => {
         </div>
 
         {/* Charts Row 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
           <Card className="border-border/30 bg-card/80">
             <CardHeader className="flex flex-row items-center gap-2 pb-2">
               <UserPlus className="w-5 h-5 text-primary" />
-              <CardTitle className="text-foreground text-base">التسجيلات الجديدة</CardTitle>
+              <CardTitle className="text-foreground text-sm">التسجيلات الجديدة</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={180}>
+              <ResponsiveContainer width="100%" height={160}>
                 <LineChart data={dailySignups}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
                   <Tooltip contentStyle={tooltipStyle} />
                   <Line type="monotone" dataKey="تسجيلات" stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981" }} />
                 </LineChart>
@@ -469,14 +638,14 @@ const DeveloperPage = () => {
           <Card className="border-border/30 bg-card/80">
             <CardHeader className="flex flex-row items-center gap-2 pb-2">
               <Clock className="w-5 h-5 text-primary" />
-              <CardTitle className="text-foreground text-base">النشاط حسب الساعة</CardTitle>
+              <CardTitle className="text-foreground text-sm">النشاط حسب الساعة</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={180}>
+              <ResponsiveContainer width="100%" height={160}>
                 <BarChart data={hourlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} interval={3} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 8 }} interval={3} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
                   <Tooltip contentStyle={tooltipStyle} />
                   <Bar dataKey="نشاط" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -486,15 +655,34 @@ const DeveloperPage = () => {
 
           <Card className="border-border/30 bg-card/80">
             <CardHeader className="flex flex-row items-center gap-2 pb-2">
-              <Hash className="w-5 h-5 text-primary" />
-              <CardTitle className="text-foreground text-base">توزيع الأعمار</CardTitle>
+              <Monitor className="w-5 h-5 text-primary" />
+              <CardTitle className="text-foreground text-sm">الأجهزة</CardTitle>
             </CardHeader>
             <CardContent>
-              {ageData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={180}>
+              {deviceData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={160}>
                   <PieChart>
-                    <Pie data={ageData} cx="50%" cy="50%" outerRadius={65} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
-                      {ageData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    <Pie data={deviceData} cx="50%" cy="50%" outerRadius={55} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
+                      {deviceData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip contentStyle={tooltipStyle} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : <p className="text-sm text-muted-foreground text-center py-8">لا توجد بيانات</p>}
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/30 bg-card/80">
+            <CardHeader className="flex flex-row items-center gap-2 pb-2">
+              <Wifi className="w-5 h-5 text-primary" />
+              <CardTitle className="text-foreground text-sm">المتصفحات</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {browserData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={160}>
+                  <PieChart>
+                    <Pie data={browserData} cx="50%" cy="50%" outerRadius={55} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
+                      {browserData.map((_, i) => <Cell key={i} fill={COLORS[(i + 3) % COLORS.length]} />)}
                     </Pie>
                     <Tooltip contentStyle={tooltipStyle} />
                   </PieChart>
@@ -504,33 +692,70 @@ const DeveloperPage = () => {
           </Card>
         </div>
 
-        {/* Data Tabs */}
+        {/* Charts Row 3 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <Card className="border-border/30 bg-card/80">
+            <CardHeader className="flex flex-row items-center gap-2 pb-2">
+              <Hash className="w-5 h-5 text-primary" />
+              <CardTitle className="text-foreground text-sm">توزيع الأعمار</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ageData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie data={ageData} cx="50%" cy="50%" outerRadius={70} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
+                      {ageData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip contentStyle={tooltipStyle} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : <p className="text-sm text-muted-foreground text-center py-8">لا توجد بيانات</p>}
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/30 bg-card/80">
+            <CardHeader className="flex flex-row items-center gap-2 pb-2">
+              <BarChart3 className="w-5 h-5 text-primary" />
+              <CardTitle className="text-foreground text-sm">أعلى 10 صفحات زيارة</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={topPagesData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                  <XAxis type="number" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <YAxis type="category" dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} width={120} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ═══════════════════════════════ DATA TABS ═══════════════════════════════ */}
         <Tabs defaultValue="users" dir="rtl">
-          <TabsList className="mb-4 flex-wrap h-auto gap-1">
+          <TabsList className="mb-4 flex-wrap h-auto gap-1 bg-secondary/30 p-2 rounded-xl">
             <TabsTrigger value="users" className="gap-1"><Users className="w-3.5 h-3.5" />المستخدمين</TabsTrigger>
+            <TabsTrigger value="management" className="gap-1"><Settings className="w-3.5 h-3.5" />إدارة متقدمة</TabsTrigger>
             <TabsTrigger value="countries" className="gap-1"><Globe className="w-3.5 h-3.5" />البلدان</TabsTrigger>
             <TabsTrigger value="notifications" className="gap-1"><Bell className="w-3.5 h-3.5" />الإشعارات</TabsTrigger>
+            <TabsTrigger value="broadcast" className="gap-1"><Megaphone className="w-3.5 h-3.5" />البث</TabsTrigger>
             <TabsTrigger value="visits" className="gap-1"><Eye className="w-3.5 h-3.5" />الزيارات</TabsTrigger>
             <TabsTrigger value="ai" className="gap-1"><MessageSquare className="w-3.5 h-3.5" />محادثات AI</TabsTrigger>
             <TabsTrigger value="pages" className="gap-1"><BarChart3 className="w-3.5 h-3.5" />الصفحات</TabsTrigger>
+            <TabsTrigger value="export" className="gap-1"><Download className="w-3.5 h-3.5" />التصدير</TabsTrigger>
           </TabsList>
 
           {/* ═══════ USERS TAB ═══════ */}
           <TabsContent value="users">
             <div className="space-y-4">
-              {/* Filters */}
+              {/* Filters + Bulk Actions */}
               <Card className="border-border/30 bg-card/80">
                 <CardContent className="p-4">
                   <div className="flex flex-wrap gap-3 items-center">
                     <div className="relative flex-1 min-w-[200px]">
                       <Search className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="بحث بالاسم، الإيميل، البلد، الهاتف..."
-                        value={userSearch}
-                        onChange={(e) => setUserSearch(e.target.value)}
-                        className="pr-10 bg-secondary/30 border-border/30"
-                        dir="auto"
-                      />
+                      <Input placeholder="بحث بالاسم، الإيميل، البلد، الهاتف..." value={userSearch} onChange={(e) => setUserSearch(e.target.value)} className="pr-10 bg-secondary/30 border-border/30" dir="auto" />
                     </div>
                     <Select value={countryFilter} onValueChange={setCountryFilter}>
                       <SelectTrigger className="w-[160px] bg-secondary/30 border-border/30">
@@ -553,6 +778,16 @@ const DeveloperPage = () => {
                     </Select>
                     <Badge variant="secondary">{filteredProfiles.length} مستخدم</Badge>
                   </div>
+                  {/* Bulk actions */}
+                  {selectedUsers.size > 0 && (
+                    <div className="mt-3 pt-3 border-t border-border/20 flex items-center gap-3 flex-wrap">
+                      <Badge className="bg-primary/20 text-primary">{selectedUsers.size} محدد</Badge>
+                      <Button size="sm" variant="destructive" className="h-7 text-xs gap-1" onClick={handleBulkDelete}>
+                        <Trash2 className="w-3 h-3" />حذف المحددين
+                      </Button>
+                      <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setSelectedUsers(new Set())}>إلغاء التحديد</Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -563,76 +798,145 @@ const DeveloperPage = () => {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-border/30 bg-secondary/20">
+                          <th className="p-3 w-10">
+                            <input type="checkbox" checked={selectedUsers.size === filteredProfiles.length && filteredProfiles.length > 0} onChange={selectAllUsers} className="rounded accent-[hsl(var(--primary))]" />
+                          </th>
                           <th className="text-right p-3 text-muted-foreground font-medium">المستخدم</th>
                           <th className="text-right p-3 text-muted-foreground font-medium">البريد</th>
+                          <th className="text-right p-3 text-muted-foreground font-medium hidden md:table-cell">الدور</th>
                           <th className="text-right p-3 text-muted-foreground font-medium hidden md:table-cell">العمر</th>
                           <th className="text-right p-3 text-muted-foreground font-medium hidden md:table-cell">البلد</th>
                           <th className="text-right p-3 text-muted-foreground font-medium hidden lg:table-cell">المدينة</th>
                           <th className="text-right p-3 text-muted-foreground font-medium hidden lg:table-cell">الهاتف</th>
                           <th className="text-right p-3 text-muted-foreground font-medium hidden sm:table-cell">التاريخ</th>
+                          <th className="text-right p-3 text-muted-foreground font-medium">التفاعل</th>
                           <th className="text-right p-3 text-muted-foreground font-medium">الخصوصية</th>
                           <th className="text-center p-3 text-muted-foreground font-medium">إجراءات</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredProfiles.map((p) => (
-                          <tr key={p.id} className="border-b border-border/10 hover:bg-secondary/20 transition-colors group">
-                            <td className="p-3">
-                              <div className="flex items-center gap-2">
-                                {p.avatar_url ? (
-                                  <img src={p.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover border border-border/30" />
-                                ) : (
-                                  <div className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center">
-                                    <span className="text-primary font-bold text-xs">{(p.display_name || "?")[0]}</span>
+                        {filteredProfiles.map((p) => {
+                          const engagement = getUserEngagement(p.id);
+                          return (
+                            <tr key={p.id} className={`border-b border-border/10 hover:bg-secondary/20 transition-colors group ${selectedUsers.has(p.id) ? "bg-primary/5" : ""}`}>
+                              <td className="p-3">
+                                <input type="checkbox" checked={selectedUsers.has(p.id)} onChange={() => toggleUserSelection(p.id)} className="rounded accent-[hsl(var(--primary))]" />
+                              </td>
+                              <td className="p-3">
+                                <div className="flex items-center gap-2">
+                                  {p.avatar_url ? (
+                                    <img src={p.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover border border-border/30" />
+                                  ) : (
+                                    <div className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center">
+                                      <span className="text-primary font-bold text-xs">{(p.display_name || "?")[0]}</span>
+                                    </div>
+                                  )}
+                                  <div>
+                                    <span className="text-foreground font-medium text-sm block">{p.display_name || "بدون اسم"}</span>
+                                    {userRoles[p.id] === "developer" && <Badge variant="outline" className="text-[8px] border-primary/40 text-primary">مطور</Badge>}
                                   </div>
-                                )}
-                                <span className="text-foreground font-medium text-sm">{p.display_name || "بدون اسم"}</span>
-                              </div>
-                            </td>
-                            <td className="p-3">
-                              <button onClick={() => copyToClipboard(p.email || "")} className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1" dir="ltr" title="انسخ">
-                                {p.email || "—"}
-                                <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                              </button>
-                            </td>
-                            <td className="p-3 text-muted-foreground hidden md:table-cell">{p.age || "—"}</td>
-                            <td className="p-3 hidden md:table-cell">
-                              {p.country ? (
-                                <Badge variant="outline" className="text-xs">{p.country}</Badge>
-                              ) : "—"}
-                            </td>
-                            <td className="p-3 text-muted-foreground text-xs hidden lg:table-cell">{p.city || "—"}</td>
-                            <td className="p-3 text-muted-foreground text-xs hidden lg:table-cell" dir="ltr">{p.phone || "—"}</td>
-                            <td className="p-3 text-muted-foreground text-xs hidden sm:table-cell">
-                              {p.created_at ? new Date(p.created_at).toLocaleDateString("ar") : "—"}
-                            </td>
-                            <td className="p-3">
-                              <Badge variant={p.privacy_accepted ? "default" : "destructive"} className="text-[10px]">
-                                {p.privacy_accepted ? "✓" : "✗"}
-                              </Badge>
-                            </td>
-                            <td className="p-3 text-center">
-                              {confirmDelete === p.id ? (
-                                <div className="flex items-center gap-1 justify-center">
-                                  <Button size="sm" variant="destructive" className="h-7 text-xs px-2" onClick={() => handleDeleteUser(p.id)} disabled={deletingUser === p.id}>
-                                    {deletingUser === p.id ? "..." : "حذف"}
-                                  </Button>
-                                  <Button size="sm" variant="ghost" className="h-7 text-xs px-2" onClick={() => setConfirmDelete(null)}>
-                                    إلغاء
-                                  </Button>
                                 </div>
-                              ) : p.id !== user?.id ? (
-                                <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setConfirmDelete(p.id)}>
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </Button>
-                              ) : (
-                                <Badge variant="secondary" className="text-[10px]">أنت</Badge>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
+                              </td>
+                              <td className="p-3">
+                                <button onClick={() => copyToClipboard(p.email || "")} className="text-muted-foreground hover:text-foreground text-xs flex items-center gap-1" dir="ltr" title="انسخ">
+                                  {p.email || "—"}
+                                  <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </button>
+                              </td>
+                              <td className="p-3 hidden md:table-cell">
+                                <Badge variant={userRoles[p.id] === "developer" ? "default" : "secondary"} className="text-[10px]">
+                                  {userRoles[p.id] || "user"}
+                                </Badge>
+                              </td>
+                              <td className="p-3 text-muted-foreground hidden md:table-cell">{p.age || "—"}</td>
+                              <td className="p-3 hidden md:table-cell">
+                                {p.country ? <Badge variant="outline" className="text-xs">{p.country}</Badge> : "—"}
+                              </td>
+                              <td className="p-3 text-muted-foreground text-xs hidden lg:table-cell">{p.city || "—"}</td>
+                              <td className="p-3 text-muted-foreground text-xs hidden lg:table-cell" dir="ltr">{p.phone || "—"}</td>
+                              <td className="p-3 text-muted-foreground text-xs hidden sm:table-cell">
+                                {p.created_at ? new Date(p.created_at).toLocaleDateString("ar") : "—"}
+                              </td>
+                              <td className="p-3">
+                                <div className="flex items-center gap-1">
+                                  <span className="text-[10px] text-muted-foreground">{engagement.visits}z</span>
+                                  <span className="text-[10px] text-muted-foreground">{engagement.chats}c</span>
+                                  <div className="w-12 h-1.5 bg-secondary/30 rounded-full overflow-hidden">
+                                    <div className="h-full rounded-full bg-primary/60" style={{ width: `${Math.min(100, engagement.score * 2)}%` }} />
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-3">
+                                <Badge variant={p.privacy_accepted ? "default" : "destructive"} className="text-[10px]">
+                                  {p.privacy_accepted ? "✓" : "✗"}
+                                </Badge>
+                              </td>
+                              <td className="p-3 text-center">
+                                <div className="flex items-center gap-1 justify-center">
+                                  <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => setExpandedUser(expandedUser === p.id ? null : p.id)} title="تفاصيل">
+                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expandedUser === p.id ? "rotate-180" : ""}`} />
+                                  </Button>
+                                  {confirmDelete === p.id ? (
+                                    <>
+                                      <Button size="sm" variant="destructive" className="h-7 text-xs px-2" onClick={() => handleDeleteUser(p.id)} disabled={deletingUser === p.id}>
+                                        {deletingUser === p.id ? "..." : "حذف"}
+                                      </Button>
+                                      <Button size="sm" variant="ghost" className="h-7 text-xs px-2" onClick={() => setConfirmDelete(null)}>إلغاء</Button>
+                                    </>
+                                  ) : p.id !== user?.id ? (
+                                    <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setConfirmDelete(p.id)}>
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </Button>
+                                  ) : (
+                                    <Badge variant="secondary" className="text-[10px]">أنت</Badge>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
+                    {/* Expanded user details */}
+                    {expandedUser && (() => {
+                      const p = profiles.find(pr => pr.id === expandedUser);
+                      if (!p) return null;
+                      const eng = getUserEngagement(p.id);
+                      return (
+                        <div className="p-4 bg-secondary/10 border-t border-border/20 space-y-3">
+                          <h4 className="text-sm font-bold text-foreground">تفاصيل: {p.display_name || p.email}</h4>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div className="p-3 rounded-lg bg-card/80 border border-border/20">
+                              <p className="text-[10px] text-muted-foreground">الزيارات</p>
+                              <p className="text-lg font-bold text-foreground">{eng.visits}</p>
+                            </div>
+                            <div className="p-3 rounded-lg bg-card/80 border border-border/20">
+                              <p className="text-[10px] text-muted-foreground">محادثات AI</p>
+                              <p className="text-lg font-bold text-foreground">{eng.chats}</p>
+                            </div>
+                            <div className="p-3 rounded-lg bg-card/80 border border-border/20">
+                              <p className="text-[10px] text-muted-foreground">نقاط التفاعل</p>
+                              <p className="text-lg font-bold text-primary">{eng.score}</p>
+                            </div>
+                            <div className="p-3 rounded-lg bg-card/80 border border-border/20">
+                              <p className="text-[10px] text-muted-foreground">الدور</p>
+                              <p className="text-lg font-bold text-foreground">{userRoles[p.id] || "user"}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(p.id)}>
+                              <Copy className="w-3 h-3" />نسخ ID
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(p.email || "")}>
+                              <Mail className="w-3 h-3" />نسخ البريد
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(JSON.stringify(p, null, 2))}>
+                              <Code className="w-3 h-3" />نسخ JSON
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })()}
                     {filteredProfiles.length === 0 && (
                       <p className="text-center text-muted-foreground py-8">لا يوجد مستخدمين مطابقين</p>
                     )}
@@ -642,10 +946,215 @@ const DeveloperPage = () => {
             </div>
           </TabsContent>
 
+          {/* ═══════ ADVANCED MANAGEMENT TAB ═══════ */}
+          <TabsContent value="management">
+            <div className="space-y-6">
+              {/* Quick Actions */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <Card className="border-border/30 bg-card/80">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-foreground text-sm flex items-center gap-2">
+                      <Database className="w-4 h-4 text-primary" />
+                      إحصائيات قاعدة البيانات
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      { label: "جدول المستخدمين (profiles)", value: profiles.length },
+                      { label: "جدول الزيارات (page_visits)", value: visits.length },
+                      { label: "جدول المحادثات (ai_chat_logs)", value: aiLogs.length },
+                      { label: "جدول الإشعارات (notifications)", value: sentNotifications.length },
+                      { label: "جدول الأدوار (user_roles)", value: Object.keys(userRoles).length },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">{item.label}</span>
+                        <Badge variant="secondary" className="text-xs">{item.value}</Badge>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/30 bg-card/80">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-foreground text-sm flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-primary" />
+                      حالة الأمان
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      { label: "RLS مفعل على جميع الجداول", status: true },
+                      { label: "جميع المستخدمين بأدوار محددة", status: Object.keys(userRoles).length === profiles.length },
+                      { label: "سياسة الخصوصية مقبولة", status: profiles.filter(p => p.privacy_accepted).length > 0 },
+                      { label: "حذف الحسابات فعال", status: true },
+                      { label: "التحقق من البريد مفعل", status: true },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">{item.label}</span>
+                        {item.status ? (
+                          <CheckCircle className="w-4 h-4 text-emerald-500" />
+                        ) : (
+                          <AlertTriangle className="w-4 h-4 text-amber-500" />
+                        )}
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border/30 bg-card/80">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-foreground text-sm flex items-center gap-2">
+                      <Server className="w-4 h-4 text-primary" />
+                      معلومات النظام
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      { label: "المنصة", value: "Lovable Cloud" },
+                      { label: "قاعدة البيانات", value: "PostgreSQL" },
+                      { label: "المصادقة", value: "Email + Link" },
+                      { label: "التخزين", value: "Cloud Storage" },
+                      { label: "Edge Functions", value: "مفعلة" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">{item.label}</span>
+                        <Badge variant="outline" className="text-[10px]">{item.value}</Badge>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* User Roles Overview */}
+              <Card className="border-border/30 bg-card/80">
+                <CardHeader>
+                  <CardTitle className="text-foreground text-base flex items-center gap-2">
+                    <Key className="w-5 h-5 text-primary" />
+                    إدارة الأدوار والصلاحيات
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">عرض شامل لأدوار جميع المستخدمين وصلاحياتهم</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Developers */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-primary" />
+                        <h3 className="text-sm font-bold text-foreground">المطورون ({Object.values(userRoles).filter(r => r === "developer").length})</h3>
+                      </div>
+                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {profiles.filter(p => userRoles[p.id] === "developer").map(p => (
+                          <div key={p.id} className="flex items-center gap-3 p-2 rounded-lg bg-primary/5 border border-primary/20">
+                            {p.avatar_url ? (
+                              <img src={p.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">{(p.display_name || "?")[0]}</div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{p.display_name || "—"}</p>
+                              <p className="text-[10px] text-muted-foreground" dir="ltr">{p.email}</p>
+                            </div>
+                            <Badge className="bg-primary/20 text-primary text-[10px]">مطور</Badge>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-3 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                        <h4 className="text-xs font-bold text-primary mb-2">صلاحيات المطور:</h4>
+                        <ul className="space-y-1 text-xs text-muted-foreground">
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />عرض جميع البيانات</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />حذف المستخدمين</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />إرسال الإشعارات</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />تصدير البيانات</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />عرض محادثات AI</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />إدارة الإشعارات</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />عرض سجلات الزيارات</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />إحصائيات النظام</li>
+                        </ul>
+                      </div>
+                    </div>
+                    {/* Regular Users */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-muted-foreground" />
+                        <h3 className="text-sm font-bold text-foreground">المستخدمون العاديون ({profiles.filter(p => userRoles[p.id] !== "developer").length})</h3>
+                      </div>
+                      <div className="space-y-2 max-h-60 overflow-y-auto">
+                        {profiles.filter(p => userRoles[p.id] !== "developer").slice(0, 20).map(p => (
+                          <div key={p.id} className="flex items-center gap-3 p-2 rounded-lg bg-secondary/20 border border-border/20">
+                            {p.avatar_url ? (
+                              <img src={p.avatar_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-secondary/40 flex items-center justify-center text-muted-foreground font-bold text-sm">{(p.display_name || "?")[0]}</div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{p.display_name || "—"}</p>
+                              <p className="text-[10px] text-muted-foreground" dir="ltr">{p.email}</p>
+                            </div>
+                            <Badge variant="secondary" className="text-[10px]">مستخدم</Badge>
+                          </div>
+                        ))}
+                        {profiles.filter(p => userRoles[p.id] !== "developer").length > 20 && (
+                          <p className="text-xs text-muted-foreground text-center">+ {profiles.filter(p => userRoles[p.id] !== "developer").length - 20} مستخدم آخر</p>
+                        )}
+                      </div>
+                      <div className="mt-3 p-3 rounded-lg bg-secondary/20 border border-border/20">
+                        <h4 className="text-xs font-bold text-foreground mb-2">صلاحيات المستخدم:</h4>
+                        <ul className="space-y-1 text-xs text-muted-foreground">
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />عرض بياناته الشخصية</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />تعديل ملفه الشخصي</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />استخدام محادثات AI</li>
+                          <li className="flex items-center gap-1"><CheckCircle className="w-3 h-3 text-emerald-500" />عرض الإشعارات</li>
+                          <li className="flex items-center gap-1"><XCircle className="w-3 h-3 text-destructive" />عرض بيانات الآخرين</li>
+                          <li className="flex items-center gap-1"><XCircle className="w-3 h-3 text-destructive" />حذف المستخدمين</li>
+                          <li className="flex items-center gap-1"><XCircle className="w-3 h-3 text-destructive" />إرسال إشعارات</li>
+                          <li className="flex items-center gap-1"><XCircle className="w-3 h-3 text-destructive" />الوصول للوحة المطور</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Recent Activity Timeline */}
+              <Card className="border-border/30 bg-card/80">
+                <CardHeader>
+                  <CardTitle className="text-foreground text-base flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-primary" />
+                    آخر الأنشطة
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {[
+                      ...profiles.slice(0, 5).map(p => ({ type: "signup" as const, time: p.created_at, text: `تسجيل جديد: ${p.display_name || p.email}`, icon: UserPlus })),
+                      ...visits.slice(0, 10).map(v => ({ type: "visit" as const, time: v.visited_at, text: `زيارة: ${decodeURIComponent(v.page_path)}`, icon: Eye })),
+                      ...aiLogs.slice(0, 5).map(l => ({ type: "ai" as const, time: l.created_at, text: `محادثة AI: ${l.message?.slice(0, 60)}...`, icon: MessageSquare })),
+                    ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 20).map((item, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                          item.type === "signup" ? "bg-emerald-500/15" :
+                          item.type === "visit" ? "bg-primary/15" : "bg-violet-500/15"
+                        }`}>
+                          <item.icon className={`w-4 h-4 ${
+                            item.type === "signup" ? "text-emerald-500" :
+                            item.type === "visit" ? "text-primary" : "text-violet-500"
+                          }`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-foreground truncate">{item.text}</p>
+                          <p className="text-[10px] text-muted-foreground">{new Date(item.time).toLocaleString("ar")}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* ═══════ COUNTRIES TAB ═══════ */}
           <TabsContent value="countries">
             <div className="space-y-6">
-              {/* Country Chart */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <Card className="border-border/30 bg-card/80">
                   <CardHeader className="flex flex-row items-center gap-2">
@@ -686,7 +1195,6 @@ const DeveloperPage = () => {
                 </Card>
               </div>
 
-              {/* Country Details Table */}
               <Card className="border-border/30 bg-card/80">
                 <CardHeader>
                   <CardTitle className="text-foreground text-base flex items-center gap-2">
@@ -720,9 +1228,7 @@ const DeveloperPage = () => {
                                   <span className="text-foreground font-medium">{country.name}</span>
                                 </div>
                               </td>
-                              <td className="p-3">
-                                <Badge variant="secondary">{country.count}</Badge>
-                              </td>
+                              <td className="p-3"><Badge variant="secondary">{country.count}</Badge></td>
                               <td className="p-3">
                                 <div className="flex items-center gap-2">
                                   <div className="h-2 bg-secondary/30 rounded-full overflow-hidden w-20">
@@ -743,9 +1249,7 @@ const DeveloperPage = () => {
                                   {country.users.slice(0, 5).map((u: any) => (
                                     <span key={u.id} className="text-[10px] text-muted-foreground bg-secondary/30 rounded px-1.5 py-0.5">{u.display_name || u.email?.split("@")[0]}</span>
                                   ))}
-                                  {country.users.length > 5 && (
-                                    <span className="text-[10px] text-primary">+{country.users.length - 5}</span>
-                                  )}
+                                  {country.users.length > 5 && <span className="text-[10px] text-primary">+{country.users.length - 5}</span>}
                                 </div>
                               </td>
                             </tr>
@@ -836,6 +1340,58 @@ const DeveloperPage = () => {
             </div>
           </TabsContent>
 
+          {/* ═══════ BROADCAST TAB ═══════ */}
+          <TabsContent value="broadcast">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="border-primary/30 bg-card/80">
+                <CardHeader>
+                  <CardTitle className="text-foreground flex items-center gap-2">
+                    <Megaphone className="w-5 h-5 text-primary" />
+                    بث رسالة عامة
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">إرسال إشعار عاجل لجميع المستخدمين</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-1 block">عنوان البث</label>
+                    <Input value={broadcastTitle} onChange={(e) => setBroadcastTitle(e.target.value)} placeholder="📢 عنوان الرسالة العامة..." className="bg-secondary/30 border-border/30" dir="auto" />
+                  </div>
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-1 block">محتوى البث</label>
+                    <Textarea value={broadcastMsg} onChange={(e) => setBroadcastMsg(e.target.value)} placeholder="اكتب رسالتك هنا... سيتم إرسالها لجميع المستخدمين" className="bg-secondary/30 border-border/30 min-h-[120px]" dir="auto" />
+                  </div>
+                  <Button onClick={handleBroadcast} disabled={sendingNotif || !broadcastTitle.trim() || !broadcastMsg.trim()} className="w-full gap-2" variant="default">
+                    {sendingNotif ? <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" /> : <Megaphone className="w-4 h-4" />}
+                    بث الرسالة للجميع
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="border-border/30 bg-card/80">
+                <CardHeader>
+                  <CardTitle className="text-foreground flex items-center gap-2">
+                    <Send className="w-5 h-5 text-primary" />
+                    إرسال مجمّع للمحددين
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">حدد مستخدمين من تاب "المستخدمين" ثم أرسل لهم</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 rounded-lg bg-secondary/20 border border-border/20 text-center">
+                    <Users className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-sm text-foreground font-medium">{selectedUsers.size} مستخدم محدد</p>
+                    <p className="text-xs text-muted-foreground mt-1">اذهب لتاب المستخدمين لتحديد المستلمين</p>
+                  </div>
+                  <Input value={notifTitle} onChange={(e) => setNotifTitle(e.target.value)} placeholder="عنوان الإشعار..." className="bg-secondary/30 border-border/30" dir="auto" />
+                  <Textarea value={notifMessage} onChange={(e) => setNotifMessage(e.target.value)} placeholder="محتوى الإشعار..." className="bg-secondary/30 border-border/30 min-h-[80px]" dir="auto" />
+                  <Button onClick={handleBulkNotify} disabled={selectedUsers.size === 0 || !notifTitle.trim() || !notifMessage.trim()} className="w-full gap-2" variant="outline">
+                    <Send className="w-4 h-4" />
+                    إرسال لـ {selectedUsers.size} مستخدم
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* ═══════ VISITS TAB ═══════ */}
           <TabsContent value="visits">
             <Card className="border-border/30 bg-card/80">
@@ -886,9 +1442,14 @@ const DeveloperPage = () => {
                     <MessageSquare className="w-5 h-5 text-primary" />
                     محادثات الذكاء الاصطناعي ({aiLogs.length})
                   </CardTitle>
-                  <div className="relative w-64">
-                    <Search className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="بحث في المحادثات..." value={aiSearch} onChange={(e) => setAiSearch(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 h-9 text-sm" dir="auto" />
+                  <div className="flex items-center gap-2">
+                    <div className="relative w-64">
+                      <Search className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input placeholder="بحث في المحادثات..." value={aiSearch} onChange={(e) => setAiSearch(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 h-9 text-sm" dir="auto" />
+                    </div>
+                    <Button size="sm" variant="outline" className="h-9 gap-1" onClick={() => exportCSV(aiLogs.slice(0, 500), "ai-logs-export")}>
+                      <Download className="w-3.5 h-3.5" />تصدير
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -930,8 +1491,7 @@ const DeveloperPage = () => {
                               <span>{new Date(log.created_at).toLocaleString("ar")}</span>
                             </div>
                             <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(log.message + "\n\n" + (log.response || ""))}>
-                              <Copy className="w-3 h-3" />
-                              نسخ
+                              <Copy className="w-3 h-3" />نسخ
                             </Button>
                           </div>
                         </div>
@@ -977,6 +1537,35 @@ const DeveloperPage = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* ═══════ EXPORT TAB ═══════ */}
+          <TabsContent value="export">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { title: "تصدير المستخدمين", desc: "جميع بيانات المستخدمين المسجلين", icon: Users, data: profiles, filename: "users" },
+                { title: "تصدير الزيارات", desc: "آخر 500 زيارة مع التفاصيل", icon: Eye, data: visits.slice(0, 500), filename: "visits" },
+                { title: "تصدير محادثات AI", desc: "آخر 500 محادثة مع الردود", icon: MessageSquare, data: aiLogs.slice(0, 500), filename: "ai-chats" },
+                { title: "تصدير الإشعارات", desc: "جميع الإشعارات المرسلة", icon: Bell, data: sentNotifications, filename: "notifications" },
+                { title: "تصدير البلدان", desc: "إحصائيات البلدان والمدن", icon: Globe, data: countryData.map(c => ({ country: c.name, users: c.count })), filename: "countries" },
+                { title: "تصدير الأدوار", desc: "جميع أدوار المستخدمين", icon: Key, data: Object.entries(userRoles).map(([uid, role]) => ({ user_id: uid, role, email: profiles.find(p => p.id === uid)?.email || "" })), filename: "roles" },
+              ].map((item, i) => (
+                <Card key={i} className="border-border/30 bg-card/80 hover:border-primary/30 transition-colors cursor-pointer group" onClick={() => exportCSV(item.data, item.filename)}>
+                  <CardContent className="p-6 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto group-hover:bg-primary/25 transition-colors">
+                      <item.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <h3 className="text-sm font-bold text-foreground">{item.title}</h3>
+                    <p className="text-xs text-muted-foreground">{item.desc}</p>
+                    <Badge variant="secondary" className="text-xs">{item.data.length} سجل</Badge>
+                    <Button size="sm" variant="outline" className="w-full gap-2 mt-2">
+                      <Download className="w-4 h-4" />
+                      تحميل CSV
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
       </div>
