@@ -386,7 +386,7 @@ const AuthPage = () => {
                     <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/20 border border-border/20">
                       <Checkbox id="privacy" checked={privacyAccepted} onCheckedChange={(checked) => setPrivacyAccepted(checked === true)} className="mt-0.5" />
                       <label htmlFor="privacy" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                        أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
+                        أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر، البلد/المدينة، نوع الجهاز) إلى مدير الموقع لأغراض إدارية وأمنية.
                       </label>
                     </div>
                   )}
