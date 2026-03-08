@@ -207,6 +207,7 @@ const guideTopics: GuideTopic[] = [
     icon: Eye,
     title: "اختبار الاختراق (Penetration Testing)",
     description: "تعرف على مراحل اختبار الاختراق الاحترافي والمنهجيات المعتمدة",
+    color: "text-purple-500",
     subTopics: [
       {
         title: "مراحل اختبار الاختراق",
