@@ -1028,6 +1028,7 @@ const guideTopics: GuideTopic[] = [
     icon: Users,
     title: "الفريق الأحمر والأزرق (Red/Blue Team)",
     description: "فهم أدوار الهجوم والدفاع في الأمن السيبراني",
+    color: "text-violet-500",
     subTopics: [
       {
         title: "الفريق الأحمر (Red Team)",
