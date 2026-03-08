@@ -341,18 +341,24 @@
     scroll-behavior: smooth;
   }
 
-  body {
+  html, body {
     @apply bg-background text-foreground antialiased;
     font-family: 'iPhoneFont', 'Cairo', sans-serif !important;
     direction: rtl;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  * {
-    font-family: inherit !important;
+  *, *::before, *::after {
+    font-family: 'iPhoneFont', 'Cairo', sans-serif !important;
+  }
+
+  h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, select, label, li, td, th, div {
+    font-family: 'iPhoneFont', 'Cairo', sans-serif !important;
   }
 
   code, pre, .font-mono {
-    font-family: 'iPhoneFont', monospace !important;
+    font-family: 'iPhoneFont', 'Cairo', monospace !important;
   }
 }
 
