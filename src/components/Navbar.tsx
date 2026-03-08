@@ -57,13 +57,22 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center gap-3">
             <ThemeToggle />
             {user ? (
-              <button
-                onClick={signOut}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                خروج
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/الملف-الشخصي"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                >
+                  <UserCircle className="w-4 h-4" />
+                  الملف الشخصي
+                </Link>
+                <button
+                  onClick={signOut}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  خروج
+                </button>
+              </div>
             ) : (
               <Link
                 to="/تسجيل-الدخول"
