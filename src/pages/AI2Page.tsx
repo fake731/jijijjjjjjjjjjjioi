@@ -1,3 +1,4 @@
+import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload, Copy, Sparkles, LogIn } from "lucide-react";
