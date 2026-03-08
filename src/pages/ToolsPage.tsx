@@ -106,16 +106,27 @@ const toolColors: Record<string, string> = {
 };
 
 const ToolsPage = () => {
+  const { user } = useAuth();
   const [expandedTool, setExpandedTool] = useState<number | null>(0);
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
   const [viewMode, setViewMode] = useState<"expanded" | "compact">("expanded");
 
+  const requireAuth = (action: () => void) => {
+    if (!user) {
+      toast.error("سجل دخول أولاً لاستخدام هذه الميزة");
+      return;
+    }
+    action();
+  };
+
   const copyCommand = (command: string) => {
-    navigator.clipboard.writeText(command);
-    setCopiedCommand(command);
-    setTimeout(() => setCopiedCommand(null), 2000);
+    requireAuth(() => {
+      navigator.clipboard.writeText(command);
+      setCopiedCommand(command);
+      setTimeout(() => setCopiedCommand(null), 2000);
+    });
   };
 
   const downloadTool = (tool: Tool) => {
