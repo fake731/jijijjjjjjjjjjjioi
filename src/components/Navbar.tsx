@@ -11,15 +11,15 @@ const Navbar = () => {
 
   const navItems = [
     { label: t("nav.home"), path: "/" },
-    { label: t("nav.guide"), path: "/guide" },
-    { label: t("nav.tools"), path: "/tools" },
-    { label: t("nav.scripts"), path: "/scripts" },
-    { label: t("nav.ai"), path: "/ai" },
-    { label: t("nav.scanner"), path: "/scanner" },
-    { label: t("nav.webdev"), path: "/webdev" },
-    { label: t("nav.password"), path: "/password-checker" },
-    { label: t("nav.inquiry"), path: "/inquiry" },
-    { label: t("nav.download"), path: "/download" },
+    { label: t("nav.guide"), path: "/الدليل" },
+    { label: t("nav.tools"), path: "/الادوات" },
+    { label: t("nav.scripts"), path: "/السكربتات" },
+    { label: t("nav.ai"), path: "/الذكاء" },
+    { label: t("nav.scanner"), path: "/الاوامر" },
+    { label: t("nav.webdev"), path: "/تطوير-الويب" },
+    { label: t("nav.password"), path: "/فحص-كلمة-المرور" },
+    { label: t("nav.inquiry"), path: "/الاستفسارات" },
+    { label: t("nav.download"), path: "/التحميل" },
   ];
 
   return (

@@ -19,10 +19,10 @@ const CTASection = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/guide" className="cyber-button-primary">
+          <Link to="/الدليل" className="cyber-button-primary">
             {t("nav.guide")}
           </Link>
-          <Link to="/tools" className="cyber-button-outline">
+          <Link to="/الادوات" className="cyber-button-outline">
             {t("nav.tools")}
           </Link>
         </div>

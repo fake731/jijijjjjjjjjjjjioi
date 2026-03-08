@@ -27,15 +27,15 @@ interface NavItem {
 
 const navItems: (NavItem & { color: string })[] = [
   { path: "/", icon: Home, labelKey: "home", color: "text-cyan-500" },
-  { path: "/tools", icon: Terminal, labelKey: "tools", color: "text-red-500" },
-  { path: "/ai", icon: MessageSquare, labelKey: "ai", color: "text-purple-500" },
-  { path: "/scanner", icon: Scan, labelKey: "scanner", color: "text-yellow-500" },
-  { path: "/scripts", icon: Code, labelKey: "scripts", color: "text-green-500" },
-  { path: "/guide", icon: BookOpen, labelKey: "guide", color: "text-orange-500" },
-  { path: "/webdev", icon: Globe, labelKey: "webdev", color: "text-blue-500" },
-  { path: "/password-checker", icon: Lock, labelKey: "password", color: "text-amber-500" },
-  { path: "/inquiry", icon: Mail, labelKey: "inquiry", color: "text-pink-500" },
-  { path: "/download", icon: Download, labelKey: "download", color: "text-emerald-500" },
+  { path: "/الادوات", icon: Terminal, labelKey: "tools", color: "text-red-500" },
+  { path: "/الذكاء", icon: MessageSquare, labelKey: "ai", color: "text-purple-500" },
+  { path: "/الاوامر", icon: Scan, labelKey: "scanner", color: "text-yellow-500" },
+  { path: "/السكربتات", icon: Code, labelKey: "scripts", color: "text-green-500" },
+  { path: "/الدليل", icon: BookOpen, labelKey: "guide", color: "text-orange-500" },
+  { path: "/تطوير-الويب", icon: Globe, labelKey: "webdev", color: "text-blue-500" },
+  { path: "/فحص-كلمة-المرور", icon: Lock, labelKey: "password", color: "text-amber-500" },
+  { path: "/الاستفسارات", icon: Mail, labelKey: "inquiry", color: "text-pink-500" },
+  { path: "/التحميل", icon: Download, labelKey: "download", color: "text-emerald-500" },
 ];
 
 const navLabels: Record<string, { ar: string; en: string }> = {

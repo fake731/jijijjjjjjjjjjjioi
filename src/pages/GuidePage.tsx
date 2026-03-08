@@ -12,6 +12,7 @@ interface GuideTopic {
   icon: React.ElementType;
   title: string;
   description: string;
+  color: string;
   subTopics: SubTopic[];
 }
 
@@ -20,6 +21,7 @@ const guideTopics: GuideTopic[] = [
     icon: Shield,
     title: "أساسيات الأمن السيبراني",
     description: "تعرف على المفاهيم الأساسية والمبادئ الثلاثة للأمن السيبراني",
+    color: "text-blue-500",
     subTopics: [
       {
         title: "ما هو الأمن السيبراني؟",
@@ -93,6 +95,7 @@ const guideTopics: GuideTopic[] = [
     icon: Target,
     title: "أنواع الهجمات الإلكترونية",
     description: "تعلم أشهر أنواع الهجمات وكيفية عملها للحماية منها",
+    color: "text-red-500",
     subTopics: [
       {
         title: "هجمات التصيد (Phishing)",
@@ -204,6 +207,7 @@ const guideTopics: GuideTopic[] = [
     icon: Eye,
     title: "اختبار الاختراق (Penetration Testing)",
     description: "تعرف على مراحل اختبار الاختراق الاحترافي والمنهجيات المعتمدة",
+    color: "text-purple-500",
     subTopics: [
       {
         title: "مراحل اختبار الاختراق",
@@ -285,6 +289,7 @@ const guideTopics: GuideTopic[] = [
     icon: Lock,
     title: "التشفير والحماية",
     description: "أساسيات التشفير وأنواعه وكيفية استخدامه لحماية البيانات",
+    color: "text-amber-500",
     subTopics: [
       {
         title: "أنواع التشفير",
@@ -366,6 +371,7 @@ const guideTopics: GuideTopic[] = [
     icon: Network,
     title: "أمن الشبكات",
     description: "حماية الشبكات من التهديدات وأدوات المراقبة والحماية",
+    color: "text-cyan-500",
     subTopics: [
       {
         title: "جدران الحماية (Firewalls)",
@@ -448,6 +454,7 @@ const guideTopics: GuideTopic[] = [
     icon: Database,
     title: "أمن تطبيقات الويب",
     description: "OWASP Top 10 وأفضل الممارسات لتطوير تطبيقات آمنة",
+    color: "text-orange-500",
     subTopics: [
       {
         title: "OWASP Top 10 - 2021",
@@ -530,6 +537,7 @@ const guideTopics: GuideTopic[] = [
     icon: Terminal,
     title: "أنظمة التشغيل والأدوات",
     description: "تعرف على توزيعات لينكس للأمن السيبراني وأهم الأدوات",
+    color: "text-green-500",
     subTopics: [
       {
         title: "توزيعات لينكس للأمن السيبراني",
@@ -612,6 +620,7 @@ const guideTopics: GuideTopic[] = [
     icon: AlertTriangle,
     title: "القوانين والأخلاقيات",
     description: "الإطار القانوني والأخلاقي للعمل في الأمن السيبراني",
+    color: "text-yellow-500",
     subTopics: [
       {
         title: "القوانين والتشريعات",
@@ -679,6 +688,7 @@ const guideTopics: GuideTopic[] = [
     icon: Cloud,
     title: "أمن السحابة (Cloud Security)",
     description: "حماية البيانات والتطبيقات في البيئات السحابية",
+    color: "text-sky-500",
     subTopics: [
       {
         title: "نماذج الحوسبة السحابية",
@@ -746,6 +756,7 @@ const guideTopics: GuideTopic[] = [
     icon: Smartphone,
     title: "أمن تطبيقات الموبايل",
     description: "حماية تطبيقات الجوال على Android و iOS",
+    color: "text-pink-500",
     subTopics: [
       {
         title: "OWASP Mobile Top 10",
@@ -813,6 +824,7 @@ const guideTopics: GuideTopic[] = [
     icon: Radio,
     title: "أمن إنترنت الأشياء (IoT Security)",
     description: "حماية الأجهزة المتصلة والأنظمة الذكية",
+    color: "text-teal-500",
     subTopics: [
       {
         title: "تحديات أمن IoT",
@@ -880,6 +892,7 @@ const guideTopics: GuideTopic[] = [
     icon: Search,
     title: "التحقيق الجنائي الرقمي (Digital Forensics)",
     description: "تحليل الأدلة الرقمية والتحقيق في الحوادث الأمنية",
+    color: "text-indigo-500",
     subTopics: [
       {
         title: "أساسيات التحقيق الجنائي",
@@ -947,6 +960,7 @@ const guideTopics: GuideTopic[] = [
     icon: Skull,
     title: "تحليل البرمجيات الخبيثة",
     description: "فهم وتحليل الفيروسات والبرمجيات الضارة",
+    color: "text-rose-500",
     subTopics: [
       {
         title: "أنواع البرمجيات الخبيثة",
@@ -1014,6 +1028,7 @@ const guideTopics: GuideTopic[] = [
     icon: Users,
     title: "الفريق الأحمر والأزرق (Red/Blue Team)",
     description: "فهم أدوار الهجوم والدفاع في الأمن السيبراني",
+    color: "text-violet-500",
     subTopics: [
       {
         title: "الفريق الأحمر (Red Team)",
@@ -1081,6 +1096,7 @@ const guideTopics: GuideTopic[] = [
     icon: Braces,
     title: "البرمجة للأمن السيبراني",
     description: "لغات البرمجة والأتمتة في مجال الأمن",
+    color: "text-emerald-500",
     subTopics: [
       {
         title: "Python للأمن السيبراني",
@@ -1148,6 +1164,7 @@ const guideTopics: GuideTopic[] = [
     icon: Wrench,
     title: "مصادر التعلم والتطبيق",
     description: "منصات التدريب والموارد لتطوير مهاراتك",
+    color: "text-fuchsia-500",
     subTopics: [
       {
         title: "منصات التدريب العملي",
@@ -1256,7 +1273,7 @@ const GuidePage = () => {
           <div className="text-center mb-16">
             <div className="flex justify-center mb-6">
               <div className="cyber-icon-box">
-                <BookOpen className="w-10 h-10 text-primary" />
+                <BookOpen className="w-10 h-10 text-yellow-500" />
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-primary text-glow mb-4">
@@ -1288,8 +1305,8 @@ const GuidePage = () => {
                   className="w-full p-6 flex items-center justify-between hover:bg-primary/5 transition-colors"
                 >
                   <div className="flex items-center gap-5">
-                    <div className="w-18 h-18 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center" style={{ width: '72px', height: '72px' }}>
-                      <topic.icon className="w-9 h-9 text-primary" />
+                    <div className={`w-18 h-18 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center`} style={{ width: '72px', height: '72px' }}>
+                      <topic.icon className={`w-9 h-9 ${topic.color}`} />
                     </div>
                     <div className="text-right">
                       <h2 className="text-2xl md:text-3xl font-bold text-primary">{topic.title}</h2>

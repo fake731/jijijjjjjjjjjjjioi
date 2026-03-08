@@ -57,7 +57,7 @@ const WebDevPage = () => {
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
               <div className="cyber-icon-box">
-                <Code className="w-10 h-10 text-primary" />
+                <Code className="w-10 h-10 text-blue-500" />
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-primary text-glow mb-4">

@@ -36,10 +36,10 @@ const HeroSection = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in [animation-delay:0.4s]">
-          <Link to="/tools" className="cyber-button-primary">
+          <Link to="/الادوات" className="cyber-button-primary">
             {t("hero.cta.tools")}
           </Link>
-          <Link to="/guide" className="cyber-button-outline">
+          <Link to="/الدليل" className="cyber-button-outline">
             {t("hero.cta.guide")}
           </Link>
         </div>

@@ -222,6 +222,21 @@ const categories = [
   { id: "other", label: { ar: "أخرى", en: "Other" } },
 ];
 
+const categoryColors: Record<string, string> = {
+  navigation: "text-blue-500",
+  listing: "text-cyan-500",
+  files: "text-green-500",
+  permissions: "text-amber-500",
+  system: "text-orange-500",
+  history: "text-purple-500",
+  network: "text-teal-500",
+  packages: "text-red-500",
+  compression: "text-yellow-500",
+  security: "text-rose-500",
+  git: "text-violet-500",
+  other: "text-pink-500",
+};
+
 const ScannerPage = () => {
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [language, setLanguage] = useState<"ar" | "en">("ar");
@@ -258,7 +273,7 @@ const ScannerPage = () => {
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
               <div className="cyber-icon-box">
-                <Terminal className="w-10 h-10 text-primary" />
+                <Terminal className="w-10 h-10 text-red-500" />
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -323,7 +338,7 @@ const ScannerPage = () => {
                   className="cyber-card p-5 hover:border-primary/50 transition-all group"
                 >
                   <div className="flex items-start gap-4">
-                    <span className="w-14 h-14 rounded-xl bg-primary/20 text-primary flex items-center justify-center flex-shrink-0">
+                    <span className={`w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0 ${categoryColors[cmd.category] || 'text-primary'}`}>
                       {cmd.icon}
                     </span>
                     <div className="flex-1 min-w-0">
