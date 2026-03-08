@@ -97,7 +97,13 @@ const AuthPage = () => {
         navigate("/");
       }
     } catch (error: any) {
-      toast.error(error.message || "حدث خطأ");
+      const msg = error.message || "حدث خطأ";
+      if (msg.includes("already registered") || msg.includes("already been registered")) {
+        toast.error("هذا البريد الإلكتروني مسجل مسبقاً. جرب تسجيل الدخول بدلاً من ذلك.");
+        setMode("login");
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
