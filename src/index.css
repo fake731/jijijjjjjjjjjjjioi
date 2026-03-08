@@ -353,43 +353,43 @@
 
   /* Yellow Theme - Dark Mode */
   .dark.theme-yellow {
-    --foreground: 50 100% 55%;
-    --card-foreground: 50 100% 55%;
-    --popover-foreground: 50 100% 55%;
-    --primary: 50 100% 50%;
+    --foreground: 43 96% 56%;
+    --card-foreground: 43 96% 56%;
+    --popover-foreground: 43 96% 56%;
+    --primary: 43 96% 56%;
     --primary-foreground: 0 0% 0%;
-    --secondary-foreground: 50 90% 65%;
-    --muted-foreground: 50 50% 58%;
-    --accent: 50 95% 48%;
+    --secondary-foreground: 43 90% 66%;
+    --muted-foreground: 43 50% 58%;
+    --accent: 43 92% 50%;
     --accent-foreground: 0 0% 0%;
-    --border: 50 60% 30%;
-    --ring: 50 100% 50%;
-    --cyber-cyan: 50 100% 50%;
-    --cyber-cyan-glow: 50 100% 62%;
-    --cyber-border: 50 60% 30%;
+    --border: 43 60% 30%;
+    --ring: 43 96% 56%;
+    --cyber-cyan: 43 96% 56%;
+    --cyber-cyan-glow: 43 96% 66%;
+    --cyber-border: 43 60% 30%;
   }
 
   /* Yellow Theme - Light Mode */
   .light.theme-yellow {
-    --background: 48 30% 95%;
-    --card: 48 22% 98%;
-    --foreground: 40 45% 22%;
-    --card-foreground: 40 45% 22%;
-    --popover-foreground: 40 45% 22%;
-    --primary: 48 90% 45%;
+    --background: 43 30% 95%;
+    --card: 43 22% 98%;
+    --foreground: 35 45% 22%;
+    --card-foreground: 35 45% 22%;
+    --popover-foreground: 35 45% 22%;
+    --primary: 43 90% 48%;
     --primary-foreground: 0 0% 0%;
-    --secondary: 48 20% 90%;
-    --secondary-foreground: 40 38% 30%;
-    --muted: 48 14% 87%;
-    --muted-foreground: 40 22% 45%;
-    --accent: 48 85% 42%;
+    --secondary: 43 20% 90%;
+    --secondary-foreground: 35 38% 30%;
+    --muted: 43 14% 87%;
+    --muted-foreground: 35 22% 45%;
+    --accent: 43 85% 44%;
     --accent-foreground: 0 0% 0%;
-    --border: 48 18% 84%;
-    --input: 48 12% 92%;
-    --ring: 48 90% 45%;
-    --cyber-cyan: 48 90% 45%;
-    --cyber-cyan-glow: 48 92% 55%;
-    --cyber-border: 48 18% 84%;
+    --border: 43 18% 84%;
+    --input: 43 12% 92%;
+    --ring: 43 90% 48%;
+    --cyber-cyan: 43 90% 48%;
+    --cyber-cyan-glow: 43 92% 58%;
+    --cyber-border: 43 18% 84%;
   }
 }
 
