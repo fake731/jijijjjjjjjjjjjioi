@@ -748,10 +748,19 @@ const DownloadPage = () => {
     warning: language === "ar" ? "تحذير" : "Warning",
   };
 
+  const sectionColors: Record<string, string> = {
+    [t.desktopSection]: "text-blue-500",
+    [t.liveSection]: "text-orange-500",
+    [t.vmSection]: "text-purple-500",
+    [t.armSection]: "text-cyan-500",
+    [t.mobileSection]: "text-pink-500",
+    [t.termuxSection]: "text-green-500",
+  };
+
   const renderDownloadSection = (title: string, icon: typeof Monitor, items: DownloadOption[]) => (
     <div className="mb-12">
       <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
-        {React.createElement(icon, { className: "w-6 h-6" })}
+        {React.createElement(icon, { className: `w-6 h-6 ${sectionColors[title] || 'text-primary'}` })}
         {title}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -764,8 +773,8 @@ const DownloadPage = () => {
             className="cyber-card p-5 group hover:border-primary/50 transition-all"
           >
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:box-glow-sm transition-all flex-shrink-0">
-                <item.icon className="w-6 h-6 text-primary" />
+              <div className={`w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:box-glow-sm transition-all flex-shrink-0`}>
+                <item.icon className={`w-6 h-6 ${sectionColors[title] || 'text-primary'}`} />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-bold text-primary mb-1 truncate">
@@ -802,7 +811,7 @@ const DownloadPage = () => {
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
               <div className="cyber-icon-box">
-                <Download className="w-10 h-10 text-primary" />
+                <Download className="w-10 h-10 text-emerald-500" />
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 mb-4">

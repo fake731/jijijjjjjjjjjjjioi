@@ -36,7 +36,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Hero Section
     "hero.title": "Qusay Kali",
     "hero.subtitle": "منصة للأمن السيبراني",
-    "hero.description": "منصة تعليمية متكاملة للأمن السيبراني وتطوير الويب",
+    "hero.description": "دليلك الشامل لتعلم الأمن السيبراني من الصفر إلى الاحتراف",
     "hero.cta.tools": "استكشف الأدوات",
     "hero.cta.guide": "ابدأ التعلم",
     
