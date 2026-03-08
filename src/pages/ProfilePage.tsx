@@ -104,14 +104,15 @@ const ProfilePage = () => {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({
-          display_name: displayName.trim(),
+        .upsert({
+          id: user.id,
+          email: user.email || null,
+          display_name: displayName.trim() || null,
           country: country.trim() || null,
           city: city.trim() || null,
           phone: phone.trim() || null,
           updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
+        }, { onConflict: "id" });
 
       if (error) throw error;
       toast.success("تم حفظ التغييرات");

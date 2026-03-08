@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Navigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,6 +40,34 @@ const AuthPage = () => {
     return <Navigate to="/" replace />;
   }
 
+  const normalizeText = (value: unknown) => {
+    if (typeof value !== "string") return null;
+    const cleaned = value.trim();
+    return cleaned.length ? cleaned : null;
+  };
+
+  const syncProfileFromMetadata = async (authUser: SupabaseUser) => {
+    const metadata = authUser.user_metadata || {};
+    const parsedAge = Number(metadata.age);
+
+    const updates = {
+      display_name: normalizeText(metadata.full_name),
+      age: Number.isFinite(parsedAge) && parsedAge > 0 && parsedAge <= 120 ? parsedAge : null,
+      country: normalizeText(metadata.country),
+      city: normalizeText(metadata.city),
+      phone: normalizeText(metadata.phone),
+      privacy_accepted: metadata.privacy_accepted === true,
+      privacy_accepted_at: metadata.privacy_accepted_at ? new Date(metadata.privacy_accepted_at).toISOString() : null,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase
+      .from("profiles")
+      .upsert({ id: authUser.id, email: authUser.email || null, ...updates }, { onConflict: "id" });
+
+    if (error) throw error;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -47,22 +76,23 @@ const AuthPage = () => {
       if (mode === "login") {
         const { data: loginData, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        
+
         if (loginData.user) {
+          await syncProfileFromMetadata(loginData.user);
           const { data: roleData } = await supabase
             .from("user_roles")
             .select("role")
             .eq("user_id", loginData.user.id)
             .eq("role", "developer")
             .maybeSingle();
-          
+
           if (roleData) {
             toast.success("مرحباً بك أيها المطور!");
             navigate("/المطور");
             return;
           }
         }
-        
+
         toast.success("تم تسجيل الدخول بنجاح!");
         navigate("/");
       } else if (mode === "forgot") {
@@ -101,6 +131,12 @@ const AuthPage = () => {
             emailRedirectTo: window.location.origin,
             data: {
               full_name: displayName.trim(),
+              age: parseInt(age),
+              country: country.trim(),
+              city: city.trim() || null,
+              phone: phone.trim() || null,
+              privacy_accepted: true,
+              privacy_accepted_at: new Date().toISOString(),
             },
           },
         });
@@ -118,17 +154,9 @@ const AuthPage = () => {
           return;
         }
 
-        // Update profile with additional data
-        await supabase.from("profiles").update({
-          display_name: displayName.trim(),
-          age: parseInt(age),
-          country: country.trim(),
-          city: city.trim() || null,
-          phone: phone.trim() || null,
-          privacy_accepted: true,
-          privacy_accepted_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        }).eq("id", data.user.id);
+        if (data.session?.user) {
+          await syncProfileFromMetadata(data.session.user);
+        }
 
         setMode("email-sent");
       }
