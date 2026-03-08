@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Shield, Eye, EyeOff, Copy, Check, Lightbulb } from "lucide-react";
+import { Shield, Eye, EyeOff, Copy, Check, Lightbulb, Lock } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Props {
   externalPassword?: string;
