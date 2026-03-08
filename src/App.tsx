@@ -100,6 +100,7 @@ const AnimatedRoutes = () => {
           <Route path="/فحص-كلمة-المرور" element={<PasswordCheckerPage />} />
           <Route path="/الاستفسارات" element={<InquiryPage />} />
           <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
+          <Route path="/دخول-المطور" element={<DevLoginPage />} />
           <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
