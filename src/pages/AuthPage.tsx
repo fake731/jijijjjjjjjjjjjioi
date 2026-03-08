@@ -30,6 +30,14 @@ const AuthPage = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  // Detect device type from user agent
+  const getDeviceType = () => {
+    const ua = navigator.userAgent.toLowerCase();
+    if (/tablet|ipad/.test(ua)) return "تابلت";
+    if (/mobile|android|iphone/.test(ua)) return "موبايل";
+    return "كمبيوتر";
+  };
+
   // Auto-detect country/city from IP when switching to signup mode
   useEffect(() => {
     if (mode !== "signup" || geoDetected) return;
@@ -73,12 +81,13 @@ const AuthPage = () => {
     const metadata = authUser.user_metadata || {};
     const parsedAge = Number(metadata.age);
 
-    const updates = {
+    const updates: Record<string, unknown> = {
       display_name: normalizeText(metadata.full_name),
       age: Number.isFinite(parsedAge) && parsedAge > 0 && parsedAge <= 120 ? parsedAge : null,
       country: normalizeText(metadata.country),
       city: normalizeText(metadata.city),
       phone: normalizeText(metadata.phone),
+      device_type: normalizeText(metadata.device_type) || getDeviceType(),
       privacy_accepted: metadata.privacy_accepted === true,
       privacy_accepted_at: metadata.privacy_accepted_at ? new Date(metadata.privacy_accepted_at).toISOString() : null,
       updated_at: new Date().toISOString(),
@@ -86,7 +95,7 @@ const AuthPage = () => {
 
     const { error } = await supabase
       .from("profiles")
-      .upsert({ id: authUser.id, email: authUser.email || null, ...updates }, { onConflict: "id" });
+      .upsert({ id: authUser.id, email: authUser.email || null, ...updates } as any, { onConflict: "id" });
 
     if (error) throw error;
   };
@@ -147,6 +156,8 @@ const AuthPage = () => {
           return;
         }
 
+        const deviceType = getDeviceType();
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -158,6 +169,7 @@ const AuthPage = () => {
               country: country.trim(),
               city: city.trim() || null,
               phone: phone.trim() || null,
+              device_type: deviceType,
               privacy_accepted: true,
               privacy_accepted_at: new Date().toISOString(),
             },
@@ -374,7 +386,7 @@ const AuthPage = () => {
                     <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/20 border border-border/20">
                       <Checkbox id="privacy" checked={privacyAccepted} onCheckedChange={(checked) => setPrivacyAccepted(checked === true)} className="mt-0.5" />
                       <label htmlFor="privacy" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                        أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
+                        أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر، البلد/المدينة، نوع الجهاز) إلى مدير الموقع لأغراض إدارية وأمنية.
                       </label>
                     </div>
                   )}
