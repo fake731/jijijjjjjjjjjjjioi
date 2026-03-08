@@ -1305,8 +1305,8 @@ const GuidePage = () => {
                   className="w-full p-6 flex items-center justify-between hover:bg-primary/5 transition-colors"
                 >
                   <div className="flex items-center gap-5">
-                    <div className="w-18 h-18 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center" style={{ width: '72px', height: '72px' }}>
-                      <topic.icon className="w-9 h-9 text-primary" />
+                    <div className={`w-18 h-18 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center`} style={{ width: '72px', height: '72px' }}>
+                      <topic.icon className={`w-9 h-9 ${topic.color}`} />
                     </div>
                     <div className="text-right">
                       <h2 className="text-2xl md:text-3xl font-bold text-primary">{topic.title}</h2>
