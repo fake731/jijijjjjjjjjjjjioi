@@ -289,6 +289,23 @@ const AuthPage = () => {
                 </button>
               )}
             </div>
+
+            {/* Developer Login Link */}
+            {mode === "login" && (
+              <div className="pt-4 border-t border-border/20">
+                <Link
+                  to="/تسجيل-الدخول"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // Just visual indicator - actual dev check happens after login
+                  }}
+                  className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60 hover:text-primary/80 transition-colors"
+                >
+                  <Shield className="w-3 h-3" />
+                  دخول للمطورين
+                </Link>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
