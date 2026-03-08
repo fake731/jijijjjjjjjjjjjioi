@@ -5,10 +5,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Users, Eye, MessageSquare, Shield, TrendingUp, BarChart3, Globe, MapPin, Phone, ChevronDown, ChevronUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Users, Eye, MessageSquare, Shield, TrendingUp, BarChart3, Globe, MapPin, Phone, ChevronDown, ChevronUp, Trash2, Mail, Calendar, UserCheck, AlertTriangle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from "recharts";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { toast } from "sonner";
 
 const DeveloperPage = () => {
   const { user, loading: authLoading } = useAuth();
@@ -20,6 +22,8 @@ const DeveloperPage = () => {
   const [aiLogs, setAiLogs] = useState<any[]>([]);
   const [expandedChat, setExpandedChat] = useState<string | null>(null);
   const [stats, setStats] = useState({ totalUsers: 0, totalVisits: 0, totalAiChats: 0 });
+  const [deletingUser, setDeletingUser] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -61,6 +65,41 @@ const DeveloperPage = () => {
     setVisits(v);
     setAiLogs(l);
     setStats({ totalUsers: p.length, totalVisits: v.length, totalAiChats: l.length });
+  };
+
+  const handleDeleteUser = async (targetUserId: string) => {
+    if (targetUserId === user?.id) {
+      toast.error("لا يمكنك حذف حسابك الخاص!");
+      return;
+    }
+    setDeletingUser(targetUserId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+          body: JSON.stringify({ targetUserId }),
+        }
+      );
+      const result = await res.json();
+      if (result.success) {
+        toast.success("تم حذف المستخدم بنجاح");
+        setProfiles((prev) => prev.filter((p) => p.id !== targetUserId));
+        setStats((prev) => ({ ...prev, totalUsers: prev.totalUsers - 1 }));
+        setConfirmDelete(null);
+      } else {
+        toast.error(result.error || "فشل حذف المستخدم");
+      }
+    } catch (err) {
+      toast.error("حدث خطأ أثناء الحذف");
+    } finally {
+      setDeletingUser(null);
+    }
   };
 
   // Chart data
@@ -113,7 +152,6 @@ const DeveloperPage = () => {
     return Object.entries(days).map(([name, محادثات]) => ({ name, محادثات }));
   }, [aiLogs]);
 
-  // Country distribution
   const countryData = useMemo(() => {
     const countries: Record<string, number> = {};
     profiles.forEach((p) => {
@@ -258,7 +296,6 @@ const DeveloperPage = () => {
 
         {/* Charts Row 2 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Top Pages */}
           <Card className="border-border/30 bg-card/80">
             <CardHeader>
               <CardTitle className="text-foreground text-base">أكثر الصفحات زيارة</CardTitle>
@@ -279,7 +316,6 @@ const DeveloperPage = () => {
             </CardContent>
           </Card>
 
-          {/* Country Distribution */}
           <Card className="border-border/30 bg-card/80">
             <CardHeader className="flex flex-row items-center gap-2">
               <Globe className="w-5 h-5 text-primary" />
@@ -314,73 +350,112 @@ const DeveloperPage = () => {
           </TabsList>
 
           <TabsContent value="users">
-            <Card className="border-border/30 bg-card/80">
-              <CardHeader>
-                <CardTitle className="text-foreground">المستخدمين المسجلين ({profiles.length})</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border/30">
-                        <th className="text-right p-3 text-muted-foreground font-medium">الاسم</th>
-                        <th className="text-right p-3 text-muted-foreground font-medium">البريد</th>
-                        <th className="text-right p-3 text-muted-foreground font-medium">العمر</th>
-                        <th className="text-right p-3 text-muted-foreground font-medium">البلد</th>
-                        <th className="text-right p-3 text-muted-foreground font-medium">المدينة</th>
-                        <th className="text-right p-3 text-muted-foreground font-medium">الهاتف</th>
-                        <th className="text-right p-3 text-muted-foreground font-medium">الخصوصية</th>
-                        <th className="text-right p-3 text-muted-foreground font-medium">التسجيل</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {profiles.map((p) => (
-                        <tr key={p.id} className="border-b border-border/10 hover:bg-secondary/20">
-                          <td className="p-3 text-foreground font-medium">{p.display_name || "—"}</td>
-                          <td className="p-3 text-foreground" dir="ltr">{p.email || "—"}</td>
-                          <td className="p-3 text-foreground">{p.age || "—"}</td>
-                          <td className="p-3 text-foreground">
-                            {p.country ? (
-                              <span className="flex items-center gap-1">
-                                <Globe className="w-3 h-3 text-muted-foreground" />
-                                {p.country}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                  <Users className="w-5 h-5 text-primary" />
+                  المستخدمين المسجلين ({profiles.length})
+                </h2>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {profiles.map((p) => (
+                  <Card key={p.id} className="border-border/30 bg-card/80 relative overflow-hidden group">
+                    {/* Delete confirmation overlay */}
+                    {confirmDelete === p.id && (
+                      <div className="absolute inset-0 bg-background/95 z-10 flex flex-col items-center justify-center gap-3 p-4">
+                        <AlertTriangle className="w-10 h-10 text-destructive" />
+                        <p className="text-sm text-foreground text-center font-medium">
+                          هل أنت متأكد من حذف هذا المستخدم؟
+                        </p>
+                        <p className="text-xs text-muted-foreground text-center">{p.email}</p>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDeleteUser(p.id)}
+                            disabled={deletingUser === p.id}
+                          >
+                            {deletingUser === p.id ? "جاري الحذف..." : "نعم، احذف"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setConfirmDelete(null)}
+                          >
+                            إلغاء
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    <CardContent className="p-5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          {p.avatar_url ? (
+                            <img src={p.avatar_url} alt={p.display_name} className="w-12 h-12 rounded-full object-cover border-2 border-primary/30" />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary/30">
+                              <span className="text-primary font-bold text-lg">
+                                {(p.display_name || "?")[0]}
                               </span>
-                            ) : "—"}
-                          </td>
-                          <td className="p-3 text-foreground">
-                            {p.city ? (
-                              <span className="flex items-center gap-1">
-                                <MapPin className="w-3 h-3 text-muted-foreground" />
-                                {p.city}
-                              </span>
-                            ) : "—"}
-                          </td>
-                          <td className="p-3 text-foreground" dir="ltr">
-                            {p.phone ? (
-                              <span className="flex items-center gap-1">
-                                <Phone className="w-3 h-3 text-muted-foreground" />
-                                {p.phone}
-                              </span>
-                            ) : "—"}
-                          </td>
-                          <td className="p-3">
-                            <Badge variant={p.privacy_accepted ? "default" : "destructive"} className="text-xs">
-                              {p.privacy_accepted ? "موافق" : "غير موافق"}
+                            </div>
+                          )}
+                          <div>
+                            <h3 className="font-bold text-foreground">{p.display_name || "بدون اسم"}</h3>
+                            <Badge variant={p.privacy_accepted ? "default" : "destructive"} className="text-[10px] mt-1">
+                              {p.privacy_accepted ? "موافق على الخصوصية" : "غير موافق"}
                             </Badge>
-                          </td>
-                          <td className="p-3 text-muted-foreground text-xs">
-                            {p.created_at ? new Date(p.created_at).toLocaleDateString("ar") : "—"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {profiles.length === 0 && (
-                    <p className="text-center text-muted-foreground py-8">لا يوجد مستخدمين</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                          </div>
+                        </div>
+                        {p.id !== user?.id && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => setConfirmDelete(p.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Mail className="w-3.5 h-3.5 shrink-0" />
+                          <span className="truncate" dir="ltr">{p.email || "—"}</span>
+                        </div>
+                        {p.age && (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <UserCheck className="w-3.5 h-3.5 shrink-0" />
+                            <span>{p.age} سنة</span>
+                          </div>
+                        )}
+                        {p.country && (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Globe className="w-3.5 h-3.5 shrink-0" />
+                            <span>{p.country}{p.city ? ` - ${p.city}` : ""}</span>
+                          </div>
+                        )}
+                        {p.phone && (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Phone className="w-3.5 h-3.5 shrink-0" />
+                            <span dir="ltr">{p.phone}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Calendar className="w-3.5 h-3.5 shrink-0" />
+                          <span>{p.created_at ? new Date(p.created_at).toLocaleDateString("ar") : "—"}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              {profiles.length === 0 && (
+                <p className="text-center text-muted-foreground py-8">لا يوجد مستخدمين</p>
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="visits">
