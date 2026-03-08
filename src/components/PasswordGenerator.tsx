@@ -133,6 +133,15 @@ const PasswordGenerator = ({ onTestPassword }: Props) => {
           {password || <span className="text-muted-foreground">اضغط "توليد" لإنشاء كلمة مرور</span>}
         </div>
         <div className="absolute left-2 top-1/2 -translate-y-1/2 flex gap-1">
+          {password && onTestPassword && (
+            <button
+              onClick={() => { onTestPassword(password); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="p-2 rounded-lg hover:bg-secondary transition-colors"
+              title="اختبر القوة"
+            >
+              <ArrowUp className="w-5 h-5 text-muted-foreground" />
+            </button>
+          )}
           <button
             onClick={copyPassword}
             className="p-2 rounded-lg hover:bg-secondary transition-colors"
