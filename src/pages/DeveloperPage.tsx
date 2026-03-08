@@ -51,6 +51,12 @@ const DeveloperPage = () => {
   const [lastRefreshTime, setLastRefreshTime] = useState<Date>(new Date());
   const [liveEvents, setLiveEvents] = useState<Array<{ type: string; text: string; time: Date }>>([]);
   const [eventFilter, setEventFilter] = useState<"all" | "visit" | "signup" | "ai">("all");
+  // Countdown timer states
+  const [refreshIntervalDays, setRefreshIntervalDays] = useState(0);
+  const [refreshIntervalHours, setRefreshIntervalHours] = useState(0);
+  const [refreshIntervalMinutes, setRefreshIntervalMinutes] = useState(0);
+  const [refreshIntervalSeconds, setRefreshIntervalSeconds] = useState(30);
+  const [countdown, setCountdown] = useState(30);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -104,14 +110,31 @@ const DeveloperPage = () => {
     setLastRefreshTime(new Date());
   };
 
-  // Auto-refresh every 30 seconds
+  const totalIntervalMs = useMemo(() => {
+    return ((refreshIntervalDays * 86400) + (refreshIntervalHours * 3600) + (refreshIntervalMinutes * 60) + refreshIntervalSeconds) * 1000;
+  }, [refreshIntervalDays, refreshIntervalHours, refreshIntervalMinutes, refreshIntervalSeconds]);
+
+  const totalIntervalSec = Math.floor(totalIntervalMs / 1000);
+
+  // Auto-refresh with custom interval
   useEffect(() => {
-    if (!isDeveloper || !autoRefresh) return;
+    if (!isDeveloper || !autoRefresh || totalIntervalMs < 1000) return;
+    setCountdown(totalIntervalSec);
     const interval = setInterval(() => {
       fetchAllData();
-    }, 30000);
+      setCountdown(totalIntervalSec);
+    }, totalIntervalMs);
     return () => clearInterval(interval);
-  }, [isDeveloper, autoRefresh]);
+  }, [isDeveloper, autoRefresh, totalIntervalMs]);
+
+  // Countdown ticker
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const tick = setInterval(() => {
+      setCountdown(prev => (prev > 0 ? prev - 1 : totalIntervalSec));
+    }, 1000);
+    return () => clearInterval(tick);
+  }, [autoRefresh, totalIntervalSec]);
 
   // Realtime subscriptions
   useEffect(() => {
@@ -1628,25 +1651,84 @@ const DeveloperPage = () => {
             <div className="space-y-6">
               {/* Controls */}
               <Card className="border-primary/30 bg-card/80">
-                <CardContent className="p-4">
+                <CardContent className="p-4 space-y-4">
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div className="flex items-center gap-3">
                       <div className={`w-3 h-3 rounded-full ${autoRefresh ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground"}`} />
                       <span className="text-sm font-medium text-foreground">
                         {autoRefresh ? "التحديث التلقائي مفعّل" : "التحديث التلقائي متوقف"}
                       </span>
-                      <Badge variant="outline" className="text-[10px]">كل 30 ثانية</Badge>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-muted-foreground">
                         آخر تحديث: {lastRefreshTime.toLocaleTimeString("ar")}
                       </span>
-                      <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} />
-                      <Button size="sm" variant="outline" onClick={fetchAllData} disabled={refreshing} className="gap-1">
+                      <Switch checked={autoRefresh} onCheckedChange={(v) => { setAutoRefresh(v); if (v) setCountdown(totalIntervalSec); }} />
+                      <Button size="sm" variant="outline" onClick={() => { fetchAllData(); setCountdown(totalIntervalSec); }} disabled={refreshing} className="gap-1">
                         <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
                         تحديث يدوي
                       </Button>
                     </div>
+                  </div>
+
+                  {/* Countdown Display */}
+                  {autoRefresh && (
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+                      <Clock className="w-4 h-4 text-primary" />
+                      <span className="text-xs text-muted-foreground">التحديث القادم بعد:</span>
+                      <div className="flex items-center gap-1.5 font-mono text-sm" dir="ltr">
+                        {(() => {
+                          const d = Math.floor(countdown / 86400);
+                          const h = Math.floor((countdown % 86400) / 3600);
+                          const m = Math.floor((countdown % 3600) / 60);
+                          const s = countdown % 60;
+                          return (
+                            <>
+                              {(refreshIntervalDays > 0 || d > 0) && <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded">{d}<span className="text-[10px] text-muted-foreground mr-0.5">يوم</span></span>}
+                              {(refreshIntervalHours > 0 || h > 0 || d > 0) && <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded">{String(h).padStart(2, '0')}<span className="text-[10px] text-muted-foreground mr-0.5">ساعة</span></span>}
+                              <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded">{String(m).padStart(2, '0')}<span className="text-[10px] text-muted-foreground mr-0.5">دقيقة</span></span>
+                              <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded">{String(s).padStart(2, '0')}<span className="text-[10px] text-muted-foreground mr-0.5">ثانية</span></span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                      {/* Progress bar */}
+                      <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-primary rounded-full transition-all duration-1000"
+                          style={{ width: `${totalIntervalSec > 0 ? ((totalIntervalSec - countdown) / totalIntervalSec) * 100 : 0}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Custom Interval Settings */}
+                  <div className="p-3 rounded-lg border border-border bg-muted/30 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Settings className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-xs font-medium text-foreground">تخصيص فترة التحديث</span>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-muted-foreground">أيام</label>
+                        <Input type="number" min={0} max={30} value={refreshIntervalDays} onChange={e => { setRefreshIntervalDays(Math.max(0, parseInt(e.target.value) || 0)); }} className="h-8 text-sm text-center" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-muted-foreground">ساعات</label>
+                        <Input type="number" min={0} max={23} value={refreshIntervalHours} onChange={e => { setRefreshIntervalHours(Math.max(0, Math.min(23, parseInt(e.target.value) || 0))); }} className="h-8 text-sm text-center" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-muted-foreground">دقائق</label>
+                        <Input type="number" min={0} max={59} value={refreshIntervalMinutes} onChange={e => { setRefreshIntervalMinutes(Math.max(0, Math.min(59, parseInt(e.target.value) || 0))); }} className="h-8 text-sm text-center" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-muted-foreground">ثواني</label>
+                        <Input type="number" min={0} max={59} value={refreshIntervalSeconds} onChange={e => { setRefreshIntervalSeconds(Math.max(0, Math.min(59, parseInt(e.target.value) || 0))); }} className="h-8 text-sm text-center" />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      الفترة الحالية: {refreshIntervalDays > 0 ? `${refreshIntervalDays} يوم ` : ""}{refreshIntervalHours > 0 ? `${refreshIntervalHours} ساعة ` : ""}{refreshIntervalMinutes > 0 ? `${refreshIntervalMinutes} دقيقة ` : ""}{refreshIntervalSeconds > 0 ? `${refreshIntervalSeconds} ثانية` : ""}{totalIntervalMs < 1000 ? " ⚠️ الحد الأدنى ثانية واحدة" : ""}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
