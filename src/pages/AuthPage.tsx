@@ -137,13 +137,68 @@ const AuthPage = () => {
     }
   };
 
+  const handleVerifyOtp = async () => {
+    if (otp.length !== 6) {
+      toast.error("يرجى إدخال رمز التحقق المكون من 6 أرقام");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: "signup",
+      });
+      if (error) throw error;
+
+      // Now update profile with stored signup data
+      if (data.user && signupData) {
+        await supabase.from("profiles").update({
+          display_name: signupData.displayName,
+          age: signupData.age,
+          country: signupData.country,
+          city: signupData.city,
+          phone: signupData.phone,
+          privacy_accepted: true,
+          privacy_accepted_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }).eq("id", data.user.id);
+      }
+
+      toast.success("تم التحقق بنجاح! مرحباً بك");
+      navigate("/");
+    } catch (error: any) {
+      toast.error(error.message || "رمز التحقق غير صحيح");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+      });
+      if (error) throw error;
+      toast.success("تم إعادة إرسال رمز التحقق");
+    } catch (error: any) {
+      toast.error(error.message || "فشل إعادة الإرسال");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getTitle = () => {
+    if (mode === "verify") return "التحقق من البريد الإلكتروني";
     if (mode === "forgot") return "نسيت كلمة المرور";
     if (mode === "signup") return "إنشاء حساب";
     return "تسجيل الدخول";
   };
 
   const getDescription = () => {
+    if (mode === "verify") return `أدخل رمز التحقق المرسل إلى ${email}`;
     if (mode === "forgot") return "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور";
     if (mode === "signup") return "أنشئ حسابك الجديد للوصول لجميع الميزات";
     return "أدخل بياناتك لتسجيل الدخول";
