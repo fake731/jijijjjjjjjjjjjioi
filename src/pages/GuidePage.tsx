@@ -95,6 +95,7 @@ const guideTopics: GuideTopic[] = [
     icon: Target,
     title: "أنواع الهجمات الإلكترونية",
     description: "تعلم أشهر أنواع الهجمات وكيفية عملها للحماية منها",
+    color: "text-red-500",
     subTopics: [
       {
         title: "هجمات التصيد (Phishing)",
