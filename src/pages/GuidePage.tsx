@@ -21,6 +21,7 @@ const guideTopics: GuideTopic[] = [
     icon: Shield,
     title: "أساسيات الأمن السيبراني",
     description: "تعرف على المفاهيم الأساسية والمبادئ الثلاثة للأمن السيبراني",
+    color: "text-blue-500",
     subTopics: [
       {
         title: "ما هو الأمن السيبراني؟",
