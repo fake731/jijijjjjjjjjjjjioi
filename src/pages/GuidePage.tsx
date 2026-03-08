@@ -12,6 +12,7 @@ interface GuideTopic {
   icon: React.ElementType;
   title: string;
   description: string;
+  color: string;
   subTopics: SubTopic[];
 }
 
