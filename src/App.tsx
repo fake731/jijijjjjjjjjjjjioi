@@ -23,6 +23,7 @@ import AuthPage from "./pages/AuthPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import DeveloperPage from "./pages/DeveloperPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
