@@ -53,7 +53,7 @@ export const translations: Record<Language, Record<string, string>> = {
     
     // CTA
     "cta.title": "جاهز للبدء؟",
-    "cta.description": "انضم إلينا واكتشف عالم الأمن السيبراني",
+    "cta.description": "الموقع مجاني 100%",
     "cta.button": "ابدأ الآن",
     
     // Footer
