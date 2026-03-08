@@ -110,14 +110,31 @@ const DeveloperPage = () => {
     setLastRefreshTime(new Date());
   };
 
-  // Auto-refresh every 30 seconds
+  const totalIntervalMs = useMemo(() => {
+    return ((refreshIntervalDays * 86400) + (refreshIntervalHours * 3600) + (refreshIntervalMinutes * 60) + refreshIntervalSeconds) * 1000;
+  }, [refreshIntervalDays, refreshIntervalHours, refreshIntervalMinutes, refreshIntervalSeconds]);
+
+  const totalIntervalSec = Math.floor(totalIntervalMs / 1000);
+
+  // Auto-refresh with custom interval
   useEffect(() => {
-    if (!isDeveloper || !autoRefresh) return;
+    if (!isDeveloper || !autoRefresh || totalIntervalMs < 1000) return;
+    setCountdown(totalIntervalSec);
     const interval = setInterval(() => {
       fetchAllData();
-    }, 30000);
+      setCountdown(totalIntervalSec);
+    }, totalIntervalMs);
     return () => clearInterval(interval);
-  }, [isDeveloper, autoRefresh]);
+  }, [isDeveloper, autoRefresh, totalIntervalMs]);
+
+  // Countdown ticker
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const tick = setInterval(() => {
+      setCountdown(prev => (prev > 0 ? prev - 1 : totalIntervalSec));
+    }, 1000);
+    return () => clearInterval(tick);
+  }, [autoRefresh, totalIntervalSec]);
 
   // Realtime subscriptions
   useEffect(() => {
