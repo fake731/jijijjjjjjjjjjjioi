@@ -844,6 +844,13 @@ const DownloadPage = () => {
             <div className="space-y-4">
               {Object.entries(detailedGuides).map(([key, guide]) => {
                 const GuideIcon = guide.icon;
+                const guideColors: Record<string, string> = {
+                  desktop: "text-blue-400",
+                  vm: "text-purple-400",
+                  termux: "text-green-400",
+                  nethunter: "text-red-400",
+                };
+                const guideColor = guideColors[key] || "text-primary";
                 return (
                 <div key={key} className="cyber-card overflow-hidden">
                   <button
@@ -852,7 +859,7 @@ const DownloadPage = () => {
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
-                        <GuideIcon className="w-7 h-7 text-primary" />
+                        <GuideIcon className={`w-7 h-7 ${guideColor}`} />
                       </div>
                       <div className="text-left">
                         <h3 className="text-xl font-bold text-primary">
