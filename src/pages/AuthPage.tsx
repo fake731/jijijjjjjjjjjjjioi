@@ -14,7 +14,8 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 
 const AuthPage = () => {
-  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot" | "verify">("login");
+  const [signupData, setSignupData] = useState<any>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
