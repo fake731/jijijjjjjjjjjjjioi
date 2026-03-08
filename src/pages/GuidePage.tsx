@@ -892,6 +892,7 @@ const guideTopics: GuideTopic[] = [
     icon: Search,
     title: "التحقيق الجنائي الرقمي (Digital Forensics)",
     description: "تحليل الأدلة الرقمية والتحقيق في الحوادث الأمنية",
+    color: "text-indigo-500",
     subTopics: [
       {
         title: "أساسيات التحقيق الجنائي",
