@@ -688,6 +688,7 @@ const guideTopics: GuideTopic[] = [
     icon: Cloud,
     title: "أمن السحابة (Cloud Security)",
     description: "حماية البيانات والتطبيقات في البيئات السحابية",
+    color: "text-sky-500",
     subTopics: [
       {
         title: "نماذج الحوسبة السحابية",
