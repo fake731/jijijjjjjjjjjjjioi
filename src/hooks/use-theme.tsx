@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 export type Theme = "dark" | "light";
-export type ColorTheme = "blue" | "red" | "green" | "purple" | "orange";
+export type ColorTheme = "blue" | "red" | "green" | "purple" | "orange" | "yellow";
 
 interface ThemeContextType {
   theme: Theme;
@@ -15,10 +15,11 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const colorThemes: { id: ColorTheme; name: string; nameAr: string; color: string }[] = [
   { id: "blue", name: "Electric Blue", nameAr: "أزرق كهربائي", color: "#00BFFF" },
-  { id: "red", name: "Cyber Red", nameAr: "أحمر سايبر", color: "#FF3B3B" },
-  { id: "green", name: "Matrix Green", nameAr: "أخضر ماتريكس", color: "#00FF66" },
-  { id: "purple", name: "Neon Purple", nameAr: "بنفسجي نيون", color: "#A855F7" },
-  { id: "orange", name: "Fire Orange", nameAr: "برتقالي ناري", color: "#FF6B00" },
+  { id: "red", name: "Elegant Rose", nameAr: "أحمر وردي", color: "#C94060" },
+  { id: "green", name: "Sage Green", nameAr: "أخضر زيتي", color: "#3D9970" },
+  { id: "purple", name: "Lavender", nameAr: "بنفسجي لافندر", color: "#8B5CF6" },
+  { id: "orange", name: "Warm Amber", nameAr: "برتقالي دافئ", color: "#D97706" },
+  { id: "yellow", name: "Golden", nameAr: "ذهبي", color: "#D4A017" },
 ];
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -41,7 +42,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove("theme-blue", "theme-red", "theme-green", "theme-purple", "theme-orange");
+    root.classList.remove("theme-blue", "theme-red", "theme-green", "theme-purple", "theme-orange", "theme-yellow");
     root.classList.add(`theme-${colorTheme}`);
     localStorage.setItem("colorTheme", colorTheme);
   }, [colorTheme]);

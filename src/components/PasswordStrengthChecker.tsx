@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Shield, Eye, EyeOff, Copy, Check, Lightbulb } from "lucide-react";
 
-const PasswordStrengthChecker = () => {
-  const [password, setPassword] = useState("");
+interface Props {
+  externalPassword?: string;
+}
+
+const PasswordStrengthChecker = ({ externalPassword }: Props) => {
+  const [password, setPassword] = useState(externalPassword || "");
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (externalPassword) setPassword(externalPassword);
+  }, [externalPassword]);
 
   const checkStrength = (pwd: string) => {
     let score = 0;

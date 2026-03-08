@@ -350,6 +350,47 @@
     --cyber-cyan-glow: 24 75% 58%;
     --cyber-border: 30 16% 84%;
   }
+
+  /* Yellow Theme - Dark Mode — Golden */
+  .dark.theme-yellow {
+    --foreground: 45 100% 55%;
+    --card-foreground: 45 100% 55%;
+    --popover-foreground: 45 100% 55%;
+    --primary: 45 100% 50%;
+    --primary-foreground: 45 100% 8%;
+    --secondary-foreground: 45 85% 65%;
+    --muted-foreground: 45 50% 55%;
+    --accent: 45 90% 45%;
+    --accent-foreground: 45 100% 8%;
+    --border: 45 60% 30%;
+    --ring: 45 100% 50%;
+    --cyber-cyan: 45 100% 50%;
+    --cyber-cyan-glow: 45 100% 60%;
+    --cyber-border: 45 60% 30%;
+  }
+
+  /* Yellow Theme - Light Mode — Elegant Gold */
+  .light.theme-yellow {
+    --background: 42 25% 95%;
+    --card: 42 20% 98%;
+    --foreground: 38 40% 25%;
+    --card-foreground: 38 40% 25%;
+    --popover-foreground: 38 40% 25%;
+    --primary: 38 70% 42%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 42 18% 90%;
+    --secondary-foreground: 38 35% 33%;
+    --muted: 42 12% 87%;
+    --muted-foreground: 38 22% 48%;
+    --accent: 38 65% 38%;
+    --accent-foreground: 0 0% 100%;
+    --border: 42 16% 84%;
+    --input: 42 10% 92%;
+    --ring: 38 70% 42%;
+    --cyber-cyan: 38 70% 42%;
+    --cyber-cyan-glow: 38 75% 52%;
+    --cyber-border: 42 16% 84%;
+  }
 }
 
 @layer base {

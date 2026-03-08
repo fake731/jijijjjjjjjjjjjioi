@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PasswordStrengthChecker from "@/components/PasswordStrengthChecker";
@@ -5,6 +6,8 @@ import PasswordGenerator from "@/components/PasswordGenerator";
 import { Lock } from "lucide-react";
 
 const PasswordCheckerPage = () => {
+  const [testPassword, setTestPassword] = useState("");
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -24,8 +27,8 @@ const PasswordCheckerPage = () => {
             </p>
           </div>
           <div className="space-y-8">
-            <PasswordStrengthChecker />
-            <PasswordGenerator />
+            <PasswordStrengthChecker externalPassword={testPassword} />
+            <PasswordGenerator onTestPassword={setTestPassword} />
           </div>
         </div>
       </main>
