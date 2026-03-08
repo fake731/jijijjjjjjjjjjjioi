@@ -46,6 +46,10 @@ const DeveloperPage = () => {
   const [userRoles, setUserRoles] = useState<Record<string, string>>({});
   const [broadcastTitle, setBroadcastTitle] = useState("");
   const [broadcastMsg, setBroadcastMsg] = useState("");
+  // Realtime states
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastRefreshTime, setLastRefreshTime] = useState<Date>(new Date());
+  const [liveEvents, setLiveEvents] = useState<Array<{ type: string; text: string; time: Date }>>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
