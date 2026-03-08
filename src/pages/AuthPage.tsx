@@ -111,9 +111,21 @@ const AuthPage = () => {
         });
         if (error) throw error;
 
+        const isExistingUser = !!data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+        if (isExistingUser) {
+          toast.error("هذا البريد الإلكتروني مسجل مسبقاً. سجّل دخول مباشرة أو استخدم نسيت كلمة المرور.");
+          setMode("login");
+          return;
+        }
+
+        if (!data.user?.id) {
+          toast.error("تعذر إنشاء الحساب حالياً، حاول مرة أخرى.");
+          return;
+        }
+
         // Store signup data for after verification
         setSignupData({
-          userId: data.user?.id,
+          userId: data.user.id,
           displayName: displayName.trim(),
           age: parseInt(age),
           country: country.trim(),
