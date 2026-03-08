@@ -10,6 +10,10 @@ const PasswordStrengthChecker = ({ externalPassword }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => {
+    if (externalPassword) setPassword(externalPassword);
+  }, [externalPassword]);
+
   const checkStrength = (pwd: string) => {
     let score = 0;
     const checks = {
