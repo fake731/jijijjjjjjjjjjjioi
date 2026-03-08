@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, UserCircle } from "lucide-react";
+import { Menu, X, LogIn, LogOut, UserCircle, Shield } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isDeveloper, setIsDeveloper] = useState(false);
   const location = useLocation();
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    if (!user) { setIsDeveloper(false); return; }
+    supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "developer").maybeSingle()
+      .then(({ data }) => setIsDeveloper(!!data));
+  }, [user]);
 
   const navItems = [
     { label: t("nav.home"), path: "/" },
@@ -58,6 +66,15 @@ const Navbar = () => {
             <ThemeToggle />
             {user ? (
               <div className="flex items-center gap-2">
+                {isDeveloper && (
+                  <Link
+                    to="/المطور"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <Shield className="w-4 h-4" />
+                    المطور
+                  </Link>
+                )}
                 <Link
                   to="/الملف-الشخصي"
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,7 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { LanguageProvider } from "@/hooks/use-language";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { AnimatePresence, motion } from "framer-motion";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
@@ -23,6 +25,7 @@ import AuthPage from "./pages/AuthPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import DeveloperPage from "./pages/DeveloperPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,11 +53,29 @@ const pageVariants = {
   },
 };
 
+const PageVisitTracker = () => {
+  const location = useLocation();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("page_visits").insert({
+      user_id: user.id,
+      page_path: location.pathname,
+      user_agent: navigator.userAgent,
+    }).then(() => {});
+  }, [location.pathname, user]);
+
+  return null;
+};
+
 const AnimatedRoutes = () => {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
+    <>
+      <PageVisitTracker />
+      <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
         initial="initial"
@@ -78,10 +99,12 @@ const AnimatedRoutes = () => {
           <Route path="/فحص-كلمة-المرور" element={<PasswordCheckerPage />} />
           <Route path="/الاستفسارات" element={<InquiryPage />} />
           <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
+          <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
+    </>
   );
 };
 
