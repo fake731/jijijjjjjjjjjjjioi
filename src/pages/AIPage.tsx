@@ -370,8 +370,8 @@ const AIPage = () => {
               role: "assistant",
               content:
                 language === "ar"
-                  ? "تم توقيف الذكاء الاصطناعي مؤقتاً. الرجاء زيارة هذا الموقع الذي فيه ذكاء اصطناعي صالح: https://qusaykali.netlify.app/"
-                  : "AI is temporarily suspended. Please visit this website which has a working AI: https://qusaykali.netlify.app/",
+                  ? "تم توقيف الذكاء الاصطناعي مؤقتاً. الرجاء زيارة هذا الموقع الذي فيه ذكاء اصطناعي صالح: https://qusayk.netlify.app/"
+                  : "AI is temporarily suspended. Please visit this website which has a working AI: https://qusayk.netlify.app/",
             },
           ]);
           return;
