@@ -171,20 +171,20 @@
 
   /* Blue Theme - Light Mode */
   .light.theme-blue {
-    --foreground: 200 70% 30%;
-    --card-foreground: 200 70% 30%;
-    --popover-foreground: 200 70% 30%;
-    --primary: 200 100% 45%;
+    --foreground: 215 35% 30%;
+    --card-foreground: 215 35% 30%;
+    --popover-foreground: 215 35% 30%;
+    --primary: 215 65% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary-foreground: 200 60% 35%;
-    --muted-foreground: 200 30% 45%;
-    --accent: 200 100% 40%;
+    --secondary-foreground: 215 30% 38%;
+    --muted-foreground: 215 20% 52%;
+    --accent: 215 60% 44%;
     --accent-foreground: 0 0% 100%;
-    --border: 200 40% 75%;
-    --ring: 200 100% 45%;
-    --cyber-cyan: 200 100% 45%;
-    --cyber-cyan-glow: 200 100% 55%;
-    --cyber-border: 200 40% 75%;
+    --border: 215 20% 85%;
+    --ring: 215 65% 48%;
+    --cyber-cyan: 215 65% 48%;
+    --cyber-cyan-glow: 215 70% 58%;
+    --cyber-border: 215 20% 85%;
   }
 
   /* Red Theme - Dark Mode */
@@ -205,22 +205,27 @@
     --cyber-border: 0 60% 35%;
   }
 
-  /* Red Theme - Light Mode */
+  /* Red Theme - Light Mode — Elegant Rose */
   .light.theme-red {
-    --foreground: 0 70% 35%;
-    --card-foreground: 0 70% 35%;
-    --popover-foreground: 0 70% 35%;
-    --primary: 0 85% 50%;
+    --background: 5 25% 95%;
+    --card: 5 20% 98%;
+    --foreground: 355 40% 30%;
+    --card-foreground: 355 40% 30%;
+    --popover-foreground: 355 40% 30%;
+    --primary: 355 60% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary-foreground: 0 60% 40%;
-    --muted-foreground: 0 40% 50%;
-    --accent: 0 80% 45%;
+    --secondary: 5 18% 90%;
+    --secondary-foreground: 355 35% 38%;
+    --muted: 5 12% 87%;
+    --muted-foreground: 355 20% 50%;
+    --accent: 355 55% 44%;
     --accent-foreground: 0 0% 100%;
-    --border: 0 40% 75%;
-    --ring: 0 85% 50%;
-    --cyber-cyan: 0 85% 50%;
-    --cyber-cyan-glow: 0 90% 60%;
-    --cyber-border: 0 40% 75%;
+    --border: 5 18% 85%;
+    --input: 5 12% 92%;
+    --ring: 355 60% 48%;
+    --cyber-cyan: 355 60% 48%;
+    --cyber-cyan-glow: 355 65% 58%;
+    --cyber-border: 5 18% 85%;
   }
 
   /* Green Theme - Dark Mode */
@@ -241,22 +246,27 @@
     --cyber-border: 145 60% 30%;
   }
 
-  /* Green Theme - Light Mode */
+  /* Green Theme - Light Mode — Elegant Sage */
   .light.theme-green {
-    --foreground: 145 70% 28%;
-    --card-foreground: 145 70% 28%;
-    --popover-foreground: 145 70% 28%;
-    --primary: 145 80% 40%;
+    --background: 150 20% 95%;
+    --card: 150 15% 98%;
+    --foreground: 155 35% 28%;
+    --card-foreground: 155 35% 28%;
+    --popover-foreground: 155 35% 28%;
+    --primary: 155 50% 38%;
     --primary-foreground: 0 0% 100%;
-    --secondary-foreground: 145 60% 35%;
-    --muted-foreground: 145 40% 45%;
-    --accent: 145 75% 35%;
+    --secondary: 150 15% 90%;
+    --secondary-foreground: 155 30% 35%;
+    --muted: 150 10% 87%;
+    --muted-foreground: 155 18% 48%;
+    --accent: 155 45% 35%;
     --accent-foreground: 0 0% 100%;
-    --border: 145 40% 75%;
-    --ring: 145 80% 40%;
-    --cyber-cyan: 145 80% 40%;
-    --cyber-cyan-glow: 145 90% 50%;
-    --cyber-border: 145 40% 75%;
+    --border: 150 15% 84%;
+    --input: 150 10% 92%;
+    --ring: 155 50% 38%;
+    --cyber-cyan: 155 50% 38%;
+    --cyber-cyan-glow: 155 55% 48%;
+    --cyber-border: 150 15% 84%;
   }
 
   /* Purple Theme - Dark Mode */
@@ -277,22 +287,27 @@
     --cyber-border: 270 60% 40%;
   }
 
-  /* Purple Theme - Light Mode */
+  /* Purple Theme - Light Mode — Elegant Lavender */
   .light.theme-purple {
-    --foreground: 270 60% 40%;
-    --card-foreground: 270 60% 40%;
-    --popover-foreground: 270 60% 40%;
-    --primary: 270 70% 55%;
+    --background: 270 18% 95%;
+    --card: 270 14% 98%;
+    --foreground: 268 30% 32%;
+    --card-foreground: 268 30% 32%;
+    --popover-foreground: 268 30% 32%;
+    --primary: 268 50% 52%;
     --primary-foreground: 0 0% 100%;
-    --secondary-foreground: 270 50% 45%;
-    --muted-foreground: 270 40% 50%;
-    --accent: 270 65% 50%;
+    --secondary: 270 14% 90%;
+    --secondary-foreground: 268 25% 40%;
+    --muted: 270 10% 87%;
+    --muted-foreground: 268 18% 50%;
+    --accent: 268 45% 48%;
     --accent-foreground: 0 0% 100%;
-    --border: 270 40% 80%;
-    --ring: 270 70% 55%;
-    --cyber-cyan: 270 70% 55%;
-    --cyber-cyan-glow: 270 80% 65%;
-    --cyber-border: 270 40% 80%;
+    --border: 270 14% 84%;
+    --input: 270 10% 92%;
+    --ring: 268 50% 52%;
+    --cyber-cyan: 268 50% 52%;
+    --cyber-cyan-glow: 268 55% 62%;
+    --cyber-border: 270 14% 84%;
   }
 
   /* Orange Theme - Dark Mode */
@@ -313,22 +328,27 @@
     --cyber-border: 25 70% 35%;
   }
 
-  /* Orange Theme - Light Mode */
+  /* Orange Theme - Light Mode — Elegant Amber */
   .light.theme-orange {
-    --foreground: 25 80% 35%;
-    --card-foreground: 25 80% 35%;
-    --popover-foreground: 25 80% 35%;
-    --primary: 25 90% 50%;
+    --background: 30 22% 95%;
+    --card: 30 18% 98%;
+    --foreground: 24 40% 28%;
+    --card-foreground: 24 40% 28%;
+    --popover-foreground: 24 40% 28%;
+    --primary: 24 70% 48%;
     --primary-foreground: 0 0% 100%;
-    --secondary-foreground: 25 70% 40%;
-    --muted-foreground: 25 50% 45%;
-    --accent: 25 85% 45%;
+    --secondary: 30 16% 90%;
+    --secondary-foreground: 24 35% 36%;
+    --muted: 30 10% 87%;
+    --muted-foreground: 24 22% 50%;
+    --accent: 24 65% 44%;
     --accent-foreground: 0 0% 100%;
-    --border: 25 50% 80%;
-    --ring: 25 90% 50%;
-    --cyber-cyan: 25 90% 50%;
-    --cyber-cyan-glow: 25 95% 60%;
-    --cyber-border: 25 50% 80%;
+    --border: 30 16% 84%;
+    --input: 30 10% 92%;
+    --ring: 24 70% 48%;
+    --cyber-cyan: 24 70% 48%;
+    --cyber-cyan-glow: 24 75% 58%;
+    --cyber-border: 30 16% 84%;
   }
 }
 
