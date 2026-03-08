@@ -334,8 +334,16 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'iPhoneFont', 'Cairo', sans-serif;
+    font-family: 'iPhoneFont', 'Cairo', sans-serif !important;
     direction: rtl;
+  }
+
+  * {
+    font-family: inherit !important;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'iPhoneFont', monospace !important;
   }
 }
 
