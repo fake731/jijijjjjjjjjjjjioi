@@ -217,231 +217,284 @@ const AuthPage = () => {
             <CardDescription className="text-muted-foreground">{getDescription()}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name - signup only */}
-              {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="displayName" className="text-foreground">الاسم</Label>
-                  <div className="relative">
-                    <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="displayName"
-                      type="text"
-                      placeholder="أدخل اسمك"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
-                      required
-                      dir="auto"
-                    />
+            {mode === "verify" ? (
+              /* OTP Verification UI */
+              <div className="space-y-6">
+                <div className="flex justify-center">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Mail className="w-8 h-8 text-primary" />
                   </div>
                 </div>
-              )}
-
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-foreground">البريد الإلكتروني</Label>
-                <div className="relative">
-                  <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="example@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
-                    required
-                    dir="ltr"
-                  />
-                </div>
-              </div>
-
-              {/* Age - signup only */}
-              {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="age" className="text-foreground">العمر</Label>
-                  <div className="relative">
-                    <Calendar className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="age"
-                      type="number"
-                      placeholder="أدخل عمرك"
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
-                      required
-                      min={1}
-                      max={120}
-                      dir="ltr"
-                    />
+                <div className="space-y-4">
+                  <div className="flex justify-center" dir="ltr">
+                    <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
                   </div>
-                </div>
-              )}
-
-              {/* Country - signup only */}
-              {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="country" className="text-foreground">البلد</Label>
-                  <div className="relative">
-                    <Globe className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="country"
-                      type="text"
-                      placeholder="مثال: فلسطين"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
-                      required
-                      dir="auto"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* City - signup only (optional) */}
-              {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="city" className="text-foreground">المدينة <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
-                  <div className="relative">
-                    <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="city"
-                      type="text"
-                      placeholder="مثال: غزة"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
-                      dir="auto"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Phone - signup only (optional) */}
-              {mode === "signup" && (
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-foreground">رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
-                  <div className="relative">
-                    <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+970..."
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
-                      dir="ltr"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Password */}
-              {mode !== "forgot" && (
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-foreground">كلمة المرور</Label>
-                  <div className="relative">
-                    <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pr-10 pl-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
-                      required
-                      dir="ltr"
-                      minLength={6}
-                    />
+                  <Button onClick={handleVerifyOtp} className="w-full h-12 gap-2" disabled={loading || otp.length !== 6}>
+                    {loading ? (
+                      <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      "تحقق"
+                    )}
+                  </Button>
+                  <div className="text-center space-y-2">
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute left-3 top-3 text-muted-foreground hover:text-foreground"
+                      onClick={handleResendOtp}
+                      disabled={loading}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      لم يصلك الرمز؟ إعادة الإرسال
+                    </button>
+                    <br />
+                    <button
+                      type="button"
+                      onClick={() => { setMode("signup"); setOtp(""); }}
+                      className="text-xs text-muted-foreground/60 hover:text-foreground transition-colors"
+                    >
+                      العودة للتسجيل
                     </button>
                   </div>
                 </div>
-              )}
-
-              {/* Privacy Policy - signup only */}
-              {mode === "signup" && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/20 border border-border/20">
-                  <Checkbox
-                    id="privacy"
-                    checked={privacyAccepted}
-                    onCheckedChange={(checked) => setPrivacyAccepted(checked === true)}
-                    className="mt-0.5"
-                  />
-                  <label htmlFor="privacy" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                    أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
-                  </label>
-                </div>
-              )}
-
-              {/* Forgot password link */}
-              {mode === "login" && (
-                <div className="text-left">
-                  <button
-                    type="button"
-                    onClick={() => setMode("forgot")}
-                    className="text-xs text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    هل نسيت كلمة المرور؟
-                  </button>
-                </div>
-              )}
-
-              <Button type="submit" className="w-full h-12 gap-2" disabled={loading || (mode === "signup" && !privacyAccepted)}>
-                {loading ? (
-                  <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                ) : mode === "forgot" ? (
-                  "إرسال رابط الاستعادة"
-                ) : mode === "login" ? (
-                  <>
-                    <LogIn className="h-4 w-4" />
-                    تسجيل الدخول
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="h-4 w-4" />
-                    إنشاء حساب
-                  </>
-                )}
-              </Button>
-            </form>
-
-            <div className="text-center space-y-2">
-              {mode === "forgot" ? (
-                <button
-                  type="button"
-                  onClick={() => setMode("login")}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  العودة لتسجيل الدخول
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setMode(mode === "login" ? "signup" : "login")}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                >
-                  {mode === "login" ? "ليس لديك حساب؟ إنشاء حساب جديد" : "لديك حساب؟ تسجيل الدخول"}
-                </button>
-              )}
-            </div>
-
-            {/* Developer Login Link */}
-            {mode === "login" && (
-              <div className="pt-4 border-t border-border/20">
-                <Link
-                  to="/دخول-المطور"
-                  className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60 hover:text-primary/80 transition-colors"
-                >
-                  <Shield className="w-3 h-3" />
-                  دخول للمطورين
-                </Link>
               </div>
+            ) : (
+              /* Login / Signup / Forgot forms */
+              <>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Name - signup only */}
+                  {mode === "signup" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="displayName" className="text-foreground">الاسم</Label>
+                      <div className="relative">
+                        <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="displayName"
+                          type="text"
+                          placeholder="أدخل اسمك"
+                          value={displayName}
+                          onChange={(e) => setDisplayName(e.target.value)}
+                          className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                          required
+                          dir="auto"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Email */}
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-foreground">البريد الإلكتروني</Label>
+                    <div className="relative">
+                      <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="example@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                        required
+                        dir="ltr"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Age - signup only */}
+                  {mode === "signup" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="age" className="text-foreground">العمر</Label>
+                      <div className="relative">
+                        <Calendar className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="age"
+                          type="number"
+                          placeholder="أدخل عمرك"
+                          value={age}
+                          onChange={(e) => setAge(e.target.value)}
+                          className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                          required
+                          min={1}
+                          max={120}
+                          dir="ltr"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Country - signup only */}
+                  {mode === "signup" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="country" className="text-foreground">البلد</Label>
+                      <div className="relative">
+                        <Globe className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="country"
+                          type="text"
+                          placeholder="مثال: فلسطين"
+                          value={country}
+                          onChange={(e) => setCountry(e.target.value)}
+                          className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                          required
+                          dir="auto"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* City - signup only (optional) */}
+                  {mode === "signup" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="city" className="text-foreground">المدينة <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+                      <div className="relative">
+                        <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="city"
+                          type="text"
+                          placeholder="مثال: غزة"
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                          dir="auto"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Phone - signup only (optional) */}
+                  {mode === "signup" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-foreground">رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+                      <div className="relative">
+                        <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="+970..."
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                          dir="ltr"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Password */}
+                  {mode !== "forgot" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="password" className="text-foreground">كلمة المرور</Label>
+                      <div className="relative">
+                        <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="pr-10 pl-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                          required
+                          dir="ltr"
+                          minLength={6}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute left-3 top-3 text-muted-foreground hover:text-foreground"
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Privacy Policy - signup only */}
+                  {mode === "signup" && (
+                    <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/20 border border-border/20">
+                      <Checkbox
+                        id="privacy"
+                        checked={privacyAccepted}
+                        onCheckedChange={(checked) => setPrivacyAccepted(checked === true)}
+                        className="mt-0.5"
+                      />
+                      <label htmlFor="privacy" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                        أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
+                      </label>
+                    </div>
+                  )}
+
+                  {/* Forgot password link */}
+                  {mode === "login" && (
+                    <div className="text-left">
+                      <button
+                        type="button"
+                        onClick={() => setMode("forgot")}
+                        className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        هل نسيت كلمة المرور؟
+                      </button>
+                    </div>
+                  )}
+
+                  <Button type="submit" className="w-full h-12 gap-2" disabled={loading || (mode === "signup" && !privacyAccepted)}>
+                    {loading ? (
+                      <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                    ) : mode === "forgot" ? (
+                      "إرسال رابط الاستعادة"
+                    ) : mode === "login" ? (
+                      <>
+                        <LogIn className="h-4 w-4" />
+                        تسجيل الدخول
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="h-4 w-4" />
+                        إنشاء حساب
+                      </>
+                    )}
+                  </Button>
+                </form>
+
+                <div className="text-center space-y-2">
+                  {mode === "forgot" ? (
+                    <button
+                      type="button"
+                      onClick={() => setMode("login")}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      العودة لتسجيل الدخول
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setMode(mode === "login" ? "signup" : "login")}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {mode === "login" ? "ليس لديك حساب؟ إنشاء حساب جديد" : "لديك حساب؟ تسجيل الدخول"}
+                    </button>
+                  )}
+                </div>
+
+                {/* Developer Login Link */}
+                {mode === "login" && (
+                  <div className="pt-4 border-t border-border/20">
+                    <Link
+                      to="/دخول-المطور"
+                      className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60 hover:text-primary/80 transition-colors"
+                    >
+                      <Shield className="w-3 h-3" />
+                      دخول للمطورين
+                    </Link>
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
