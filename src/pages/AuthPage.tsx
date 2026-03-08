@@ -111,22 +111,18 @@ const AuthPage = () => {
         });
         if (error) throw error;
 
-        // Update profile with all fields
-        if (data.user) {
-          await supabase.from("profiles").update({
-            display_name: displayName.trim(),
-            age: parseInt(age),
-            country: country.trim(),
-            city: city.trim() || null,
-            phone: phone.trim() || null,
-            privacy_accepted: true,
-            privacy_accepted_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          }).eq("id", data.user.id);
-        }
+        // Store signup data for after verification
+        setSignupData({
+          userId: data.user?.id,
+          displayName: displayName.trim(),
+          age: parseInt(age),
+          country: country.trim(),
+          city: city.trim() || null,
+          phone: phone.trim() || null,
+        });
 
-        toast.success("تم إنشاء الحساب بنجاح!");
-        navigate("/");
+        toast.success("تم إرسال رمز التحقق إلى بريدك الإلكتروني");
+        setMode("verify");
       }
     } catch (error: any) {
       const msg = error.message || "حدث خطأ";
