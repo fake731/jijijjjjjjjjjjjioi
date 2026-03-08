@@ -290,7 +290,9 @@ const ToolsPage = () => {
                     }`}>
                       {(() => {
                         const IconComponent = toolIcons[tool.name] || Terminal;
-                        return <IconComponent className={viewMode === "compact" ? "w-5 h-5 text-primary" : "w-8 h-8 text-primary"} />;
+                        const iconColor = toolColors[tool.name] || "text-primary";
+                        return <IconComponent className={`${viewMode === "compact" ? "w-5 h-5" : "w-8 h-8"} ${iconColor}`} />;
+                      })()}
                       })()}
                     </div>
                     <div className={language === "ar" ? "text-right" : "text-left"}>
