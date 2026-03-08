@@ -331,6 +331,13 @@ const AIPage = () => {
         return { role: m.role, content: textContent };
       });
 
+      // Generate conversation ID if new conversation
+      let currentConvId = conversationId;
+      if (!currentConvId) {
+        currentConvId = crypto.randomUUID();
+        setConversationId(currentConvId);
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       const accessToken = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
@@ -342,7 +349,7 @@ const AIPage = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({ messages: apiMessages, language }),
+          body: JSON.stringify({ messages: apiMessages, language, conversationId: currentConvId }),
         }
       );
 
