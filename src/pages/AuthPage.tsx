@@ -81,12 +81,13 @@ const AuthPage = () => {
     const metadata = authUser.user_metadata || {};
     const parsedAge = Number(metadata.age);
 
-    const updates = {
+    const updates: Record<string, unknown> = {
       display_name: normalizeText(metadata.full_name),
       age: Number.isFinite(parsedAge) && parsedAge > 0 && parsedAge <= 120 ? parsedAge : null,
       country: normalizeText(metadata.country),
       city: normalizeText(metadata.city),
       phone: normalizeText(metadata.phone),
+      device_type: normalizeText(metadata.device_type) || getDeviceType(),
       privacy_accepted: metadata.privacy_accepted === true,
       privacy_accepted_at: metadata.privacy_accepted_at ? new Date(metadata.privacy_accepted_at).toISOString() : null,
       updated_at: new Date().toISOString(),
@@ -94,7 +95,7 @@ const AuthPage = () => {
 
     const { error } = await supabase
       .from("profiles")
-      .upsert({ id: authUser.id, email: authUser.email || null, ...updates }, { onConflict: "id" });
+      .upsert({ id: authUser.id, email: authUser.email || null, ...updates } as any, { onConflict: "id" });
 
     if (error) throw error;
   };
