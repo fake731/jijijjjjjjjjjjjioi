@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate, Navigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,18 +41,18 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      if (mode === "forgot") {
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast.success("تم تسجيل الدخول بنجاح!");
+        navigate("/");
+      } else if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/إعادة-كلمة-المرور`,
         });
         if (error) throw error;
         toast.success("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
         setMode("login");
-      } else if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("تم تسجيل الدخول بنجاح!");
-        navigate("/");
       } else {
         // Signup
         if (!privacyAccepted) {
@@ -97,7 +97,13 @@ const AuthPage = () => {
         navigate("/");
       }
     } catch (error: any) {
-      toast.error(error.message || "حدث خطأ");
+      const msg = error.message || "حدث خطأ";
+      if (msg.includes("already registered") || msg.includes("already been registered")) {
+        toast.error("هذا البريد الإلكتروني مسجل مسبقاً. جرب تسجيل الدخول بدلاً من ذلك.");
+        setMode("login");
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -227,7 +233,7 @@ const AuthPage = () => {
                     className="mt-0.5"
                   />
                   <label htmlFor="privacy" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                    أوافق على <span className="text-primary font-medium">سياسة الخصوصية</span> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
+                    أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر) إلى مدير الموقع لأغراض إدارية وأمنية.
                   </label>
                 </div>
               )}
