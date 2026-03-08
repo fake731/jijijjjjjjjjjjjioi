@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Navigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar, Shield, Globe, MapPin, Phone, CheckCircle2, ArrowRight } from "lucide-react";
+import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar, Shield, Globe, MapPin, Phone, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,8 +25,31 @@ const AuthPage = () => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [geoDetecting, setGeoDetecting] = useState(false);
+  const [geoDetected, setGeoDetected] = useState(false);
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Auto-detect country/city from IP when switching to signup mode
+  useEffect(() => {
+    if (mode !== "signup" || geoDetected) return;
+    const detectGeo = async () => {
+      setGeoDetecting(true);
+      try {
+        const res = await fetch("http://ip-api.com/json/?fields=country,city&lang=ar");
+        if (!res.ok) throw new Error("Geo API failed");
+        const data = await res.json();
+        if (data.country && !country) setCountry(data.country);
+        if (data.city && !city) setCity(data.city);
+        setGeoDetected(true);
+      } catch {
+        // Silently fail - user can still enter manually
+      } finally {
+        setGeoDetecting(false);
+      }
+    };
+    detectGeo();
+  }, [mode]);
 
   if (authLoading) {
     return (
@@ -299,20 +322,27 @@ const AuthPage = () => {
 
                   {mode === "signup" && (
                     <div className="space-y-2">
-                      <Label htmlFor="country" className="text-foreground">البلد</Label>
+                      <Label htmlFor="country" className="text-foreground flex items-center gap-2">
+                        البلد
+                        {geoDetecting && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
+                        {geoDetected && country && <span className="text-[10px] text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded">تم الكشف تلقائياً</span>}
+                      </Label>
                       <div className="relative">
                         <Globe className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="country" type="text" placeholder="مثال: فلسطين" value={country} onChange={(e) => setCountry(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" required dir="auto" />
+                        <Input id="country" type="text" placeholder={geoDetecting ? "جارٍ الكشف..." : "مثال: فلسطين"} value={country} onChange={(e) => setCountry(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" required dir="auto" />
                       </div>
                     </div>
                   )}
 
                   {mode === "signup" && (
                     <div className="space-y-2">
-                      <Label htmlFor="city" className="text-foreground">المدينة <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+                      <Label htmlFor="city" className="text-foreground flex items-center gap-2">
+                        المدينة <span className="text-muted-foreground text-xs">(اختياري)</span>
+                        {geoDetected && city && <span className="text-[10px] text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded">تم الكشف تلقائياً</span>}
+                      </Label>
                       <div className="relative">
                         <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="city" type="text" placeholder="مثال: غزة" value={city} onChange={(e) => setCity(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" dir="auto" />
+                        <Input id="city" type="text" placeholder={geoDetecting ? "جارٍ الكشف..." : "مثال: غزة"} value={city} onChange={(e) => setCity(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" dir="auto" />
                       </div>
                     </div>
                   )}
