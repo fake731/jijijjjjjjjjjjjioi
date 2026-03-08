@@ -60,10 +60,11 @@ const DeveloperPage = () => {
   };
 
   const fetchAllData = async () => {
-    const [profilesRes, visitsRes, logsRes] = await Promise.all([
+    const [profilesRes, visitsRes, logsRes, notifsRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("page_visits").select("*").order("visited_at", { ascending: false }).limit(500),
       supabase.from("ai_chat_logs").select("*").order("created_at", { ascending: false }).limit(500),
+      supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(100),
     ]);
 
     const p = profilesRes.data || [];
@@ -73,6 +74,44 @@ const DeveloperPage = () => {
     setVisits(v);
     setAiLogs(l);
     setStats({ totalUsers: p.length, totalVisits: v.length, totalAiChats: l.length });
+    setSentNotifications(notifsRes.data || []);
+  };
+
+  const handleSendNotification = async () => {
+    if (!notifTitle.trim() || !notifMessage.trim()) {
+      toast.error("يرجى ملء العنوان والرسالة");
+      return;
+    }
+    setSendingNotif(true);
+    try {
+      const insertData: any = {
+        title: notifTitle.trim(),
+        message: notifMessage.trim(),
+        sent_by: user?.id,
+      };
+      if (notifTarget !== "all") {
+        insertData.user_id = notifTarget;
+      }
+      const { error } = await supabase.from("notifications").insert(insertData);
+      if (error) throw error;
+      toast.success("تم إرسال الإشعار بنجاح");
+      setNotifTitle("");
+      setNotifMessage("");
+      setNotifTarget("all");
+      // Refresh notifications
+      const { data } = await supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(100);
+      setSentNotifications(data || []);
+    } catch (err: any) {
+      toast.error(err.message || "فشل إرسال الإشعار");
+    } finally {
+      setSendingNotif(false);
+    }
+  };
+
+  const handleDeleteNotification = async (id: string) => {
+    await supabase.from("notifications").delete().eq("id", id);
+    setSentNotifications((prev) => prev.filter((n) => n.id !== id));
+    toast.success("تم حذف الإشعار");
   };
 
   const handleDeleteUser = async (targetUserId: string) => {
