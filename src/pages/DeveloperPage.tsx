@@ -50,6 +50,7 @@ const DeveloperPage = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastRefreshTime, setLastRefreshTime] = useState<Date>(new Date());
   const [liveEvents, setLiveEvents] = useState<Array<{ type: string; text: string; time: Date }>>([]);
+  const [eventFilter, setEventFilter] = useState<"all" | "visit" | "signup" | "ai">("all");
 
   useEffect(() => {
     if (!authLoading && !user) {
