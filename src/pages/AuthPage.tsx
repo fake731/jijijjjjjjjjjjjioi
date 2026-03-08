@@ -192,9 +192,13 @@ const AuthPage = () => {
 
         if (data.session?.user) {
           await syncProfileFromMetadata(data.session.user);
+          toast.success("تم إنشاء الحساب بنجاح!");
+          navigate("/");
+          return;
         }
 
-        setMode("email-sent");
+        toast.success("تم إنشاء الحساب بنجاح! سجّل دخول الآن.");
+        setMode("login");
       }
     } catch (error: any) {
       const msg = error.message || "حدث خطأ";
