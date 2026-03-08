@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import { Wand2, Copy, Check, RefreshCw, Settings2, User, ArrowUp } from "lucide-react";
+import { Wand2, Copy, Check, RefreshCw, Settings2, User, ArrowUp, Lock } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Props {
   onTestPassword?: (password: string) => void;
