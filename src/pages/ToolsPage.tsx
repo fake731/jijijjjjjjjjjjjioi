@@ -170,8 +170,8 @@ const ToolsPage = () => {
   const t = {
     title: language === "ar" ? "أدوات كالي لينكس" : "Kali Linux Tools",
     subtitle: language === "ar" 
-      ? `${tools.length} أداة احترافية مع ${totalCommands} أمر` 
-      : `${tools.length} professional tools with ${totalCommands} commands`,
+      ? "استكشف أدوات اختبار الاختراق الاحترافية" 
+      : "Explore professional penetration testing tools",
     search: language === "ar" ? "ابحث عن أداة أو أمر..." : "Search for a tool or command...",
     commands: language === "ar" ? "أمر" : "commands",
     expandedView: language === "ar" ? "عرض موسع" : "Expanded",
