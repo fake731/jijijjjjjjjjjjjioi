@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
 
   const navItems = [
     { label: t("nav.home"), path: "/" },
