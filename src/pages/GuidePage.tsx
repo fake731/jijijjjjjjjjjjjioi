@@ -824,6 +824,7 @@ const guideTopics: GuideTopic[] = [
     icon: Radio,
     title: "أمن إنترنت الأشياء (IoT Security)",
     description: "حماية الأجهزة المتصلة والأنظمة الذكية",
+    color: "text-teal-500",
     subTopics: [
       {
         title: "تحديات أمن IoT",
