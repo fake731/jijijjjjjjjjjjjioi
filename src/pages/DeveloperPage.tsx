@@ -50,6 +50,7 @@ const DeveloperPage = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastRefreshTime, setLastRefreshTime] = useState<Date>(new Date());
   const [liveEvents, setLiveEvents] = useState<Array<{ type: string; text: string; time: Date }>>([]);
+  const [eventFilter, setEventFilter] = useState<"all" | "visit" | "signup" | "ai">("all");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -1725,22 +1726,37 @@ const DeveloperPage = () => {
                       الأحداث المباشرة
                       {autoRefresh && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
                     </CardTitle>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <Badge variant="secondary" className="text-xs">{liveEvents.length} حدث</Badge>
+                      <div className="flex items-center gap-0.5 border border-border/30 rounded-lg p-0.5">
+                        {(["all", "visit", "signup", "ai"] as const).map(f => (
+                          <button
+                            key={f}
+                            onClick={() => setEventFilter(f)}
+                            className={`px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
+                              eventFilter === f ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
+                            }`}
+                          >
+                            {f === "all" ? "الكل" : f === "visit" ? "زيارات" : f === "signup" ? "تسجيلات" : "AI"}
+                          </button>
+                        ))}
+                      </div>
                       <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setLiveEvents([])}>مسح</Button>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                    {liveEvents.length === 0 ? (
-                      <div className="text-center py-12">
-                        <Activity className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
-                        <p className="text-sm text-muted-foreground">في انتظار أحداث جديدة...</p>
-                        <p className="text-xs text-muted-foreground/60 mt-1">ستظهر الأحداث هنا فور حدوثها</p>
-                      </div>
-                    ) : (
-                      liveEvents.map((event, i) => (
+                    {(() => {
+                      const filtered = eventFilter === "all" ? liveEvents : liveEvents.filter(e => e.type === eventFilter);
+                      if (filtered.length === 0) return (
+                        <div className="text-center py-12">
+                          <Activity className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
+                          <p className="text-sm text-muted-foreground">في انتظار أحداث جديدة...</p>
+                          <p className="text-xs text-muted-foreground/60 mt-1">ستظهر الأحداث هنا فور حدوثها</p>
+                        </div>
+                      );
+                      return filtered.map((event, i) => (
                         <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-secondary/20 border border-border/10 animate-fade-in">
                           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                             event.type === "signup" ? "bg-emerald-500/15" :
@@ -1758,8 +1774,8 @@ const DeveloperPage = () => {
                             {event.type === "signup" ? "تسجيل" : event.type === "visit" ? "زيارة" : "AI"}
                           </Badge>
                         </div>
-                      ))
-                    )}
+                      ));
+                    })()}
                   </div>
                 </CardContent>
               </Card>
