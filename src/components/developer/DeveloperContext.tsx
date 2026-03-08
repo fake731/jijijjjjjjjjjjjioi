@@ -373,6 +373,18 @@ export const DeveloperProvider = ({ children }: { children: ReactNode }) => {
     return Object.entries(ranges).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value }));
   }, [profiles]);
 
+  const filteredVisits = useMemo(() => {
+    if (!visitSearch) return visits.slice(0, 100);
+    const s = visitSearch.toLowerCase();
+    return visits.filter(v => decodeURIComponent(v.page_path).toLowerCase().includes(s)).slice(0, 100);
+  }, [visits, visitSearch]);
+
+  const filteredAiLogs = useMemo(() => {
+    if (!aiSearch) return aiLogs.slice(0, 100);
+    const s = aiSearch.toLowerCase();
+    return aiLogs.filter(l => (l.message || "").toLowerCase().includes(s) || (l.user_email || "").toLowerCase().includes(s) || (l.response || "").toLowerCase().includes(s)).slice(0, 100);
+  }, [aiLogs, aiSearch]);
+
   const uniqueCountries = useMemo(() => Array.from(new Set(profiles.map(p => normalizeCountry(p.country)))).sort(), [profiles]);
 
   const todayStats = useMemo(() => {
