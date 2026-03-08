@@ -607,76 +607,88 @@ const AIPage = () => {
                 </div>
               )}
               <div className="flex gap-2">
-                {/* Camera Capture */}
-                <input
-                  type="file"
-                  ref={cameraInputRef}
-                  onChange={handleCameraCapture}
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => cameraInputRef.current?.click()}
-                  disabled={selectedImages.length >= MAX_IMAGES}
-                  className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={t.camera}
-                >
-                  <Camera className="w-5 h-5" />
-                </button>
-                {/* Image Upload */}
-                <input
-                  type="file"
-                  ref={imageInputRef}
-                  onChange={handleImageSelect}
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => imageInputRef.current?.click()}
-                  disabled={selectedImages.length >= MAX_IMAGES}
-                  className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={t.addImages}
-                >
-                  <Image className="w-5 h-5" />
-                </button>
-                {/* File Upload */}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileSelect}
-                  accept=".txt,.html,.css,.js,.ts,.jsx,.tsx,.json,.xml,.md,.csv,.py,.java,.c,.cpp,.h,.php,.rb,.go,.rs,.swift,.kt,.sh,.bash,.zsh,.yaml,.yml,.toml,.ini,.cfg,.conf,.log,.sql"
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={!!selectedFile}
-                  className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  title={t.addFile}
-                >
-                  <Paperclip className="w-5 h-5" />
-                </button>
-                {/* Text Input */}
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder={t.typePlaceholder}
-                  className="flex-1 px-4 py-3 rounded-xl bg-secondary border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
-                  disabled={isLoading}
-                  dir={language === "ar" ? "rtl" : "ltr"}
-                />
-                <button
-                  type="submit"
-                  disabled={isLoading || (!input.trim() && selectedImages.length === 0 && !selectedFile)}
-                  className="cyber-button-primary px-6 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Send className="w-5 h-5" />
-                </button>
+                {user ? (
+                  <>
+                    {/* Camera Capture */}
+                    <input
+                      type="file"
+                      ref={cameraInputRef}
+                      onChange={handleCameraCapture}
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => cameraInputRef.current?.click()}
+                      disabled={selectedImages.length >= MAX_IMAGES}
+                      className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={t.camera}
+                    >
+                      <Camera className="w-5 h-5" />
+                    </button>
+                    {/* Image Upload */}
+                    <input
+                      type="file"
+                      ref={imageInputRef}
+                      onChange={handleImageSelect}
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => imageInputRef.current?.click()}
+                      disabled={selectedImages.length >= MAX_IMAGES}
+                      className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={t.addImages}
+                    >
+                      <Image className="w-5 h-5" />
+                    </button>
+                    {/* File Upload */}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleFileSelect}
+                      accept=".txt,.html,.css,.js,.ts,.jsx,.tsx,.json,.xml,.md,.csv,.py,.java,.c,.cpp,.h,.php,.rb,.go,.rs,.swift,.kt,.sh,.bash,.zsh,.yaml,.yml,.toml,.ini,.cfg,.conf,.log,.sql"
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={!!selectedFile}
+                      className="px-3 py-3 rounded-xl bg-secondary border border-border/50 text-muted-foreground hover:border-primary/50 hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={t.addFile}
+                    >
+                      <Paperclip className="w-5 h-5" />
+                    </button>
+                    {/* Text Input */}
+                    <input
+                      type="text"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      placeholder={t.typePlaceholder}
+                      className="flex-1 px-4 py-3 rounded-xl bg-secondary border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                      disabled={isLoading}
+                      dir={language === "ar" ? "rtl" : "ltr"}
+                    />
+                    <button
+                      type="submit"
+                      disabled={isLoading || (!input.trim() && selectedImages.length === 0 && !selectedFile)}
+                      className="cyber-button-primary px-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
+                  </>
+                ) : (
+                  <Link
+                    to="/تسجيل-الدخول"
+                    className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-primary/10 border border-primary/30 text-primary hover:bg-primary/20 transition-colors"
+                  >
+                    <LogIn className="w-5 h-5" />
+                    <span>{language === "ar" ? "سجل دخول لاستخدام الذكاء الاصطناعي" : "Sign in to use the AI"}</span>
+                  </Link>
+                )}
               </div>
             </form>
           </div>
