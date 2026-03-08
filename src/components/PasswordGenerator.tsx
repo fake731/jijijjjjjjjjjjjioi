@@ -1,10 +1,12 @@
 import { useState, useCallback } from "react";
-import { Wand2, Copy, Check, RefreshCw, Settings2 } from "lucide-react";
+import { Wand2, Copy, Check, RefreshCw, Settings2, User } from "lucide-react";
 
 const PasswordGenerator = () => {
   const [password, setPassword] = useState("");
   const [copied, setCopied] = useState(false);
   const [length, setLength] = useState(16);
+  const [name, setName] = useState("");
+  const [useNameBase, setUseNameBase] = useState(false);
   const [options, setOptions] = useState({
     uppercase: true,
     lowercase: true,
@@ -19,34 +21,63 @@ const PasswordGenerator = () => {
     symbols: "!@#$%^&*()_+-=[]{}|;:,.<>?",
   };
 
+  const leetMap: Record<string, string> = {
+    a: "@", e: "3", i: "!", o: "0", s: "$", t: "7", l: "1", g: "9", b: "8",
+  };
+
+  const generateFromName = useCallback(() => {
+    if (!name.trim()) return;
+    const cleanName = name.trim().replace(/\s+/g, "");
+    
+    // Transform name with leet speak
+    let base = "";
+    for (const char of cleanName) {
+      const lower = char.toLowerCase();
+      if (Math.random() > 0.5 && leetMap[lower]) {
+        base += leetMap[lower];
+      } else if (Math.random() > 0.5) {
+        base += char.toUpperCase();
+      } else {
+        base += char.toLowerCase();
+      }
+    }
+
+    // Add random numbers and symbols to reach desired length
+    const extras = "!@#$%^&*0123456789";
+    while (base.length < length) {
+      base += extras[Math.floor(Math.random() * extras.length)];
+    }
+
+    // Trim if too long, then shuffle middle part (keep first 2 recognizable)
+    base = base.slice(0, length);
+    const first = base.slice(0, 2);
+    const last = base.slice(2);
+    const shuffled = last.split("").sort(() => Math.random() - 0.5).join("");
+    
+    setPassword(first + shuffled);
+  }, [name, length]);
+
   const generate = useCallback(() => {
     let chars = "";
     const selected = Object.entries(options).filter(([, v]) => v);
     if (selected.length === 0) return;
 
-    // Build character pool
     selected.forEach(([key]) => {
       chars += charSets[key as keyof typeof charSets];
     });
 
-    // Ensure at least one char from each selected set
     let result = "";
     selected.forEach(([key]) => {
       const set = charSets[key as keyof typeof charSets];
       result += set[Math.floor(Math.random() * set.length)];
     });
 
-    // Fill remaining length
     for (let i = result.length; i < length; i++) {
       result += chars[Math.floor(Math.random() * chars.length)];
     }
 
-    // Shuffle
     setPassword(
-      result
-        .split("")
-        .sort(() => Math.random() - 0.5)
-        .join("")
+      result.split("").sort(() => Math.random() - 0.5).join("")
     );
   }, [length, options]);
 
@@ -59,7 +90,6 @@ const PasswordGenerator = () => {
 
   const toggleOption = (key: keyof typeof options) => {
     const newOptions = { ...options, [key]: !options[key] };
-    // Prevent all options from being unchecked
     if (Object.values(newOptions).every((v) => !v)) return;
     setOptions(newOptions);
   };
@@ -131,12 +161,57 @@ const PasswordGenerator = () => {
         </div>
       )}
 
+      {/* Mode Toggle */}
+      <div className="flex gap-2 mb-5">
+        <button
+          onClick={() => setUseNameBase(false)}
+          className={`flex-1 py-3 px-4 rounded-xl border text-sm font-medium transition-all ${
+            !useNameBase
+              ? "bg-primary/10 border-primary/40 text-primary"
+              : "bg-secondary/50 border-border text-muted-foreground"
+          }`}
+        >
+          <RefreshCw className="w-4 h-4 inline-block ml-2" />
+          توليد عشوائي
+        </button>
+        <button
+          onClick={() => setUseNameBase(true)}
+          className={`flex-1 py-3 px-4 rounded-xl border text-sm font-medium transition-all ${
+            useNameBase
+              ? "bg-primary/10 border-primary/40 text-primary"
+              : "bg-secondary/50 border-border text-muted-foreground"
+          }`}
+        >
+          <User className="w-4 h-4 inline-block ml-2" />
+          من اسمك
+        </button>
+      </div>
+
       {/* Settings */}
       <div className="space-y-5">
         <div className="flex items-center gap-2 text-muted-foreground mb-2">
           <Settings2 className="w-4 h-4" />
           <span className="text-sm font-medium">خيارات التخصيص</span>
         </div>
+
+        {/* Name Input (when name-based mode) */}
+        {useNameBase && (
+          <div className="space-y-2">
+            <label className="text-sm text-foreground font-medium">ادخل اسمك أو كلمة مفتاحية</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="مثال: Qusay"
+              className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring font-mono"
+              dir="ltr"
+              maxLength={30}
+            />
+            <p className="text-xs text-muted-foreground">
+              سيتم تحويل اسمك إلى كلمة مرور قوية باستخدام رموز وأرقام بديلة
+            </p>
+          </div>
+        )}
 
         {/* Length Slider */}
         <div className="space-y-3">
@@ -158,31 +233,34 @@ const PasswordGenerator = () => {
           </div>
         </div>
 
-        {/* Character Options */}
-        <div className="grid grid-cols-2 gap-3">
-          {optionsList.map((opt) => (
-            <button
-              key={opt.key}
-              onClick={() => toggleOption(opt.key)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 text-sm ${
-                options[opt.key]
-                  ? "bg-primary/10 border-primary/40 text-primary"
-                  : "bg-secondary/50 border-border text-muted-foreground hover:border-border/80"
-              }`}
-            >
-              <span className="font-mono text-xs font-bold w-6">{opt.icon}</span>
-              <span>{opt.label}</span>
-            </button>
-          ))}
-        </div>
+        {/* Character Options (random mode only) */}
+        {!useNameBase && (
+          <div className="grid grid-cols-2 gap-3">
+            {optionsList.map((opt) => (
+              <button
+                key={opt.key}
+                onClick={() => toggleOption(opt.key)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 text-sm ${
+                  options[opt.key]
+                    ? "bg-primary/10 border-primary/40 text-primary"
+                    : "bg-secondary/50 border-border text-muted-foreground hover:border-border/80"
+                }`}
+              >
+                <span className="font-mono text-xs font-bold w-6">{opt.icon}</span>
+                <span>{opt.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Generate Button */}
         <button
-          onClick={generate}
-          className="w-full h-14 rounded-xl bg-primary text-primary-foreground font-bold text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-opacity"
+          onClick={useNameBase ? generateFromName : generate}
+          disabled={useNameBase && !name.trim()}
+          className="w-full h-14 rounded-xl bg-primary text-primary-foreground font-bold text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw className="w-5 h-5" />
-          <span>توليد كلمة مرور</span>
+          <span>{useNameBase ? "توليد من الاسم" : "توليد كلمة مرور"}</span>
         </button>
       </div>
     </div>
