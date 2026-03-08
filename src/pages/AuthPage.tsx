@@ -132,8 +132,7 @@ const AuthPage = () => {
           redirectTo: `${window.location.origin}/إعادة-كلمة-المرور`,
         });
         if (error) throw error;
-        toast.success("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
-        setMode("login");
+        setMode("reset-sent");
       } else if (mode === "signup") {
         if (!privacyAccepted) {
           toast.error("يجب الموافقة على سياسة الخصوصية للمتابعة");
