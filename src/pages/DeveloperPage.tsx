@@ -786,6 +786,10 @@ const DeveloperPage = () => {
             <TabsTrigger value="ai" className="gap-1"><MessageSquare className="w-3.5 h-3.5" />محادثات AI</TabsTrigger>
             <TabsTrigger value="pages" className="gap-1"><BarChart3 className="w-3.5 h-3.5" />الصفحات</TabsTrigger>
             <TabsTrigger value="export" className="gap-1"><Download className="w-3.5 h-3.5" />التصدير</TabsTrigger>
+            <TabsTrigger value="realtime" className="gap-1 relative">
+              <Zap className="w-3.5 h-3.5" />الوقت الحقيقي
+              {autoRefresh && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
+            </TabsTrigger>
           </TabsList>
 
           {/* ═══════ USERS TAB ═══════ */}
