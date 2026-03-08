@@ -30,6 +30,14 @@ const AuthPage = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
+  // Detect device type from user agent
+  const getDeviceType = () => {
+    const ua = navigator.userAgent.toLowerCase();
+    if (/tablet|ipad/.test(ua)) return "تابلت";
+    if (/mobile|android|iphone/.test(ua)) return "موبايل";
+    return "كمبيوتر";
+  };
+
   // Auto-detect country/city from IP when switching to signup mode
   useEffect(() => {
     if (mode !== "signup" || geoDetected) return;
