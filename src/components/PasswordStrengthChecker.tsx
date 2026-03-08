@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Shield, Eye, EyeOff, Copy, Check, Lightbulb } from "lucide-react";
 
 interface Props {
