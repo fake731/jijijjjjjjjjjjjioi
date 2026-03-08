@@ -1,11 +1,19 @@
 import { useDeveloper } from "../DeveloperContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Trash2, ChevronDown, Copy, Mail, Code } from "lucide-react";
+import { Users, Search, Trash2, ChevronDown, Copy, Mail, Code, Monitor, Smartphone, Tablet } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
+
+const deviceIcon = (type: string | null) => {
+  if (!type) return null;
+  if (type.includes("موبايل")) return <Smartphone className="w-3.5 h-3.5" />;
+  if (type.includes("تابلت")) return <Tablet className="w-3.5 h-3.5" />;
+  return <Monitor className="w-3.5 h-3.5" />;
+};
 
 const UsersTab = () => {
   const { user } = useAuth();
@@ -17,6 +25,14 @@ const UsersTab = () => {
     handleDeleteUser, handleBulkDelete, deletingUser,
     userRoles, getUserEngagement, copyToClipboard,
   } = useDeveloper();
+
+  const [deviceFilter, setDeviceFilter] = useState("all");
+
+  const uniqueDevices = Array.from(new Set(filteredProfiles.map(p => (p as any).device_type).filter(Boolean))) as string[];
+
+  const displayedProfiles = deviceFilter === "all"
+    ? filteredProfiles
+    : filteredProfiles.filter(p => (p as any).device_type === deviceFilter);
 
   return (
     <div className="space-y-4">
@@ -35,6 +51,13 @@ const UsersTab = () => {
                 {uniqueCountries.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Select value={deviceFilter} onValueChange={setDeviceFilter}>
+              <SelectTrigger className="w-[150px] bg-secondary/30 border-border/30"><SelectValue placeholder="الجهاز" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">جميع الأجهزة</SelectItem>
+                {uniqueDevices.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+              </SelectContent>
+            </Select>
             <Select value={userSort} onValueChange={(v: any) => setUserSort(v)}>
               <SelectTrigger className="w-[140px] bg-secondary/30 border-border/30"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -43,7 +66,7 @@ const UsersTab = () => {
                 <SelectItem value="name">الاسم</SelectItem>
               </SelectContent>
             </Select>
-            <Badge variant="secondary">{filteredProfiles.length} مستخدم</Badge>
+            <Badge variant="secondary">{displayedProfiles.length} مستخدم</Badge>
           </div>
           {selectedUsers.size > 0 && (
             <div className="mt-3 pt-3 border-t border-border/20 flex items-center gap-3 flex-wrap">
@@ -62,19 +85,21 @@ const UsersTab = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border/30 bg-secondary/20">
-                  <th className="p-3 w-10"><input type="checkbox" checked={selectedUsers.size === filteredProfiles.length && filteredProfiles.length > 0} onChange={selectAllUsers} className="rounded accent-[hsl(var(--primary))]" /></th>
+                  <th className="p-3 w-10"><input type="checkbox" checked={selectedUsers.size === displayedProfiles.length && displayedProfiles.length > 0} onChange={selectAllUsers} className="rounded accent-[hsl(var(--primary))]" /></th>
                   <th className="text-right p-3 text-muted-foreground font-medium">المستخدم</th>
                   <th className="text-right p-3 text-muted-foreground font-medium">البريد</th>
                   <th className="text-right p-3 text-muted-foreground font-medium hidden md:table-cell">الدور</th>
                   <th className="text-right p-3 text-muted-foreground font-medium hidden md:table-cell">البلد</th>
+                  <th className="text-right p-3 text-muted-foreground font-medium hidden lg:table-cell">الجهاز</th>
                   <th className="text-right p-3 text-muted-foreground font-medium hidden sm:table-cell">التاريخ</th>
                   <th className="text-right p-3 text-muted-foreground font-medium">التفاعل</th>
                   <th className="text-center p-3 text-muted-foreground font-medium">إجراءات</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredProfiles.map((p) => {
+                {displayedProfiles.map((p) => {
                   const engagement = getUserEngagement(p.id);
+                  const dt = (p as any).device_type as string | null;
                   return (
                     <tr key={p.id} className={`border-b border-border/10 hover:bg-secondary/20 transition-colors group ${selectedUsers.has(p.id) ? "bg-primary/5" : ""}`}>
                       <td className="p-3"><input type="checkbox" checked={selectedUsers.has(p.id)} onChange={() => toggleUserSelection(p.id)} className="rounded accent-[hsl(var(--primary))]" /></td>
@@ -94,6 +119,14 @@ const UsersTab = () => {
                       </td>
                       <td className="p-3 hidden md:table-cell"><Badge variant={userRoles[p.id] === "developer" ? "default" : "secondary"} className="text-[10px]">{userRoles[p.id] || "user"}</Badge></td>
                       <td className="p-3 hidden md:table-cell">{p.country ? <Badge variant="outline" className="text-xs">{p.country}</Badge> : "—"}</td>
+                      <td className="p-3 hidden lg:table-cell">
+                        {dt ? (
+                          <div className="flex items-center gap-1.5 text-muted-foreground">
+                            {deviceIcon(dt)}
+                            <span className="text-xs">{dt}</span>
+                          </div>
+                        ) : "—"}
+                      </td>
                       <td className="p-3 text-muted-foreground text-xs hidden sm:table-cell">{p.created_at ? new Date(p.created_at).toLocaleDateString("ar") : "—"}</td>
                       <td className="p-3">
                         <div className="flex items-center gap-1">
@@ -122,14 +155,15 @@ const UsersTab = () => {
               </tbody>
             </table>
             {expandedUser && (() => {
-              const p = filteredProfiles.find(pr => pr.id === expandedUser);
+              const p = displayedProfiles.find(pr => pr.id === expandedUser);
               if (!p) return null;
               const eng = getUserEngagement(p.id);
+              const dt = (p as any).device_type as string | null;
               return (
                 <div className="p-4 bg-secondary/10 border-t border-border/20 space-y-3">
                   <h4 className="text-sm font-bold text-foreground">تفاصيل: {p.display_name || p.email}</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {[{ l: "الزيارات", v: eng.visits }, { l: "محادثات AI", v: eng.chats }, { l: "نقاط التفاعل", v: eng.score }, { l: "الدور", v: userRoles[p.id] || "user" }].map((item, i) => (
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    {[{ l: "الزيارات", v: eng.visits }, { l: "محادثات AI", v: eng.chats }, { l: "نقاط التفاعل", v: eng.score }, { l: "الدور", v: userRoles[p.id] || "user" }, { l: "الجهاز", v: dt || "غير محدد" }].map((item, i) => (
                       <div key={i} className="p-3 rounded-lg bg-card/80 border border-border/20">
                         <p className="text-[10px] text-muted-foreground">{item.l}</p>
                         <p className="text-lg font-bold text-foreground">{item.v}</p>
@@ -144,7 +178,7 @@ const UsersTab = () => {
                 </div>
               );
             })()}
-            {filteredProfiles.length === 0 && <p className="text-center text-muted-foreground py-8">لا يوجد مستخدمين مطابقين</p>}
+            {displayedProfiles.length === 0 && <p className="text-center text-muted-foreground py-8">لا يوجد مستخدمين مطابقين</p>}
           </div>
         </CardContent>
       </Card>
