@@ -273,7 +273,7 @@ const ScannerPage = () => {
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">
               <div className="cyber-icon-box">
-                <Terminal className="w-10 h-10 text-primary" />
+                <Terminal className="w-10 h-10 text-red-500" />
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 mb-4">

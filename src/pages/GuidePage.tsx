@@ -1273,7 +1273,7 @@ const GuidePage = () => {
           <div className="text-center mb-16">
             <div className="flex justify-center mb-6">
               <div className="cyber-icon-box">
-                <BookOpen className="w-10 h-10 text-primary" />
+                <BookOpen className="w-10 h-10 text-yellow-500" />
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-primary text-glow mb-4">
