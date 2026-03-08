@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Users, Eye, MessageSquare, Shield, Calendar } from "lucide-react";
+import { Users, Eye, MessageSquare, Shield, TrendingUp, BarChart3 } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from "recharts";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -48,8 +49,8 @@ const DeveloperPage = () => {
   const fetchAllData = async () => {
     const [profilesRes, visitsRes, logsRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      supabase.from("page_visits").select("*").order("visited_at", { ascending: false }).limit(200),
-      supabase.from("ai_chat_logs").select("*").order("created_at", { ascending: false }).limit(200),
+      supabase.from("page_visits").select("*").order("visited_at", { ascending: false }).limit(500),
+      supabase.from("ai_chat_logs").select("*").order("created_at", { ascending: false }).limit(500),
     ]);
 
     const p = profilesRes.data || [];
@@ -60,6 +61,62 @@ const DeveloperPage = () => {
     setAiLogs(l);
     setStats({ totalUsers: p.length, totalVisits: v.length, totalAiChats: l.length });
   };
+
+  // Chart data: daily visits for last 7 days
+  const dailyVisitsData = useMemo(() => {
+    const days: Record<string, number> = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
+      days[key] = 0;
+    }
+    visits.forEach((v) => {
+      const d = new Date(v.visited_at);
+      const now = new Date();
+      const diff = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+      if (diff < 7) {
+        const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
+        if (days[key] !== undefined) days[key]++;
+      }
+    });
+    return Object.entries(days).map(([name, زيارات]) => ({ name, زيارات }));
+  }, [visits]);
+
+  // Chart data: top visited pages
+  const topPagesData = useMemo(() => {
+    const pages: Record<string, number> = {};
+    visits.forEach((v) => {
+      pages[v.page_path] = (pages[v.page_path] || 0) + 1;
+    });
+    return Object.entries(pages)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([name, value]) => ({ name: decodeURIComponent(name), value }));
+  }, [visits]);
+
+  // Chart data: AI chats per day
+  const dailyAiData = useMemo(() => {
+    const days: Record<string, number> = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
+      days[key] = 0;
+    }
+    aiLogs.forEach((l) => {
+      const d = new Date(l.created_at);
+      const now = new Date();
+      const diff = Math.floor((now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+      if (diff < 7) {
+        const key = d.toLocaleDateString("ar", { weekday: "short", day: "numeric" });
+        if (days[key] !== undefined) days[key]++;
+      }
+    });
+    return Object.entries(days).map(([name, محادثات]) => ({ name, محادثات }));
+  }, [aiLogs]);
+
+  const COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "#06b6d4", "#8b5cf6", "#f59e0b", "#ef4444"];
 
   if (authLoading || checking) {
     return (
@@ -97,12 +154,12 @@ const DeveloperPage = () => {
           <Badge variant="outline" className="border-primary/40 text-primary">مطور</Badge>
         </div>
 
-        {/* Stats */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card className="border-border/30 bg-card/80">
             <CardContent className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-500" />
+              <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                <Users className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.totalUsers}</p>
@@ -112,8 +169,8 @@ const DeveloperPage = () => {
           </Card>
           <Card className="border-border/30 bg-card/80">
             <CardContent className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
-                <Eye className="w-6 h-6 text-green-500" />
+              <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center">
+                <Eye className="w-6 h-6 text-accent-foreground" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.totalVisits}</p>
@@ -123,8 +180,8 @@ const DeveloperPage = () => {
           </Card>
           <Card className="border-border/30 bg-card/80">
             <CardContent className="p-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                <MessageSquare className="w-6 h-6 text-purple-500" />
+              <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center">
+                <MessageSquare className="w-6 h-6 text-foreground" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-foreground">{stats.totalAiChats}</p>
@@ -134,7 +191,75 @@ const DeveloperPage = () => {
           </Card>
         </div>
 
-        {/* Tabs */}
+        {/* Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Daily Visits Chart */}
+          <Card className="border-border/30 bg-card/80">
+            <CardHeader className="flex flex-row items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              <CardTitle className="text-foreground text-lg">الزيارات اليومية (آخر 7 أيام)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250}>
+                <AreaChart data={dailyVisitsData}>
+                  <defs>
+                    <linearGradient id="visitGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, color: "hsl(var(--foreground))" }} />
+                  <Area type="monotone" dataKey="زيارات" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#visitGrad)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* AI Chats Chart */}
+          <Card className="border-border/30 bg-card/80">
+            <CardHeader className="flex flex-row items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-primary" />
+              <CardTitle className="text-foreground text-lg">محادثات AI اليومية (آخر 7 أيام)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={dailyAiData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                  <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, color: "hsl(var(--foreground))" }} />
+                  <Bar dataKey="محادثات" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Top Pages Pie */}
+          <Card className="border-border/30 bg-card/80 lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-foreground text-lg">أكثر الصفحات زيارة</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie data={topPagesData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({ name, value }) => `${name} (${value})`}>
+                      {topPagesData.map((_, index) => (
+                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, color: "hsl(var(--foreground))" }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Data Tabs */}
         <Tabs defaultValue="users" dir="rtl">
           <TabsList className="mb-4">
             <TabsTrigger value="users">المستخدمين</TabsTrigger>
@@ -202,7 +327,7 @@ const DeveloperPage = () => {
                     <tbody>
                       {visits.map((v) => (
                         <tr key={v.id} className="border-b border-border/10 hover:bg-secondary/20">
-                          <td className="p-3 text-foreground" dir="ltr">{v.page_path}</td>
+                          <td className="p-3 text-foreground" dir="ltr">{decodeURIComponent(v.page_path)}</td>
                           <td className="p-3 text-muted-foreground text-xs">
                             {new Date(v.visited_at).toLocaleString("ar")}
                           </td>

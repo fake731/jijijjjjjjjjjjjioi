@@ -11,6 +11,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 
+const ALLOWED_DEV_EMAILS = [
+  "faketeam39@gmail.com",
+  "qusaysawalhy39@gmail.com",
+  "sawalhy007@gmail.com",
+];
+
 const DevLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,6 +40,13 @@ const DevLoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    // Check email before even trying to sign in
+    if (!ALLOWED_DEV_EMAILS.includes(email.trim().toLowerCase())) {
+      toast.error("هذا البريد غير مصرح له بالدخول كمطور");
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
