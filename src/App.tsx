@@ -77,6 +77,7 @@ const AnimatedRoutes = () => {
           <Route path="/تطوير-الويب" element={<WebDevPage />} />
           <Route path="/فحص-كلمة-المرور" element={<PasswordCheckerPage />} />
           <Route path="/الاستفسارات" element={<InquiryPage />} />
+          <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>
