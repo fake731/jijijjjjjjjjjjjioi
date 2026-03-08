@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar } from "lucide-react";
+import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar, Shield } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -42,8 +42,25 @@ const AuthPage = () => {
 
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data: loginData, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        
+        // Check if user is a developer
+        if (loginData.user) {
+          const { data: roleData } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", loginData.user.id)
+            .eq("role", "developer")
+            .maybeSingle();
+          
+          if (roleData) {
+            toast.success("مرحباً بك أيها المطور!");
+            navigate("/المطور");
+            return;
+          }
+        }
+        
         toast.success("تم تسجيل الدخول بنجاح!");
         navigate("/");
       } else if (mode === "forgot") {
@@ -289,6 +306,23 @@ const AuthPage = () => {
                 </button>
               )}
             </div>
+
+            {/* Developer Login Link */}
+            {mode === "login" && (
+              <div className="pt-4 border-t border-border/20">
+                <Link
+                  to="/تسجيل-الدخول"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // Just visual indicator - actual dev check happens after login
+                  }}
+                  className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60 hover:text-primary/80 transition-colors"
+                >
+                  <Shield className="w-3 h-3" />
+                  دخول للمطورين
+                </Link>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
