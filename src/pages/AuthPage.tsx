@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Navigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar, Shield, Globe, MapPin, Phone, CheckCircle2, ArrowRight } from "lucide-react";
+import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar, Shield, Globe, MapPin, Phone, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,8 +25,31 @@ const AuthPage = () => {
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [geoDetecting, setGeoDetecting] = useState(false);
+  const [geoDetected, setGeoDetected] = useState(false);
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+
+  // Auto-detect country/city from IP when switching to signup mode
+  useEffect(() => {
+    if (mode !== "signup" || geoDetected) return;
+    const detectGeo = async () => {
+      setGeoDetecting(true);
+      try {
+        const res = await fetch("http://ip-api.com/json/?fields=country,city&lang=ar");
+        if (!res.ok) throw new Error("Geo API failed");
+        const data = await res.json();
+        if (data.country && !country) setCountry(data.country);
+        if (data.city && !city) setCity(data.city);
+        setGeoDetected(true);
+      } catch {
+        // Silently fail - user can still enter manually
+      } finally {
+        setGeoDetecting(false);
+      }
+    };
+    detectGeo();
+  }, [mode]);
 
   if (authLoading) {
     return (
