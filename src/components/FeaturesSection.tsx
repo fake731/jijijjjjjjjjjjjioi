@@ -18,7 +18,7 @@ const FeaturesSection = () => {
     {
       icon: Terminal,
       title: "اوامر كالي لينكس",
-      description: "اكتب وتعلم أوامر كالي لينكس",
+      description: "تعلم أوامر كالي لينكس",
       link: "/scanner",
       color: "text-red-500",
       bg: "bg-red-500/10",
