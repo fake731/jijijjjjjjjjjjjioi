@@ -391,6 +391,8 @@ const DeveloperPage = () => {
         <Tabs defaultValue="users" dir="rtl">
           <TabsList className="mb-4 flex-wrap h-auto gap-1">
             <TabsTrigger value="users">المستخدمين</TabsTrigger>
+            <TabsTrigger value="users">المستخدمين</TabsTrigger>
+            <TabsTrigger value="notifications">الإشعارات</TabsTrigger>
             <TabsTrigger value="visits">الزيارات</TabsTrigger>
             <TabsTrigger value="ai">محادثات AI</TabsTrigger>
             <TabsTrigger value="pages">الصفحات الأكثر زيارة</TabsTrigger>
