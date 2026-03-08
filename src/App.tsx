@@ -27,6 +27,7 @@ import ProfilePage from "./pages/ProfilePage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import DeveloperPage from "./pages/DeveloperPage";
 import DevLoginPage from "./pages/DevLoginPage";
+import UserDashboardPage from "./pages/UserDashboardPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -102,6 +103,7 @@ const AnimatedRoutes = () => {
           <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
           <Route path="/دخول-المطور" element={<DevLoginPage />} />
           <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
+          <Route path="/لوحة-التحكم" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </motion.div>

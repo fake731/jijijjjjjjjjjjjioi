@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, UserCircle, Shield, Bell } from "lucide-react";
+import { Menu, X, LogIn, LogOut, UserCircle, Shield, Bell, LayoutDashboard } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
@@ -173,6 +173,13 @@ const Navbar = () => {
                     المطور
                   </Link>
                 )}
+                <Link
+                  to="/لوحة-التحكم"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  لوحة التحكم
+                </Link>
                 <Link
                   to="/الملف-الشخصي"
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
