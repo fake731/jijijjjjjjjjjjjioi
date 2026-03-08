@@ -222,6 +222,21 @@ const categories = [
   { id: "other", label: { ar: "أخرى", en: "Other" } },
 ];
 
+const categoryColors: Record<string, string> = {
+  navigation: "text-blue-500",
+  listing: "text-cyan-500",
+  files: "text-green-500",
+  permissions: "text-amber-500",
+  system: "text-orange-500",
+  history: "text-purple-500",
+  network: "text-teal-500",
+  packages: "text-red-500",
+  compression: "text-yellow-500",
+  security: "text-rose-500",
+  git: "text-violet-500",
+  other: "text-pink-500",
+};
+
 const ScannerPage = () => {
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [language, setLanguage] = useState<"ar" | "en">("ar");
