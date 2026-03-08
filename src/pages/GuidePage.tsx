@@ -1096,6 +1096,7 @@ const guideTopics: GuideTopic[] = [
     icon: Braces,
     title: "البرمجة للأمن السيبراني",
     description: "لغات البرمجة والأتمتة في مجال الأمن",
+    color: "text-emerald-500",
     subTopics: [
       {
         title: "Python للأمن السيبراني",
