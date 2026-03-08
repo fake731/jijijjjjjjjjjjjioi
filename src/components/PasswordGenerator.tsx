@@ -7,7 +7,7 @@ interface Props {
 }
 
 const PasswordGenerator = ({ onTestPassword }: Props) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [password, setPassword] = useState("");
   const [copied, setCopied] = useState(false);
   const [length, setLength] = useState(16);
