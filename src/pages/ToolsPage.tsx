@@ -377,8 +377,11 @@ const ToolsPage = () => {
                                 <button
                                   onClick={() => copyCommand(cmd.command)}
                                   className="p-1 rounded hover:bg-primary/20 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
+                                  title={!user ? "سجل دخول للنسخ" : "نسخ"}
                                 >
-                                  {copiedCommand === cmd.command ? (
+                                  {!user ? (
+                                    <Lock className="w-3 h-3 text-muted-foreground" />
+                                  ) : copiedCommand === cmd.command ? (
                                     <Check className="w-3 h-3 text-primary" />
                                   ) : (
                                     <Copy className="w-3 h-3 text-muted-foreground" />
