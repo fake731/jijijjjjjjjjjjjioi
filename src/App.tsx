@@ -21,6 +21,7 @@ import PasswordCheckerPage from "./pages/PasswordCheckerPage";
 import InquiryPage from "./pages/InquiryPage";
 import AuthPage from "./pages/AuthPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const AnimatedRoutes = () => {
           <Route path="/" element={<Index />} />
           <Route path="/تسجيل-الدخول" element={<AuthPage />} />
           <Route path="/إعادة-كلمة-المرور" element={<ResetPasswordPage />} />
+          <Route path="/الملف-الشخصي" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/الذكاء" element={<AIPage />} />
           <Route path="/الذكاء2" element={<AI2Page />} />
           <Route path="/الادوات" element={<ToolsPage />} />

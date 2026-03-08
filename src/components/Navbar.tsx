@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut } from "lucide-react";
+import { Menu, X, LogIn, LogOut, UserCircle } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
@@ -57,13 +57,22 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center gap-3">
             <ThemeToggle />
             {user ? (
-              <button
-                onClick={signOut}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-              >
-                <LogOut className="w-4 h-4" />
-                خروج
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/الملف-الشخصي"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                >
+                  <UserCircle className="w-4 h-4" />
+                  الملف الشخصي
+                </Link>
+                <button
+                  onClick={signOut}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  خروج
+                </button>
+              </div>
             ) : (
               <Link
                 to="/تسجيل-الدخول"
@@ -78,12 +87,12 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
             {user ? (
-              <button
-                onClick={signOut}
-                className="w-10 h-10 rounded-xl bg-destructive/10 border border-destructive/30 flex items-center justify-center"
+              <Link
+                to="/الملف-الشخصي"
+                className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center"
               >
-                <LogOut className="w-4 h-4 text-destructive" />
-              </button>
+                <UserCircle className="w-5 h-5 text-primary" />
+              </Link>
             ) : (
               <Link
                 to="/تسجيل-الدخول"
