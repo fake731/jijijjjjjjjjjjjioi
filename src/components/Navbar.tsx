@@ -66,6 +66,15 @@ const Navbar = () => {
             <ThemeToggle />
             {user ? (
               <div className="flex items-center gap-2">
+                {isDeveloper && (
+                  <Link
+                    to="/المطور"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                  >
+                    <Shield className="w-4 h-4" />
+                    المطور
+                  </Link>
+                )}
                 <Link
                   to="/الملف-الشخصي"
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
