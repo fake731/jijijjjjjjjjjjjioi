@@ -20,6 +20,7 @@ import WebDevPage from "./pages/WebDevPage";
 import PasswordCheckerPage from "./pages/PasswordCheckerPage";
 import InquiryPage from "./pages/InquiryPage";
 import AuthPage from "./pages/AuthPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
