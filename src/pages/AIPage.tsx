@@ -35,6 +35,7 @@ const sensitiveKeywords = [
 const MAX_IMAGES = 3;
 
 const AIPage = () => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
