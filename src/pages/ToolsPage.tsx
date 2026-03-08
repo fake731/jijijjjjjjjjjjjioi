@@ -130,7 +130,8 @@ const ToolsPage = () => {
   };
 
   const downloadTool = (tool: Tool) => {
-    const watermark = `# ═══════════════════════════════════════════════════════════════
+    requireAuth(() => {
+      const watermark = `# ═══════════════════════════════════════════════════════════════
 # Tool: ${tool.name}
 # By: Qusay_kali
 # Instagram: @0oscp
@@ -144,21 +145,21 @@ const ToolsPage = () => {
 # ═══════════════════════════════════════════════════════════════
 
 `;
-    
-    const commands = tool.commands.map((cmd, i) => 
-      `# ${language === "ar" ? "الخطوة" : "Step"} ${i + 1}: ${language === "ar" ? cmd.description.ar : cmd.description.en}\n${cmd.command}\n`
-    ).join('\n');
-    
-    const content = watermark + commands;
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${tool.name.toLowerCase().replace(/\s+/g, '-')}-commands.sh`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const commands = tool.commands.map((cmd, i) => 
+        `# ${language === "ar" ? "الخطوة" : "Step"} ${i + 1}: ${language === "ar" ? cmd.description.ar : cmd.description.en}\n${cmd.command}\n`
+      ).join('\n');
+      
+      const content = watermark + commands;
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tool.name.toLowerCase().replace(/\s+/g, '-')}-commands.sh`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
   };
 
   const filteredTools = useMemo(() => {
