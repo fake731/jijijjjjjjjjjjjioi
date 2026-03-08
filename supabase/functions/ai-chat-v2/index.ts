@@ -12,43 +12,46 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, language } = await req.json();
+    const { messages, language, conversationId } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Log the chat to database
-    try {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
-      
-      const authHeader = req.headers.get("authorization");
-      let userId = null;
-      let userEmail = null;
-      
-      if (authHeader) {
-        const supabaseClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
-        const { data: { user } } = await supabaseClient.auth.getUser(authHeader.replace("Bearer ", ""));
-        if (user) {
-          userId = user.id;
-          userEmail = user.email;
-        }
-      }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
-      const lastUserMsg = messages.filter((m: any) => m.role === "user").pop();
-      if (lastUserMsg) {
-        await supabaseAdmin.from("ai_chat_logs").insert({
+    const authHeader = req.headers.get("authorization");
+    let userId = null;
+    let userEmail = null;
+
+    if (authHeader) {
+      const supabaseClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!);
+      const { data: { user } } = await supabaseClient.auth.getUser(authHeader.replace("Bearer ", ""));
+      if (user) {
+        userId = user.id;
+        userEmail = user.email;
+      }
+    }
+
+    // Log the user message
+    const lastUserMsg = messages.filter((m: any) => m.role === "user").pop();
+    let logId: string | null = null;
+    if (lastUserMsg) {
+      try {
+        const { data } = await supabaseAdmin.from("ai_chat_logs").insert({
           user_id: userId,
           user_email: userEmail,
-          message: lastUserMsg.content,
+          message: typeof lastUserMsg.content === "string" ? lastUserMsg.content : JSON.stringify(lastUserMsg.content),
           ai_version: "v2",
-        });
+          conversation_id: conversationId || undefined,
+        }).select("id").single();
+        logId = data?.id || null;
+      } catch (logError) {
+        console.error("Failed to log chat:", logError);
       }
-    } catch (logError) {
-      console.error("Failed to log chat:", logError);
     }
 
     const systemPrompt = language === "ar" 
@@ -144,7 +147,43 @@ Your advanced areas of expertise:
       });
     }
 
-    return new Response(response.body, {
+    // Collect the full response to save it, while streaming to client
+    const reader = response.body!.getReader();
+    let fullResponse = "";
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        const decoder = new TextDecoder();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            controller.close();
+            // Save response to DB
+            if (logId && fullResponse) {
+              try {
+                await supabaseAdmin.from("ai_chat_logs").update({ response: fullResponse }).eq("id", logId);
+              } catch (e) {
+                console.error("Failed to save response:", e);
+              }
+            }
+            break;
+          }
+          controller.enqueue(value);
+          const text = decoder.decode(value, { stream: true });
+          const lines = text.split("\n");
+          for (const line of lines) {
+            if (!line.startsWith("data: ") || line.includes("[DONE]")) continue;
+            try {
+              const parsed = JSON.parse(line.slice(6));
+              const content = parsed.choices?.[0]?.delta?.content;
+              if (content) fullResponse += content;
+            } catch {}
+          }
+        }
+      },
+    });
+
+    return new Response(stream, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
 
