@@ -41,7 +41,12 @@ const AuthPage = () => {
     setLoading(true);
 
     try {
-      if (mode === "forgot") {
+      if (mode === "login") {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        toast.success("تم تسجيل الدخول بنجاح!");
+        navigate("/");
+      } else if (mode === "forgot") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/إعادة-كلمة-المرور`,
         });
