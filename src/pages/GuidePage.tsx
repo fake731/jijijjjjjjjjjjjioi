@@ -371,6 +371,7 @@ const guideTopics: GuideTopic[] = [
     icon: Network,
     title: "أمن الشبكات",
     description: "حماية الشبكات من التهديدات وأدوات المراقبة والحماية",
+    color: "text-cyan-500",
     subTopics: [
       {
         title: "جدران الحماية (Firewalls)",
