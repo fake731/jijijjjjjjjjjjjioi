@@ -620,6 +620,7 @@ const guideTopics: GuideTopic[] = [
     icon: AlertTriangle,
     title: "القوانين والأخلاقيات",
     description: "الإطار القانوني والأخلاقي للعمل في الأمن السيبراني",
+    color: "text-yellow-500",
     subTopics: [
       {
         title: "القوانين والتشريعات",
