@@ -49,6 +49,10 @@ const AI2Page = () => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<{ name: string; content: string } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [conversations, setConversations] = useState<{ id: string; firstMessage: string; date: string }[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -56,6 +60,73 @@ const AI2Page = () => {
   const dropZoneRef = useRef<HTMLDivElement>(null);
 
   const SECRET_PASSWORD = "Qusay_kali";
+
+  const fetchConversations = useCallback(async () => {
+    if (!user) return;
+    setLoadingHistory(true);
+    try {
+      const { data } = await supabase
+        .from("ai_chat_logs")
+        .select("conversation_id, message, created_at")
+        .eq("user_id", user.id)
+        .eq("ai_version", "v2")
+        .order("created_at", { ascending: false });
+
+      if (data) {
+        const convMap = new Map<string, { firstMessage: string; date: string }>();
+        for (const log of data) {
+          const cid = log.conversation_id;
+          if (!cid) continue;
+          if (!convMap.has(cid)) {
+            convMap.set(cid, {
+              firstMessage: log.message.slice(0, 60) + (log.message.length > 60 ? "..." : ""),
+              date: log.created_at,
+            });
+          }
+        }
+        setConversations(Array.from(convMap.entries()).map(([id, v]) => ({ id, ...v })));
+      }
+    } catch (err) {
+      console.error("Failed to fetch conversations:", err);
+    } finally {
+      setLoadingHistory(false);
+    }
+  }, [user]);
+
+  const loadConversation = async (cid: string) => {
+    if (!user) return;
+    try {
+      const { data } = await supabase
+        .from("ai_chat_logs")
+        .select("message, response, created_at")
+        .eq("conversation_id", cid)
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+
+      if (data) {
+        const loadedMessages: Message[] = [];
+        for (const log of data) {
+          loadedMessages.push({ role: "user", content: log.message });
+          if (log.response) loadedMessages.push({ role: "assistant", content: log.response });
+        }
+        setMessages(loadedMessages);
+        setConversationId(cid);
+        setShowHistory(false);
+      }
+    } catch (err) {
+      console.error("Failed to load conversation:", err);
+    }
+  };
+
+  const startNewConversation = () => {
+    setMessages([]);
+    setConversationId(null);
+    setShowHistory(false);
+  };
+
+  useEffect(() => {
+    if (showHistory && user) fetchConversations();
+  }, [showHistory, user, fetchConversations]);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
