@@ -773,8 +773,8 @@ const DownloadPage = () => {
             className="cyber-card p-5 group hover:border-primary/50 transition-all"
           >
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:box-glow-sm transition-all flex-shrink-0">
-                <item.icon className="w-6 h-6 text-primary" />
+              <div className={`w-12 h-12 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center group-hover:box-glow-sm transition-all flex-shrink-0`}>
+                <item.icon className={`w-6 h-6 ${sectionColors[title] || 'text-primary'}`} />
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-bold text-primary mb-1 truncate">
