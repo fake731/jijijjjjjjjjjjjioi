@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn, LogOut } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useLanguage } from "@/hooks/use-language";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
 
   const navItems = [
     { label: t("nav.home"), path: "/" },
@@ -51,13 +53,45 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Theme Toggle */}
-          <div className="hidden lg:flex items-center gap-4">
+          {/* Theme Toggle & Auth */}
+          <div className="hidden lg:flex items-center gap-3">
             <ThemeToggle />
+            {user ? (
+              <button
+                onClick={signOut}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                خروج
+              </button>
+            ) : (
+              <Link
+                to="/تسجيل-الدخول"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                دخول
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
+            {user ? (
+              <button
+                onClick={signOut}
+                className="w-10 h-10 rounded-xl bg-destructive/10 border border-destructive/30 flex items-center justify-center"
+              >
+                <LogOut className="w-4 h-4 text-destructive" />
+              </button>
+            ) : (
+              <Link
+                to="/تسجيل-الدخول"
+                className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center"
+              >
+                <LogIn className="w-4 h-4 text-primary" />
+              </Link>
+            )}
             <ThemeToggle />
             <button
               onClick={() => setIsOpen(!isOpen)}
