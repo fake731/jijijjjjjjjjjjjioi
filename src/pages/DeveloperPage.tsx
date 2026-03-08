@@ -100,7 +100,45 @@ const DeveloperPage = () => {
     (rolesRes.data || []).forEach((r: any) => { rm[r.user_id] = r.role; });
     setUserRoles(rm);
     setRefreshing(false);
+    setLastRefreshTime(new Date());
   };
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    if (!isDeveloper || !autoRefresh) return;
+    const interval = setInterval(() => {
+      fetchAllData();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [isDeveloper, autoRefresh]);
+
+  // Realtime subscriptions
+  useEffect(() => {
+    if (!isDeveloper) return;
+    const channel = supabase
+      .channel('realtime-dashboard')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'page_visits' }, (payload) => {
+        const p = payload.new as any;
+        setLiveEvents(prev => [{ type: 'visit', text: `زيارة جديدة: ${decodeURIComponent(p.page_path)}`, time: new Date() }, ...prev].slice(0, 50));
+        setVisits(prev => [p, ...prev]);
+        setStats(prev => ({ ...prev, totalVisits: prev.totalVisits + 1 }));
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ai_chat_logs' }, (payload) => {
+        const l = payload.new as any;
+        setLiveEvents(prev => [{ type: 'ai', text: `محادثة AI: ${(l.message || '').slice(0, 50)}...`, time: new Date() }, ...prev].slice(0, 50));
+        setAiLogs(prev => [l, ...prev]);
+        setStats(prev => ({ ...prev, totalAiChats: prev.totalAiChats + 1 }));
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, (payload) => {
+        const pr = payload.new as any;
+        setLiveEvents(prev => [{ type: 'signup', text: `تسجيل جديد: ${pr.display_name || pr.email}`, time: new Date() }, ...prev].slice(0, 50));
+        setProfiles(prev => [pr, ...prev]);
+        setStats(prev => ({ ...prev, totalUsers: prev.totalUsers + 1 }));
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [isDeveloper]);
 
   const handleSendNotification = async () => {
     if (!notifTitle.trim() || !notifMessage.trim()) {
