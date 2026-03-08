@@ -128,8 +128,10 @@ const AuthPage = () => {
         toast.success("تم تسجيل الدخول بنجاح!");
         navigate("/");
       } else if (mode === "forgot") {
+        // Use published URL so the reset link opens the real site, not Lovable preview
+        const siteOrigin = "https://jijijjjjjjjjjjjioi.lovable.app";
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/إعادة-كلمة-المرور`,
+          redirectTo: `${siteOrigin}/إعادة-كلمة-المرور`,
         });
         if (error) throw error;
         setMode("reset-sent");
