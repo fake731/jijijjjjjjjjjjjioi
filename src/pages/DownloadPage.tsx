@@ -748,10 +748,19 @@ const DownloadPage = () => {
     warning: language === "ar" ? "تحذير" : "Warning",
   };
 
+  const sectionColors: Record<string, string> = {
+    [t.desktopSection]: "text-blue-500",
+    [t.liveSection]: "text-orange-500",
+    [t.vmSection]: "text-purple-500",
+    [t.armSection]: "text-cyan-500",
+    [t.mobileSection]: "text-pink-500",
+    [t.termuxSection]: "text-green-500",
+  };
+
   const renderDownloadSection = (title: string, icon: typeof Monitor, items: DownloadOption[]) => (
     <div className="mb-12">
       <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
-        {React.createElement(icon, { className: "w-6 h-6" })}
+        {React.createElement(icon, { className: `w-6 h-6 ${sectionColors[title] || 'text-primary'}` })}
         {title}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
