@@ -91,6 +91,12 @@ const AuthPage = () => {
           return;
         }
 
+        if (!country.trim()) {
+          toast.error("يرجى إدخال البلد");
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -102,11 +108,14 @@ const AuthPage = () => {
         });
         if (error) throw error;
 
-        // Update profile with age and privacy consent
+        // Update profile with all fields
         if (data.user) {
           await supabase.from("profiles").update({
             display_name: displayName.trim(),
             age: parseInt(age),
+            country: country.trim(),
+            city: city.trim() || null,
+            phone: phone.trim() || null,
             privacy_accepted: true,
             privacy_accepted_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
