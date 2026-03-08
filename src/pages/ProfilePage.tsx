@@ -36,15 +36,19 @@ const ProfilePage = () => {
 
   const fetchProfile = async () => {
     if (!user) return;
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
-      .select("display_name, avatar_url")
+      .select("display_name, avatar_url, country, city, phone, age")
       .eq("id", user.id)
       .single();
 
     if (data) {
       setDisplayName(data.display_name || "");
       setAvatarUrl(data.avatar_url || null);
+      setCountry(data.country || "");
+      setCity(data.city || "");
+      setPhone(data.phone || "");
+      setAge(data.age);
     }
   };
 
