@@ -163,7 +163,7 @@ const AuthPage = () => {
           email,
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: "https://qusayk.netlify.app",
             data: {
               full_name: displayName.trim(),
               age: parseInt(age),
