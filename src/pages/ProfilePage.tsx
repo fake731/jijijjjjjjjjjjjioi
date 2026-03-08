@@ -104,7 +104,13 @@ const ProfilePage = () => {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ display_name: displayName.trim(), updated_at: new Date().toISOString() })
+        .update({
+          display_name: displayName.trim(),
+          country: country.trim() || null,
+          city: city.trim() || null,
+          phone: phone.trim() || null,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", user.id);
 
       if (error) throw error;
