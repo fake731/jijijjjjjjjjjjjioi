@@ -756,6 +756,7 @@ const guideTopics: GuideTopic[] = [
     icon: Smartphone,
     title: "أمن تطبيقات الموبايل",
     description: "حماية تطبيقات الجوال على Android و iOS",
+    color: "text-pink-500",
     subTopics: [
       {
         title: "OWASP Mobile Top 10",
