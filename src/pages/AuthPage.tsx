@@ -42,8 +42,25 @@ const AuthPage = () => {
 
     try {
       if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data: loginData, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        
+        // Check if user is a developer
+        if (loginData.user) {
+          const { data: roleData } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", loginData.user.id)
+            .eq("role", "developer")
+            .maybeSingle();
+          
+          if (roleData) {
+            toast.success("مرحباً بك أيها المطور!");
+            navigate("/المطور");
+            return;
+          }
+        }
+        
         toast.success("تم تسجيل الدخول بنجاح!");
         navigate("/");
       } else if (mode === "forgot") {
