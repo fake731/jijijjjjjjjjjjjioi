@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PasswordStrengthChecker from "@/components/PasswordStrengthChecker";
+import PasswordGenerator from "@/components/PasswordGenerator";
 import { Lock } from "lucide-react";
 
 const PasswordCheckerPage = () => {
@@ -22,7 +23,10 @@ const PasswordCheckerPage = () => {
               افحص مدى قوة كلمة مرورك واحصل على نصائح لتحسينها
             </p>
           </div>
-          <PasswordStrengthChecker />
+          <div className="space-y-8">
+            <PasswordStrengthChecker />
+            <PasswordGenerator />
+          </div>
         </div>
       </main>
       <Footer />
