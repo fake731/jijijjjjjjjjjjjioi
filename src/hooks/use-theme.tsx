@@ -19,7 +19,7 @@ export const colorThemes: { id: ColorTheme; name: string; nameAr: string; color:
   { id: "green", name: "Sage Green", nameAr: "أخضر زيتي", color: "#3D9970" },
   { id: "purple", name: "Lavender", nameAr: "بنفسجي لافندر", color: "#8B5CF6" },
   { id: "orange", name: "Warm Amber", nameAr: "برتقالي دافئ", color: "#D97706" },
-  { id: "yellow", name: "Yellow", nameAr: "أصفر", color: "#FACC15" },
+  { id: "yellow", name: "Yellow", nameAr: "أصفر", color: "#FFC107" },
 ];
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
