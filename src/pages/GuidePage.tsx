@@ -1164,6 +1164,7 @@ const guideTopics: GuideTopic[] = [
     icon: Wrench,
     title: "مصادر التعلم والتطبيق",
     description: "منصات التدريب والموارد لتطوير مهاراتك",
+    color: "text-fuchsia-500",
     subTopics: [
       {
         title: "منصات التدريب العملي",
