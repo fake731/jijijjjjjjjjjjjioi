@@ -7,7 +7,7 @@ interface Props {
 }
 
 const PasswordGenerator = ({ onTestPassword }: Props) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [password, setPassword] = useState("");
   const [copied, setCopied] = useState(false);
   const [length, setLength] = useState(16);
@@ -217,10 +217,10 @@ const PasswordGenerator = ({ onTestPassword }: Props) => {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={user ? "مثال: Qusay" : "سجل دخول أولاً"}
+              placeholder={!loading && !user ? "سجل دخول أولاً" : "مثال: Qusay"}
               className="w-full h-12 px-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring font-mono"
               dir="ltr"
-              disabled={!user}
+              disabled={!loading && !user}
               maxLength={30}
             />
             <p className="text-xs text-muted-foreground">
@@ -272,7 +272,7 @@ const PasswordGenerator = ({ onTestPassword }: Props) => {
         {/* Generate Button */}
         <button
           onClick={useNameBase ? generateFromName : generate}
-          disabled={!user || (useNameBase && !name.trim())}
+          disabled={(!loading && !user) || (useNameBase && !name.trim())}
           className="w-full h-14 rounded-xl bg-primary text-primary-foreground font-bold text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw className="w-5 h-5" />

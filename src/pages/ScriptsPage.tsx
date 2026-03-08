@@ -3764,7 +3764,7 @@ const ScriptsPage = () => {
 # ═══════════════════════════════════════════════════════════════
 # Script by: Qusay_kali
 # Instagram: @0oscp
-# Website: https://qusaykali.netlify.app/
+# Website: https://qusayk.netlify.app/
 # ═══════════════════════════════════════════════════════════════
 
 `;
