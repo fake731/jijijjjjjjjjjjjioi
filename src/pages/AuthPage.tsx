@@ -53,11 +53,6 @@ const AuthPage = () => {
         if (error) throw error;
         toast.success("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني");
         setMode("login");
-      } else if (mode === "login") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("تم تسجيل الدخول بنجاح!");
-        navigate("/");
       } else {
         // Signup
         if (!privacyAccepted) {
