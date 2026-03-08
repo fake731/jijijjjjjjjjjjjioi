@@ -537,6 +537,7 @@ const guideTopics: GuideTopic[] = [
     icon: Terminal,
     title: "أنظمة التشغيل والأدوات",
     description: "تعرف على توزيعات لينكس للأمن السيبراني وأهم الأدوات",
+    color: "text-green-500",
     subTopics: [
       {
         title: "توزيعات لينكس للأمن السيبراني",
