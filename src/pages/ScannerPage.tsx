@@ -338,7 +338,7 @@ const ScannerPage = () => {
                   className="cyber-card p-5 hover:border-primary/50 transition-all group"
                 >
                   <div className="flex items-start gap-4">
-                    <span className="w-14 h-14 rounded-xl bg-primary/20 text-primary flex items-center justify-center flex-shrink-0">
+                    <span className={`w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0 ${categoryColors[cmd.category] || 'text-primary'}`}>
                       {cmd.icon}
                     </span>
                     <div className="flex-1 min-w-0">
