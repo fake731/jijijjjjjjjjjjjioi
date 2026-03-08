@@ -77,6 +77,21 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
+            {user ? (
+              <button
+                onClick={signOut}
+                className="w-10 h-10 rounded-xl bg-destructive/10 border border-destructive/30 flex items-center justify-center"
+              >
+                <LogOut className="w-4 h-4 text-destructive" />
+              </button>
+            ) : (
+              <Link
+                to="/تسجيل-الدخول"
+                className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center"
+              >
+                <LogIn className="w-4 h-4 text-primary" />
+              </Link>
+            )}
             <ThemeToggle />
             <button
               onClick={() => setIsOpen(!isOpen)}
