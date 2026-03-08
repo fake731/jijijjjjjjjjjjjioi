@@ -2,8 +2,9 @@
 
 @font-face {
   font-family: 'iPhoneFont';
-  src: url('/fonts/iphone-font.ttf') format('truetype');
-  font-weight: normal;
+  src: url('https://jijijjjjjjjjjjjioi.lovable.app/fonts/iphone-font.ttf') format('truetype'),
+       url('/fonts/iphone-font.ttf') format('truetype');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
