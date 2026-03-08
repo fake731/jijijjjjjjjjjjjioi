@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { User, Camera, Save, LogOut, Mail, Calendar } from "lucide-react";
+import { User, Camera, Save, LogOut, Mail, Calendar, Globe, MapPin, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -16,6 +16,10 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [displayName, setDisplayName] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [phone, setPhone] = useState("");
+  const [age, setAge] = useState<number | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -32,15 +36,19 @@ const ProfilePage = () => {
 
   const fetchProfile = async () => {
     if (!user) return;
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("profiles")
-      .select("display_name, avatar_url")
+      .select("display_name, avatar_url, country, city, phone, age")
       .eq("id", user.id)
       .single();
 
     if (data) {
       setDisplayName(data.display_name || "");
       setAvatarUrl(data.avatar_url || null);
+      setCountry(data.country || "");
+      setCity(data.city || "");
+      setPhone(data.phone || "");
+      setAge(data.age);
     }
   };
 
@@ -96,7 +104,13 @@ const ProfilePage = () => {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ display_name: displayName.trim(), updated_at: new Date().toISOString() })
+        .update({
+          display_name: displayName.trim(),
+          country: country.trim() || null,
+          city: city.trim() || null,
+          phone: phone.trim() || null,
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", user.id);
 
       if (error) throw error;
@@ -182,6 +196,62 @@ const ProfilePage = () => {
                 <span dir="ltr">{user?.email}</span>
               </div>
             </div>
+
+            {/* Country */}
+            <div className="space-y-2">
+              <Label className="text-foreground">البلد</Label>
+              <div className="relative">
+                <Globe className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  placeholder="مثال: فلسطين"
+                  className="pr-10 bg-secondary/30 border-border/30 text-foreground"
+                  dir="auto"
+                />
+              </div>
+            </div>
+
+            {/* City */}
+            <div className="space-y-2">
+              <Label className="text-foreground">المدينة <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+              <div className="relative">
+                <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="مثال: غزة"
+                  className="pr-10 bg-secondary/30 border-border/30 text-foreground"
+                  dir="auto"
+                />
+              </div>
+            </div>
+
+            {/* Phone */}
+            <div className="space-y-2">
+              <Label className="text-foreground">رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+              <div className="relative">
+                <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+970..."
+                  className="pr-10 bg-secondary/30 border-border/30 text-foreground"
+                  dir="ltr"
+                />
+              </div>
+            </div>
+
+            {/* Age (read-only) */}
+            {age && (
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">العمر</Label>
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-secondary/20 border border-border/20 text-muted-foreground text-sm">
+                  <Calendar className="w-4 h-4" />
+                  <span>{age}</span>
+                </div>
+              </div>
+            )}
 
             {/* Join date */}
             <div className="space-y-2">

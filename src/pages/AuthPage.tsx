@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar, Shield } from "lucide-react";
+import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar, Shield, Globe, MapPin, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,6 +18,9 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [phone, setPhone] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -88,6 +91,12 @@ const AuthPage = () => {
           return;
         }
 
+        if (!country.trim()) {
+          toast.error("يرجى إدخال البلد");
+          setLoading(false);
+          return;
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -99,11 +108,14 @@ const AuthPage = () => {
         });
         if (error) throw error;
 
-        // Update profile with age and privacy consent
+        // Update profile with all fields
         if (data.user) {
           await supabase.from("profiles").update({
             display_name: displayName.trim(),
             age: parseInt(age),
+            country: country.trim(),
+            city: city.trim() || null,
+            phone: phone.trim() || null,
             privacy_accepted: true,
             privacy_accepted_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -206,6 +218,64 @@ const AuthPage = () => {
                       required
                       min={1}
                       max={120}
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Country - signup only */}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="country" className="text-foreground">البلد</Label>
+                  <div className="relative">
+                    <Globe className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="country"
+                      type="text"
+                      placeholder="مثال: فلسطين"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                      required
+                      dir="auto"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* City - signup only (optional) */}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="city" className="text-foreground">المدينة <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+                  <div className="relative">
+                    <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="city"
+                      type="text"
+                      placeholder="مثال: غزة"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
+                      dir="auto"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Phone - signup only (optional) */}
+              {mode === "signup" && (
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-foreground">رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+                  <div className="relative">
+                    <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+970..."
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50"
                       dir="ltr"
                     />
                   </div>

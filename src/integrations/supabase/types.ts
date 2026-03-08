@@ -72,10 +72,13 @@ export type Database = {
         Row: {
           age: number | null
           avatar_url: string | null
+          city: string | null
+          country: string | null
           created_at: string | null
           display_name: string | null
           email: string | null
           id: string
+          phone: string | null
           privacy_accepted: boolean | null
           privacy_accepted_at: string | null
           updated_at: string | null
@@ -83,10 +86,13 @@ export type Database = {
         Insert: {
           age?: number | null
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           display_name?: string | null
           email?: string | null
           id: string
+          phone?: string | null
           privacy_accepted?: boolean | null
           privacy_accepted_at?: string | null
           updated_at?: string | null
@@ -94,10 +100,13 @@ export type Database = {
         Update: {
           age?: number | null
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
           display_name?: string | null
           email?: string | null
           id?: string
+          phone?: string | null
           privacy_accepted?: boolean | null
           privacy_accepted_at?: string | null
           updated_at?: string | null
