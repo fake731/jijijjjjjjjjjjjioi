@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { decode } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -43,16 +44,69 @@ serve(async (req) => {
       }
     }
 
+    // Extract images from the last user message
     const lastUserMsg = messages.filter((m: any) => m.role === "user").pop();
+    let imageUrls: string[] = [];
+
+    if (lastUserMsg) {
+      // Extract base64 images from content array
+      const content = lastUserMsg.content;
+      if (Array.isArray(content)) {
+        const imageItems = content.filter((item: any) => item.type === "image_url" && item.image_url?.url);
+        for (const item of imageItems) {
+          const dataUrl = item.image_url.url;
+          if (dataUrl.startsWith("data:image/")) {
+            try {
+              const matches = dataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
+              if (matches) {
+                const ext = matches[1] === "jpeg" ? "jpg" : matches[1];
+                const base64Data = matches[2];
+                const bytes = decode(base64Data);
+                const fileName = `${crypto.randomUUID()}.${ext}`;
+                const filePath = `${userId || "anonymous"}/${fileName}`;
+
+                const { error: uploadError } = await supabaseAdmin.storage
+                  .from("ai-chat-images")
+                  .upload(filePath, bytes, {
+                    contentType: `image/${matches[1]}`,
+                    upsert: false,
+                  });
+
+                if (!uploadError) {
+                  const { data: publicUrlData } = supabaseAdmin.storage
+                    .from("ai-chat-images")
+                    .getPublicUrl(filePath);
+                  if (publicUrlData?.publicUrl) {
+                    imageUrls.push(publicUrlData.publicUrl);
+                  }
+                } else {
+                  console.error("Image upload error:", uploadError);
+                }
+              }
+            } catch (imgErr) {
+              console.error("Failed to process image:", imgErr);
+            }
+          }
+        }
+      }
+    }
+
     let logId: string | null = null;
     if (lastUserMsg) {
       try {
+        const messageText = typeof lastUserMsg.content === "string"
+          ? lastUserMsg.content
+          : Array.isArray(lastUserMsg.content)
+            ? lastUserMsg.content.filter((c: any) => c.type === "text").map((c: any) => c.text).join("\n")
+            : JSON.stringify(lastUserMsg.content);
+
         const { data } = await supabaseAdmin.from("ai_chat_logs").insert({
           user_id: userId,
           user_email: userEmail,
-          message: typeof lastUserMsg.content === "string" ? lastUserMsg.content : JSON.stringify(lastUserMsg.content),
+          message: messageText,
           ai_version: "v2",
           conversation_id: conversationId || undefined,
+          image_urls: imageUrls.length > 0 ? imageUrls : undefined,
         }).select("id").single();
         logId = data?.id || null;
       } catch (logError) {
