@@ -10,6 +10,8 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimatePresence, motion } from "framer-motion";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import SpaceBackground from "@/components/SpaceBackground";
+import CustomCursor from "@/components/CustomCursor";
 import Index from "./pages/Index";
 import AIPage from "./pages/AIPage";
 import AI2Page from "./pages/AI2Page";
@@ -33,26 +35,9 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 10,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.35,
-      ease: "easeOut" as const,
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -10,
-    transition: {
-      duration: 0.25,
-      ease: "easeIn" as const,
-    },
-  },
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" as const } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.25, ease: "easeIn" as const } },
 };
 
 const PageVisitTracker = () => {
@@ -78,36 +63,30 @@ const AnimatedRoutes = () => {
     <>
       <PageVisitTracker />
       <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        variants={pageVariants}
-      >
-        <Routes location={location}>
-          <Route path="/" element={<Index />} />
-          <Route path="/تسجيل-الدخول" element={<AuthPage />} />
-          <Route path="/إعادة-كلمة-المرور" element={<ResetPasswordPage />} />
-          <Route path="/الملف-الشخصي" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-          <Route path="/الذكاء" element={<AIPage />} />
-          <Route path="/الذكاء2" element={<AI2Page />} />
-          <Route path="/الادوات" element={<ToolsPage />} />
-          <Route path="/الاوامر" element={<ScannerPage />} />
-          <Route path="/السكربتات" element={<ScriptsPage />} />
-          <Route path="/الدليل" element={<GuidePage />} />
-          <Route path="/التحميل" element={<ProtectedRoute><DownloadPage /></ProtectedRoute>} />
-          <Route path="/تطوير-الويب" element={<WebDevPage />} />
-          <Route path="/فحص-كلمة-المرور" element={<ProtectedRoute><PasswordCheckerPage /></ProtectedRoute>} />
-          <Route path="/الاستفسارات" element={<InquiryPage />} />
-          <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
-          <Route path="/دخول-المطور" element={<DevLoginPage />} />
-          <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
-          <Route path="/لوحة-التحكم" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
+        <motion.div key={location.pathname} initial="initial" animate="animate" exit="exit" variants={pageVariants}>
+          <Routes location={location}>
+            <Route path="/" element={<Index />} />
+            <Route path="/تسجيل-الدخول" element={<AuthPage />} />
+            <Route path="/إعادة-كلمة-المرور" element={<ResetPasswordPage />} />
+            <Route path="/الملف-الشخصي" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/الذكاء" element={<AIPage />} />
+            <Route path="/الذكاء2" element={<AI2Page />} />
+            <Route path="/الادوات" element={<ToolsPage />} />
+            <Route path="/الاوامر" element={<ScannerPage />} />
+            <Route path="/السكربتات" element={<ScriptsPage />} />
+            <Route path="/الدليل" element={<GuidePage />} />
+            <Route path="/التحميل" element={<ProtectedRoute><DownloadPage /></ProtectedRoute>} />
+            <Route path="/تطوير-الويب" element={<WebDevPage />} />
+            <Route path="/فحص-كلمة-المرور" element={<ProtectedRoute><PasswordCheckerPage /></ProtectedRoute>} />
+            <Route path="/الاستفسارات" element={<InquiryPage />} />
+            <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
+            <Route path="/دخول-المطور" element={<DevLoginPage />} />
+            <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
+            <Route path="/لوحة-التحكم" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </motion.div>
+      </AnimatePresence>
     </>
   );
 };
@@ -118,6 +97,8 @@ const App = () => (
       <LanguageProvider>
         <AuthProvider>
           <TooltipProvider>
+            <SpaceBackground />
+            <CustomCursor />
             <Toaster />
             <Sonner />
             <BrowserRouter>
