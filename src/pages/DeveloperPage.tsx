@@ -38,6 +38,25 @@ const sectionTitles: Record<DevSection, string> = {
   realtime: "الوقت الحقيقي",
   security: "الأمان والتدقيق",
   retention: "النمو والاحتفاظ",
+  "ip-tracking": "تتبع عناوين IP",
+  "device-analytics": "تحليل الأجهزة",
+  "login-history": "سجل الدخول",
+  "banned-users": "المستخدمين المحظورين",
+  "rate-limits": "حدود الاستخدام",
+  "api-logs": "سجل API",
+  "storage-manager": "إدارة التخزين",
+  "error-logs": "سجل الأخطاء",
+  "user-search-advanced": "بحث متقدم",
+  "session-monitor": "مراقبة الجلسات",
+  "geo-map": "خريطة جغرافية",
+  "permission-manager": "إدارة الصلاحيات",
+  "system-health": "صحة النظام",
+  "audit-trail": "سجل التدقيق",
+  "content-moderation": "مراقبة المحتوى",
+  "backup-restore": "النسخ الاحتياطي",
+  "feature-flags": "تبديل الميزات",
+  "user-segments": "شرائح المستخدمين",
+  "performance": "الأداء",
 };
 
 const DeveloperContent = () => {
@@ -62,6 +81,8 @@ const DeveloperContent = () => {
       case "realtime": return <RealtimeTab />;
       case "security": return <SecurityTab />;
       case "retention": return <RetentionTab />;
+      case "ip-tracking": return <IpTrackingTab />;
+      default: return <PlaceholderTab title={sectionTitles[activeSection]} />;
     }
   };
 
