@@ -23,6 +23,8 @@ import ExportTab from "@/components/developer/tabs/ExportTab";
 import RealtimeTab from "@/components/developer/tabs/RealtimeTab";
 import SecurityTab from "@/components/developer/tabs/SecurityTab";
 import RetentionTab from "@/components/developer/tabs/RetentionTab";
+import IpTrackingTab from "@/components/developer/tabs/IpTrackingTab";
+import PlaceholderTab from "@/components/developer/tabs/PlaceholderTab";
 
 const sectionTitles: Record<DevSection, string> = {
   overview: "لوحة القيادة",
