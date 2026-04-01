@@ -8,29 +8,26 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Calendar, Shield, Globe, MapPin, Phone, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, User, Shield, Globe, Phone, ArrowRight, Loader2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 
 const AuthPage = () => {
-  const [mode, setMode] = useState<"login" | "signup" | "forgot" | "email-sent" | "reset-sent">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot" | "reset-sent">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [age, setAge] = useState("");
+  const [fullName, setFullName] = useState("");
   const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
   const [phone, setPhone] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [geoDetecting, setGeoDetecting] = useState(false);
-  const [geoDetected, setGeoDetected] = useState(false);
+  const [detectedIp, setDetectedIp] = useState("");
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Detect device type from user agent
   const getDeviceType = () => {
     const ua = navigator.userAgent.toLowerCase();
     if (/tablet|ipad/.test(ua)) return "تابلت";
@@ -38,20 +35,18 @@ const AuthPage = () => {
     return "كمبيوتر";
   };
 
-  // Auto-detect country/city from IP when switching to signup mode
   useEffect(() => {
-    if (mode !== "signup" || geoDetected) return;
+    if (mode !== "signup") return;
     const detectGeo = async () => {
       setGeoDetecting(true);
       try {
-        const res = await fetch("http://ip-api.com/json/?fields=country,city&lang=ar");
+        const res = await fetch("http://ip-api.com/json/?fields=country,city,query&lang=ar");
         if (!res.ok) throw new Error("Geo API failed");
         const data = await res.json();
         if (data.country && !country) setCountry(data.country);
-        if (data.city && !city) setCity(data.city);
-        setGeoDetected(true);
+        if (data.query) setDetectedIp(data.query);
       } catch {
-        // Silently fail - user can still enter manually
+        // Silently fail
       } finally {
         setGeoDetecting(false);
       }
@@ -79,15 +74,12 @@ const AuthPage = () => {
 
   const syncProfileFromMetadata = async (authUser: SupabaseUser) => {
     const metadata = authUser.user_metadata || {};
-    const parsedAge = Number(metadata.age);
-
     const updates: Record<string, unknown> = {
       display_name: normalizeText(metadata.full_name),
-      age: Number.isFinite(parsedAge) && parsedAge > 0 && parsedAge <= 120 ? parsedAge : null,
       country: normalizeText(metadata.country),
-      city: normalizeText(metadata.city),
       phone: normalizeText(metadata.phone),
       device_type: normalizeText(metadata.device_type) || getDeviceType(),
+      ip_address: normalizeText(metadata.ip_address),
       privacy_accepted: metadata.privacy_accepted === true,
       privacy_accepted_at: metadata.privacy_accepted_at ? new Date(metadata.privacy_accepted_at).toISOString() : null,
       updated_at: new Date().toISOString(),
@@ -128,7 +120,6 @@ const AuthPage = () => {
         toast.success("تم تسجيل الدخول بنجاح!");
         navigate("/");
       } else if (mode === "forgot") {
-        // Use published URL so the reset link opens the real site, not Lovable preview
         const siteOrigin = "https://qusayk.netlify.app";
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${siteOrigin}/إعادة-كلمة-المرور`,
@@ -141,18 +132,8 @@ const AuthPage = () => {
           setLoading(false);
           return;
         }
-        if (!displayName.trim()) {
-          toast.error("يرجى إدخال الاسم");
-          setLoading(false);
-          return;
-        }
-        if (!age || parseInt(age) < 1 || parseInt(age) > 120) {
-          toast.error("يرجى إدخال عمر صحيح");
-          setLoading(false);
-          return;
-        }
-        if (!country.trim()) {
-          toast.error("يرجى إدخال البلد");
+        if (!fullName.trim()) {
+          toast.error("يرجى إدخال الاسم الرباعي");
           setLoading(false);
           return;
         }
@@ -165,12 +146,11 @@ const AuthPage = () => {
           options: {
             emailRedirectTo: "https://qusayk.netlify.app",
             data: {
-              full_name: displayName.trim(),
-              age: parseInt(age),
-              country: country.trim(),
-              city: city.trim() || null,
+              full_name: fullName.trim(),
+              country: country.trim() || null,
               phone: phone.trim() || null,
               device_type: deviceType,
+              ip_address: detectedIp || null,
               privacy_accepted: true,
               privacy_accepted_at: new Date().toISOString(),
             },
@@ -214,7 +194,6 @@ const AuthPage = () => {
   };
 
   const getTitle = () => {
-    if (mode === "email-sent") return "تحقق من بريدك الإلكتروني";
     if (mode === "reset-sent") return "تحقق من بريدك الإلكتروني";
     if (mode === "forgot") return "نسيت كلمة المرور";
     if (mode === "signup") return "إنشاء حساب";
@@ -222,15 +201,14 @@ const AuthPage = () => {
   };
 
   const getDescription = () => {
-    if (mode === "email-sent") return "تم إرسال رابط التأكيد إلى بريدك الإلكتروني";
     if (mode === "reset-sent") return "تم إرسال رابط إعادة تعيين كلمة المرور";
     if (mode === "forgot") return "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور";
-    if (mode === "signup") return "أنشئ حسابك الجديد للوصول لجميع الميزات";
+    if (mode === "signup") return "أنشئ حسابك للوصول لجميع الميزات";
     return "أدخل بياناتك لتسجيل الدخول";
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative z-10">
       <Navbar />
       <div className="flex items-center justify-center min-h-screen pt-20 pb-10 px-4">
         <Card className="w-full max-w-md border-border/30 bg-card/80 backdrop-blur-xl shadow-2xl">
@@ -249,10 +227,8 @@ const AuthPage = () => {
                     <Mail className="w-10 h-10 text-primary" />
                   </div>
                 </div>
-
                 <div className="bg-secondary/30 rounded-xl p-5 space-y-4">
                   <h3 className="text-sm font-bold text-foreground text-center">خطوات إعادة تعيين كلمة المرور:</h3>
-                  
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
                       <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
@@ -263,7 +239,6 @@ const AuthPage = () => {
                         <p className="text-xs text-muted-foreground">{email}</p>
                       </div>
                     </div>
-
                     <div className="flex items-start gap-3">
                       <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
                         <span className="text-primary font-bold text-xs">2</span>
@@ -273,103 +248,22 @@ const AuthPage = () => {
                         <p className="text-xs text-muted-foreground">تحقق من صندوق الوارد أو مجلد Spam</p>
                       </div>
                     </div>
-
-                    <div className="flex items-start gap-3">
-                      <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
-                        <CheckCircle2 className="w-4 h-4 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-foreground font-medium">أدخل كلمة المرور الجديدة</p>
-                        <p className="text-xs text-muted-foreground">سيتم توجيهك تلقائياً لصفحة إعادة التعيين</p>
-                      </div>
-                    </div>
                   </div>
                 </div>
-
                 <Button onClick={() => setMode("login")} className="w-full h-12 gap-2">
                   <ArrowRight className="w-4 h-4" />
                   العودة لتسجيل الدخول
                 </Button>
-
-                <p className="text-xs text-center text-muted-foreground/60">
-                  لم يصلك الإيميل؟ تحقق من مجلد Spam أو حاول مرة أخرى
-                </p>
-              </div>
-            ) : mode === "email-sent" ? (
-              <div className="space-y-6">
-                <div className="flex justify-center">
-                  <div className="w-20 h-20 rounded-full bg-green-500/10 border-2 border-green-500/30 flex items-center justify-center">
-                    <Mail className="w-10 h-10 text-green-500" />
-                  </div>
-                </div>
-
-                <div className="bg-secondary/30 rounded-xl p-5 space-y-4">
-                  <h3 className="text-sm font-bold text-foreground text-center">خطوات تفعيل حسابك:</h3>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-primary font-bold text-xs">1</span>
-                      </div>
-                      <div>
-                        <p className="text-sm text-foreground font-medium">افتح بريدك الإلكتروني</p>
-                        <p className="text-xs text-muted-foreground">{email}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-primary font-bold text-xs">2</span>
-                      </div>
-                      <div>
-                        <p className="text-sm text-foreground font-medium">ابحث عن رسالة التأكيد</p>
-                        <p className="text-xs text-muted-foreground">تحقق من صندوق الوارد أو مجلد الرسائل غير المرغوبة (Spam)</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-0.5">
-                        <span className="text-primary font-bold text-xs">3</span>
-                      </div>
-                      <div>
-                        <p className="text-sm text-foreground font-medium">اضغط على زر "Confirm your mail" أو "Verify Email"</p>
-                        <p className="text-xs text-muted-foreground">سيتم تفعيل حسابك تلقائياً</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3">
-                      <div className="w-7 h-7 rounded-full bg-green-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                        <CheckCircle2 className="w-4 h-4 text-green-500" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-foreground font-medium">ارجع هنا وسجّل دخول</p>
-                        <p className="text-xs text-muted-foreground">بعد التأكيد، استخدم إيميلك وكلمة المرور لتسجيل الدخول</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => setMode("login")}
-                  className="w-full h-12 gap-2"
-                >
-                  <ArrowRight className="w-4 h-4" />
-                  الذهاب لتسجيل الدخول
-                </Button>
-
-                <p className="text-xs text-center text-muted-foreground/60">
-                  لم يصلك الإيميل؟ تحقق من مجلد Spam أو أعد التسجيل بعد دقائق
-                </p>
               </div>
             ) : (
               <>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {mode === "signup" && (
                     <div className="space-y-2">
-                      <Label htmlFor="displayName" className="text-foreground">الاسم</Label>
+                      <Label htmlFor="fullName" className="text-foreground">الاسم الرباعي</Label>
                       <div className="relative">
                         <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="displayName" type="text" placeholder="أدخل اسمك" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" required dir="auto" />
+                        <Input id="fullName" type="text" placeholder="محمد أحمد علي حسن" value={fullName} onChange={(e) => setFullName(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" required dir="auto" />
                       </div>
                     </div>
                   )}
@@ -384,10 +278,10 @@ const AuthPage = () => {
 
                   {mode === "signup" && (
                     <div className="space-y-2">
-                      <Label htmlFor="age" className="text-foreground">العمر</Label>
+                      <Label htmlFor="phone" className="text-foreground">رقم الهاتف</Label>
                       <div className="relative">
-                        <Calendar className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="age" type="number" placeholder="أدخل عمرك" value={age} onChange={(e) => setAge(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" required min={1} max={120} dir="ltr" />
+                        <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input id="phone" type="tel" placeholder="+970..." value={phone} onChange={(e) => setPhone(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" dir="ltr" />
                       </div>
                     </div>
                   )}
@@ -397,34 +291,10 @@ const AuthPage = () => {
                       <Label htmlFor="country" className="text-foreground flex items-center gap-2">
                         البلد
                         {geoDetecting && <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />}
-                        {geoDetected && country && <span className="text-[10px] text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded">تم الكشف تلقائياً</span>}
                       </Label>
                       <div className="relative">
                         <Globe className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="country" type="text" placeholder={geoDetecting ? "جارٍ الكشف..." : "مثال: فلسطين"} value={country} onChange={(e) => setCountry(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" required dir="auto" />
-                      </div>
-                    </div>
-                  )}
-
-                  {mode === "signup" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="city" className="text-foreground flex items-center gap-2">
-                        المدينة <span className="text-muted-foreground text-xs">(اختياري)</span>
-                        {geoDetected && city && <span className="text-[10px] text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded">تم الكشف تلقائياً</span>}
-                      </Label>
-                      <div className="relative">
-                        <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="city" type="text" placeholder={geoDetecting ? "جارٍ الكشف..." : "مثال: غزة"} value={city} onChange={(e) => setCity(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" dir="auto" />
-                      </div>
-                    </div>
-                  )}
-
-                  {mode === "signup" && (
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-foreground">رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
-                      <div className="relative">
-                        <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input id="phone" type="tel" placeholder="+970..." value={phone} onChange={(e) => setPhone(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" dir="ltr" />
+                        <Input id="country" type="text" placeholder={geoDetecting ? "جارٍ الكشف..." : "مثال: فلسطين"} value={country} onChange={(e) => setCountry(e.target.value)} className="pr-10 bg-secondary/30 border-border/30 text-foreground placeholder:text-muted-foreground/50" dir="auto" />
                       </div>
                     </div>
                   )}
@@ -446,7 +316,7 @@ const AuthPage = () => {
                     <div className="flex items-start gap-3 p-3 rounded-lg bg-secondary/20 border border-border/20">
                       <Checkbox id="privacy" checked={privacyAccepted} onCheckedChange={(checked) => setPrivacyAccepted(checked === true)} className="mt-0.5" />
                       <label htmlFor="privacy" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                        أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي (الاسم، البريد الإلكتروني، العمر، البلد/المدينة، نوع الجهاز) إلى مدير الموقع لأغراض إدارية وأمنية.
+                        أوافق على <Link to="/سياسة-الخصوصية" target="_blank" className="text-primary font-medium hover:underline">سياسة الخصوصية</Link> وأسمح بإرسال معلوماتي إلى مدير الموقع لأغراض إدارية وأمنية.
                       </label>
                     </div>
                   )}

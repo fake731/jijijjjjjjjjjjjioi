@@ -115,6 +115,7 @@ export type Database = {
           display_name: string | null
           email: string | null
           id: string
+          ip_address: string | null
           phone: string | null
           privacy_accepted: boolean | null
           privacy_accepted_at: string | null
@@ -130,6 +131,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id: string
+          ip_address?: string | null
           phone?: string | null
           privacy_accepted?: boolean | null
           privacy_accepted_at?: string | null
@@ -145,6 +147,7 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+          ip_address?: string | null
           phone?: string | null
           privacy_accepted?: boolean | null
           privacy_accepted_at?: string | null

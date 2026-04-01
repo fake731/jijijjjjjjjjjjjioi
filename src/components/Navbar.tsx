@@ -77,6 +77,7 @@ const Navbar = () => {
     { label: t("nav.password"), path: "/فحص-كلمة-المرور" },
     { label: t("nav.inquiry"), path: "/الاستفسارات" },
     { label: t("nav.download"), path: "/التحميل" },
+    { label: t("nav.privacy"), path: "/سياسة-الخصوصية" },
   ];
 
   return (
