@@ -81,6 +81,15 @@ const InquirySection = () => {
         fileName = file.name;
       }
 
+      // Save to inquiries table
+      await supabase.from("inquiries").insert({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim() || null,
+        message: formData.message.trim(),
+        file_name: fileName || null,
+      } as any);
+
       const { data, error } = await supabase.functions.invoke("send-inquiry", {
         body: {
           name: formData.name.trim(),
