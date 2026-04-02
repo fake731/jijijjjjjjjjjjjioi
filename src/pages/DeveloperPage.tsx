@@ -24,6 +24,14 @@ import RealtimeTab from "@/components/developer/tabs/RealtimeTab";
 import SecurityTab from "@/components/developer/tabs/SecurityTab";
 import RetentionTab from "@/components/developer/tabs/RetentionTab";
 import IpTrackingTab from "@/components/developer/tabs/IpTrackingTab";
+import DeviceAnalyticsTab from "@/components/developer/tabs/DeviceAnalyticsTab";
+import LoginHistoryTab from "@/components/developer/tabs/LoginHistoryTab";
+import RateLimitsTab from "@/components/developer/tabs/RateLimitsTab";
+import UserSearchAdvancedTab from "@/components/developer/tabs/UserSearchAdvancedTab";
+import GeoMapTab from "@/components/developer/tabs/GeoMapTab";
+import SystemHealthTab from "@/components/developer/tabs/SystemHealthTab";
+import PerformanceTab from "@/components/developer/tabs/PerformanceTab";
+import InquiriesTab from "@/components/developer/tabs/InquiriesTab";
 import PlaceholderTab from "@/components/developer/tabs/PlaceholderTab";
 
 const sectionTitles: Record<DevSection, string> = {
@@ -59,6 +67,7 @@ const sectionTitles: Record<DevSection, string> = {
   "feature-flags": "تبديل الميزات",
   "user-segments": "شرائح المستخدمين",
   "performance": "الأداء",
+  "inquiries": "الاستفسارات",
 };
 
 const DeveloperContent = () => {
@@ -84,6 +93,14 @@ const DeveloperContent = () => {
       case "security": return <SecurityTab />;
       case "retention": return <RetentionTab />;
       case "ip-tracking": return <IpTrackingTab />;
+      case "device-analytics": return <DeviceAnalyticsTab />;
+      case "login-history": return <LoginHistoryTab />;
+      case "rate-limits": return <RateLimitsTab />;
+      case "user-search-advanced": return <UserSearchAdvancedTab />;
+      case "geo-map": return <GeoMapTab />;
+      case "system-health": return <SystemHealthTab />;
+      case "performance": return <PerformanceTab />;
+      case "inquiries": return <InquiriesTab />;
       default: return <PlaceholderTab title={sectionTitles[activeSection]} />;
     }
   };
@@ -121,13 +138,31 @@ const DeveloperContent = () => {
       </div>
 
       {/* Layout: Sidebar + Content */}
-      <div className="flex gap-6">
-        <DeveloperSidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-          collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
+      <div className="flex gap-4 md:gap-6 flex-col md:flex-row">
+        <div className="hidden md:block">
+          <DeveloperSidebar
+            activeSection={activeSection}
+            onSectionChange={setActiveSection}
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
+        </div>
+        {/* Mobile tabs */}
+        <div className="md:hidden overflow-x-auto pb-2">
+          <div className="flex gap-2 min-w-max">
+            {Object.entries(sectionTitles).map(([key, title]) => (
+              <button
+                key={key}
+                onClick={() => setActiveSection(key as DevSection)}
+                className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors ${
+                  activeSection === key ? "bg-primary text-primary-foreground" : "bg-secondary/50 text-muted-foreground"
+                }`}
+              >
+                {title}
+              </button>
+            ))}
+          </div>
+        </div>
         <main className="flex-1 min-w-0">
           <div className="mb-4">
             <h2 className="text-lg font-bold text-foreground">{sectionTitles[activeSection]}</h2>

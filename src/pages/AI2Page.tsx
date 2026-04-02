@@ -267,6 +267,9 @@ const AI2Page = () => {
     e.preventDefault();
     if ((!input.trim() && selectedImages.length === 0 && !selectedFile) || isLoading) return;
 
+    // Require login to use AI
+    if (!user) return;
+
     const userMessage = input.trim();
 
     if (isSensitiveQuery(userMessage) && !isAuthenticated) {

@@ -14,7 +14,7 @@ export type DevSection =
   | "user-search-advanced" | "session-monitor" | "geo-map" 
   | "permission-manager" | "system-health" | "audit-trail" 
   | "content-moderation" | "backup-restore" | "feature-flags" 
-  | "user-segments" | "performance";
+  | "user-segments" | "performance" | "inquiries";
 
 interface NavItem {
   id: DevSection;
@@ -52,6 +52,7 @@ const navGroups: { title: string; items: NavItem[] }[] = [
     items: [
       { id: "notifications", label: "الإشعارات", icon: Bell, group: "comm" },
       { id: "broadcast", label: "البث العام", icon: Megaphone, group: "comm" },
+      { id: "inquiries", label: "الاستفسارات", icon: MessageSquare, group: "comm" },
       { id: "content-moderation", label: "مراقبة المحتوى", icon: AlertTriangle, group: "comm" },
     ],
   },
