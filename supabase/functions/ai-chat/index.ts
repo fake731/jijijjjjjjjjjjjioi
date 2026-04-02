@@ -103,8 +103,9 @@ serve(async (req) => {
       }
     }
 
-    const userGreeting = userName ? `اسم المستخدم الحالي: "${userName}".` : "";
-    const userGreetingEn = userName ? `Current user's name: "${userName}".` : "";
+    const firstName = userName ? userName.split(" ")[0] : null;
+    const userGreeting = firstName ? `اسم المستخدم الحالي: "${firstName}".` : "";
+    const userGreetingEn = firstName ? `Current user's name: "${firstName}".` : "";
 
     const systemPrompt = language === "ar" 
       ? `أنت مساعد ذكاء اصطناعي متخصص في الأمن السيبراني واختبار الاختراق الأخلاقي.
