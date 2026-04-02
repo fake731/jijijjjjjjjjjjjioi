@@ -24,6 +24,14 @@ import RealtimeTab from "@/components/developer/tabs/RealtimeTab";
 import SecurityTab from "@/components/developer/tabs/SecurityTab";
 import RetentionTab from "@/components/developer/tabs/RetentionTab";
 import IpTrackingTab from "@/components/developer/tabs/IpTrackingTab";
+import DeviceAnalyticsTab from "@/components/developer/tabs/DeviceAnalyticsTab";
+import LoginHistoryTab from "@/components/developer/tabs/LoginHistoryTab";
+import RateLimitsTab from "@/components/developer/tabs/RateLimitsTab";
+import UserSearchAdvancedTab from "@/components/developer/tabs/UserSearchAdvancedTab";
+import GeoMapTab from "@/components/developer/tabs/GeoMapTab";
+import SystemHealthTab from "@/components/developer/tabs/SystemHealthTab";
+import PerformanceTab from "@/components/developer/tabs/PerformanceTab";
+import InquiriesTab from "@/components/developer/tabs/InquiriesTab";
 import PlaceholderTab from "@/components/developer/tabs/PlaceholderTab";
 
 const sectionTitles: Record<DevSection, string> = {
