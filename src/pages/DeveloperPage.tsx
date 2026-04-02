@@ -67,6 +67,7 @@ const sectionTitles: Record<DevSection, string> = {
   "feature-flags": "تبديل الميزات",
   "user-segments": "شرائح المستخدمين",
   "performance": "الأداء",
+  "inquiries": "الاستفسارات",
 };
 
 const DeveloperContent = () => {
