@@ -44,6 +44,29 @@ serve(async (req) => {
       }
     }
 
+    // Check daily chat limit (3 per day)
+    if (userId) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const { count } = await supabaseAdmin
+        .from("ai_chat_logs")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .gte("created_at", todayStart.toISOString());
+
+      if (count !== null && count >= 3) {
+        const limitMsg = language === "ar"
+          ? "لقد استنفدت الحد اليومي (3 محادثات). حاول مرة أخرى غداً."
+          : "You've reached your daily limit (3 chats). Try again tomorrow.";
+        return new Response(JSON.stringify({ error: limitMsg }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // Use first name only
+    const firstName = userName ? userName.split(" ")[0] : null;
+
     // Extract images from the last user message
     const lastUserMsg = messages.filter((m: any) => m.role === "user").pop();
     let imageUrls: string[] = [];
