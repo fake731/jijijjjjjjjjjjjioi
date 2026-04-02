@@ -93,6 +93,14 @@ const DeveloperContent = () => {
       case "security": return <SecurityTab />;
       case "retention": return <RetentionTab />;
       case "ip-tracking": return <IpTrackingTab />;
+      case "device-analytics": return <DeviceAnalyticsTab />;
+      case "login-history": return <LoginHistoryTab />;
+      case "rate-limits": return <RateLimitsTab />;
+      case "user-search-advanced": return <UserSearchAdvancedTab />;
+      case "geo-map": return <GeoMapTab />;
+      case "system-health": return <SystemHealthTab />;
+      case "performance": return <PerformanceTab />;
+      case "inquiries": return <InquiriesTab />;
       default: return <PlaceholderTab title={sectionTitles[activeSection]} />;
     }
   };
