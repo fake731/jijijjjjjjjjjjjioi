@@ -138,13 +138,31 @@ const DeveloperContent = () => {
       </div>
 
       {/* Layout: Sidebar + Content */}
-      <div className="flex gap-6">
-        <DeveloperSidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-          collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
+      <div className="flex gap-4 md:gap-6 flex-col md:flex-row">
+        <div className="hidden md:block">
+          <DeveloperSidebar
+            activeSection={activeSection}
+            onSectionChange={setActiveSection}
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+          />
+        </div>
+        {/* Mobile tabs */}
+        <div className="md:hidden overflow-x-auto pb-2">
+          <div className="flex gap-2 min-w-max">
+            {Object.entries(sectionTitles).map(([key, title]) => (
+              <button
+                key={key}
+                onClick={() => setActiveSection(key as DevSection)}
+                className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors ${
+                  activeSection === key ? "bg-primary text-primary-foreground" : "bg-secondary/50 text-muted-foreground"
+                }`}
+              >
+                {title}
+              </button>
+            ))}
+          </div>
+        </div>
         <main className="flex-1 min-w-0">
           <div className="mb-4">
             <h2 className="text-lg font-bold text-foreground">{sectionTitles[activeSection]}</h2>
