@@ -52,6 +52,7 @@ const navGroups: { title: string; items: NavItem[] }[] = [
     items: [
       { id: "notifications", label: "الإشعارات", icon: Bell, group: "comm" },
       { id: "broadcast", label: "البث العام", icon: Megaphone, group: "comm" },
+      { id: "inquiries", label: "الاستفسارات", icon: MessageSquare, group: "comm" },
       { id: "content-moderation", label: "مراقبة المحتوى", icon: AlertTriangle, group: "comm" },
     ],
   },
