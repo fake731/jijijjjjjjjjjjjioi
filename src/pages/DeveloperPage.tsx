@@ -32,7 +32,17 @@ import GeoMapTab from "@/components/developer/tabs/GeoMapTab";
 import SystemHealthTab from "@/components/developer/tabs/SystemHealthTab";
 import PerformanceTab from "@/components/developer/tabs/PerformanceTab";
 import InquiriesTab from "@/components/developer/tabs/InquiriesTab";
-import PlaceholderTab from "@/components/developer/tabs/PlaceholderTab";
+import BannedUsersTab from "@/components/developer/tabs/BannedUsersTab";
+import ApiLogsTab from "@/components/developer/tabs/ApiLogsTab";
+import StorageManagerTab from "@/components/developer/tabs/StorageManagerTab";
+import ErrorLogsTab from "@/components/developer/tabs/ErrorLogsTab";
+import SessionMonitorTab from "@/components/developer/tabs/SessionMonitorTab";
+import PermissionManagerTab from "@/components/developer/tabs/PermissionManagerTab";
+import AuditTrailTab from "@/components/developer/tabs/AuditTrailTab";
+import ContentModerationTab from "@/components/developer/tabs/ContentModerationTab";
+import BackupRestoreTab from "@/components/developer/tabs/BackupRestoreTab";
+import FeatureFlagsTab from "@/components/developer/tabs/FeatureFlagsTab";
+import UserSegmentsTab from "@/components/developer/tabs/UserSegmentsTab";
 
 const sectionTitles: Record<DevSection, string> = {
   overview: "لوحة القيادة",
@@ -101,7 +111,18 @@ const DeveloperContent = () => {
       case "system-health": return <SystemHealthTab />;
       case "performance": return <PerformanceTab />;
       case "inquiries": return <InquiriesTab />;
-      default: return <PlaceholderTab title={sectionTitles[activeSection]} />;
+      case "banned-users": return <BannedUsersTab />;
+      case "api-logs": return <ApiLogsTab />;
+      case "storage-manager": return <StorageManagerTab />;
+      case "error-logs": return <ErrorLogsTab />;
+      case "session-monitor": return <SessionMonitorTab />;
+      case "permission-manager": return <PermissionManagerTab />;
+      case "audit-trail": return <AuditTrailTab />;
+      case "content-moderation": return <ContentModerationTab />;
+      case "backup-restore": return <BackupRestoreTab />;
+      case "feature-flags": return <FeatureFlagsTab />;
+      case "user-segments": return <UserSegmentsTab />;
+      default: return <OverviewTab />;
     }
   };
 
