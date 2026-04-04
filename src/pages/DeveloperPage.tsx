@@ -76,8 +76,10 @@ const sectionTitles: Record<DevSection, string> = {
   "content-moderation": "مراقبة المحتوى",
   "backup-restore": "النسخ الاحتياطي",
   "feature-flags": "تبديل الميزات",
+  "ai-settings": "إعدادات الذكاء الاصطناعي",
   "user-segments": "شرائح المستخدمين",
   "performance": "الأداء",
+  "inquiries": "الاستفسارات",
   "inquiries": "الاستفسارات",
 };
 
