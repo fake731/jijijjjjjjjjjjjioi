@@ -42,6 +42,7 @@ import AuditTrailTab from "@/components/developer/tabs/AuditTrailTab";
 import ContentModerationTab from "@/components/developer/tabs/ContentModerationTab";
 import BackupRestoreTab from "@/components/developer/tabs/BackupRestoreTab";
 import FeatureFlagsTab from "@/components/developer/tabs/FeatureFlagsTab";
+import AISettingsTab from "@/components/developer/tabs/AISettingsTab";
 import UserSegmentsTab from "@/components/developer/tabs/UserSegmentsTab";
 
 const sectionTitles: Record<DevSection, string> = {
@@ -75,6 +76,7 @@ const sectionTitles: Record<DevSection, string> = {
   "content-moderation": "مراقبة المحتوى",
   "backup-restore": "النسخ الاحتياطي",
   "feature-flags": "تبديل الميزات",
+  "ai-settings": "إعدادات الذكاء الاصطناعي",
   "user-segments": "شرائح المستخدمين",
   "performance": "الأداء",
   "inquiries": "الاستفسارات",
@@ -121,6 +123,7 @@ const DeveloperContent = () => {
       case "content-moderation": return <ContentModerationTab />;
       case "backup-restore": return <BackupRestoreTab />;
       case "feature-flags": return <FeatureFlagsTab />;
+      case "ai-settings": return <AISettingsTab />;
       case "user-segments": return <UserSegmentsTab />;
       default: return <OverviewTab />;
     }
