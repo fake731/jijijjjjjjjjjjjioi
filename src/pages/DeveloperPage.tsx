@@ -80,7 +80,6 @@ const sectionTitles: Record<DevSection, string> = {
   "user-segments": "شرائح المستخدمين",
   "performance": "الأداء",
   "inquiries": "الاستفسارات",
-  "inquiries": "الاستفسارات",
 };
 
 const DeveloperContent = () => {
