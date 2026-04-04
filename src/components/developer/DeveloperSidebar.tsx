@@ -14,7 +14,7 @@ export type DevSection =
   | "user-search-advanced" | "session-monitor" | "geo-map" 
   | "permission-manager" | "system-health" | "audit-trail" 
   | "content-moderation" | "backup-restore" | "feature-flags" 
-  | "user-segments" | "performance" | "inquiries";
+  | "user-segments" | "performance" | "inquiries" | "ai-settings";
 
 interface NavItem {
   id: DevSection;
