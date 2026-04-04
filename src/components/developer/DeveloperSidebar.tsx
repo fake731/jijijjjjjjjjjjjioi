@@ -80,6 +80,7 @@ const navGroups: { title: string; items: NavItem[] }[] = [
       { id: "storage-manager", label: "إدارة التخزين", icon: Database, group: "system" },
       { id: "backup-restore", label: "النسخ الاحتياطي", icon: Download, group: "system" },
       { id: "feature-flags", label: "تبديل الميزات", icon: ToggleLeft, group: "system" },
+      { id: "ai-settings", label: "إعدادات AI", icon: Bot, group: "system" },
       { id: "export", label: "تصدير البيانات", icon: Download, group: "system" },
     ],
   },
