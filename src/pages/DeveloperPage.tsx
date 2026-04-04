@@ -42,6 +42,7 @@ import AuditTrailTab from "@/components/developer/tabs/AuditTrailTab";
 import ContentModerationTab from "@/components/developer/tabs/ContentModerationTab";
 import BackupRestoreTab from "@/components/developer/tabs/BackupRestoreTab";
 import FeatureFlagsTab from "@/components/developer/tabs/FeatureFlagsTab";
+import AISettingsTab from "@/components/developer/tabs/AISettingsTab";
 import UserSegmentsTab from "@/components/developer/tabs/UserSegmentsTab";
 
 const sectionTitles: Record<DevSection, string> = {
