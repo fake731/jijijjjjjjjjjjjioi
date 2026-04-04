@@ -124,6 +124,7 @@ const DeveloperContent = () => {
       case "content-moderation": return <ContentModerationTab />;
       case "backup-restore": return <BackupRestoreTab />;
       case "feature-flags": return <FeatureFlagsTab />;
+      case "ai-settings": return <AISettingsTab />;
       case "user-segments": return <UserSegmentsTab />;
       default: return <OverviewTab />;
     }
