@@ -1,7 +1,7 @@
 import { useDeveloper } from "./DeveloperContext";
 import { 
   Users, Eye, MessageSquare, Globe, UserPlus, Activity, Shield, Settings, Bell, Megaphone, 
-  BarChart3, Download, Zap, Monitor, ShieldCheck, TrendingUp, Clock, 
+  BarChart3, Download, Zap, Monitor, ShieldCheck, TrendingUp, Clock, Bot,
   Wifi, Database, FileText, AlertTriangle, Lock, Key, Server, 
   Map, Smartphone, Search, UserX, ToggleLeft, Fingerprint, type LucideIcon 
 } from "lucide-react";
