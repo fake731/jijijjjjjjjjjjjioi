@@ -74,6 +74,30 @@ export type Database = {
         }
         Relationships: []
       }
+      banned_users: {
+        Row: {
+          banned_by: string | null
+          created_at: string
+          id: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          banned_by?: string | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          banned_by?: string | null
+          created_at?: string
+          id?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           created_at: string
@@ -104,6 +128,24 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+        }
+        Relationships: []
+      }
+      login_exports: {
+        Row: {
+          exported_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          exported_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          exported_at?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }
