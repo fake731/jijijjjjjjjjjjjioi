@@ -612,10 +612,39 @@ const AIPage = () => {
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Bot className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg mb-2">{t.welcome}</p>
-                  <p className="text-sm">{t.askAnything}</p>
+                <div className="flex flex-col items-center justify-center py-16 space-y-6">
+                  <div className="w-20 h-20 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
+                    <Bot className="w-10 h-10 text-primary" />
+                  </div>
+                  <div className="text-center space-y-2">
+                    <h2 className="text-2xl font-bold text-foreground">
+                      {language === "ar" ? "مرحباً!" : "Hello!"}
+                    </h2>
+                    <p className="text-muted-foreground text-lg">
+                      {language === "ar" ? "كيف يمكنني مساعدتك اليوم؟" : "How can I help you today?"}
+                    </p>
+                  </div>
+                  {/* Quick Suggestion Buttons */}
+                  <div className="flex flex-wrap justify-center gap-3 max-w-lg">
+                    {[
+                      { label: language === "ar" ? "شرح أداة Nmap" : "Explain Nmap tool", icon: "🔍" },
+                      { label: language === "ar" ? "كتابة سكربت Python" : "Write Python script", icon: "🐍" },
+                      { label: language === "ar" ? "مفاهيم اختبار الاختراق" : "Penetration testing concepts", icon: "🛡️" },
+                      { label: language === "ar" ? "سؤال تقني" : "Technical question", icon: "💻" },
+                    ].map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          if (!user) return;
+                          setInput(suggestion.label);
+                        }}
+                        className="flex items-center gap-2 px-4 py-3 rounded-xl bg-secondary/80 border border-border/50 text-foreground text-sm hover:border-primary/50 hover:bg-primary/10 transition-all duration-200"
+                      >
+                        <span className="text-lg">{suggestion.icon}</span>
+                        <span>{suggestion.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 messages.map((message, index) => (
