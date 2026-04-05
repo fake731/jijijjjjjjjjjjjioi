@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import SpaceBackground from "@/components/SpaceBackground";
 import CustomCursor from "@/components/CustomCursor";
+import LoginExportCard from "@/components/LoginExportCard";
 import Index from "./pages/Index";
 import AIPage from "./pages/AIPage";
 import AI2Page from "./pages/AI2Page";
@@ -77,7 +78,7 @@ const AnimatedRoutes = () => {
             <Route path="/الدليل" element={<GuidePage />} />
             <Route path="/التحميل" element={<DownloadPage />} />
             <Route path="/تطوير-الويب" element={<WebDevPage />} />
-            <Route path="/فحص-كلمة-المرور" element={<ProtectedRoute><PasswordCheckerPage /></ProtectedRoute>} />
+            <Route path="/فحص-كلمة-المرور" element={<PasswordCheckerPage />} />
             <Route path="/الاستفسارات" element={<InquiryPage />} />
             <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
             <Route path="/دخول-المطور" element={<DevLoginPage />} />
@@ -99,6 +100,7 @@ const App = () => (
           <TooltipProvider>
             <SpaceBackground />
             <CustomCursor />
+            <LoginExportCard />
             <Toaster />
             <Sonner />
             <BrowserRouter>
