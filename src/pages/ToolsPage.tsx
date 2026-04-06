@@ -107,7 +107,7 @@ const toolColors: Record<string, string> = {
 
 const ToolsPage = () => {
   const { user } = useAuth();
-  const [expandedTool, setExpandedTool] = useState<number | null>(0);
+  const [expandedTool, setExpandedTool] = useState<number | null>(null);
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");

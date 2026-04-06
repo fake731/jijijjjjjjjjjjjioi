@@ -16,16 +16,19 @@ const SpaceBackground = () => {
     canvas.width = width;
     canvas.height = height;
 
-    // Stars
-    const stars = Array.from({ length: 350 }, () => ({
+    // Stars with color variety
+    const stars = Array.from({ length: 400 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      r: Math.random() * 2 + 0.2,
-      twinkleSpeed: Math.random() * 0.015 + 0.002,
+      r: Math.random() * 2.2 + 0.2,
+      twinkleSpeed: Math.random() * 0.012 + 0.002,
       phase: Math.random() * Math.PI * 2,
-      color: Math.random() > 0.7
-        ? `hsl(${200 + Math.random() * 40}, 80%, 85%)`
-        : `hsl(0, 0%, ${85 + Math.random() * 15}%)`,
+      color: (() => {
+        const rnd = Math.random();
+        if (rnd < 0.15) return `hsl(${30 + Math.random() * 20}, 90%, 85%)`;  // warm
+        if (rnd < 0.3) return `hsl(${200 + Math.random() * 40}, 80%, 88%)`;  // blue
+        return `hsl(0, 0%, ${82 + Math.random() * 18}%)`;
+      })(),
     }));
 
     // Shooting stars
@@ -39,167 +42,213 @@ const SpaceBackground = () => {
     const cy = () => height / 2;
     const minDim = () => Math.min(width, height);
 
-    // Planet definitions with realistic colors and texture bands
-    const planetDefs = [
-      { angle: 0, speed: 0.0006, distRatio: 0.12, size: 8, colors: ["#b5b5b5", "#8a8a8a", "#6e6e6e"], name: "mercury", hasRing: false, moons: 0, tilt: 0.03 },
-      { angle: 1.5, speed: 0.00045, distRatio: 0.18, size: 11, colors: ["#e8c56d", "#d4a937", "#c99a2e"], name: "venus", hasRing: false, moons: 0, tilt: 0.05 },
-      { angle: 3, speed: 0.00035, distRatio: 0.26, size: 12, colors: ["#4a90d9", "#2d6a4f", "#3a7d44"], name: "earth", hasRing: false, moons: 1, tilt: 0.41 },
-      { angle: 4.2, speed: 0.00028, distRatio: 0.34, size: 10, colors: ["#c1440e", "#e07a3a", "#8b3a0f"], name: "mars", hasRing: false, moons: 2, tilt: 0.44 },
-      { angle: 2, speed: 0.00015, distRatio: 0.46, size: 26, colors: ["#c88b3a", "#e3a857", "#a0722a"], name: "jupiter", hasRing: false, moons: 4, tilt: 0.05 },
-      { angle: 5, speed: 0.0001, distRatio: 0.58, size: 22, colors: ["#e8d68c", "#c9a94e", "#d4b96a"], name: "saturn", hasRing: true, moons: 3, tilt: 0.47 },
-      { angle: 0.5, speed: 0.00007, distRatio: 0.7, size: 16, colors: ["#7ec8e3", "#9fd5e0", "#5fb8c9"], name: "uranus", hasRing: true, moons: 2, tilt: 1.71 },
-      { angle: 3.5, speed: 0.00005, distRatio: 0.82, size: 15, colors: ["#3f51b5", "#5c6bc0", "#283593"], name: "neptune", hasRing: false, moons: 1, tilt: 0.49 },
+    // Realistic planet textures using offscreen canvases
+    interface PlanetDef {
+      angle: number; speed: number; distRatio: number; size: number;
+      colors: string[]; name: string; hasRing: boolean; moons: number;
+      tilt: number; moonAngles: number[]; rotationPhase: number;
+      eccentricity: number; inclination: number;
+    }
+
+    const planetDefs: Omit<PlanetDef, 'moonAngles' | 'rotationPhase'>[] = [
+      { angle: 0, speed: 0.0008, distRatio: 0.10, size: 6, colors: ["#b5b5b5", "#8a8a8a", "#5e5e5e"], name: "mercury", hasRing: false, moons: 0, tilt: 0.03, eccentricity: 0.2, inclination: 0.12 },
+      { angle: 1.5, speed: 0.0006, distRatio: 0.16, size: 10, colors: ["#e8c56d", "#d4a937", "#b88a20"], name: "venus", hasRing: false, moons: 0, tilt: 0.05, eccentricity: 0.01, inclination: 0.06 },
+      { angle: 3, speed: 0.0004, distRatio: 0.23, size: 11, colors: ["#4a90d9", "#2d6a4f", "#3a7d44"], name: "earth", hasRing: false, moons: 1, tilt: 0.41, eccentricity: 0.017, inclination: 0 },
+      { angle: 4.2, speed: 0.00032, distRatio: 0.31, size: 9, colors: ["#c1440e", "#e07a3a", "#8b3a0f"], name: "mars", hasRing: false, moons: 2, tilt: 0.44, eccentricity: 0.09, inclination: 0.03 },
+      { angle: 2, speed: 0.00016, distRatio: 0.43, size: 24, colors: ["#c88b3a", "#e3a857", "#a0722a"], name: "jupiter", hasRing: false, moons: 4, tilt: 0.05, eccentricity: 0.05, inclination: 0.02 },
+      { angle: 5, speed: 0.00011, distRatio: 0.56, size: 20, colors: ["#e8d68c", "#c9a94e", "#d4b96a"], name: "saturn", hasRing: true, moons: 3, tilt: 0.47, eccentricity: 0.06, inclination: 0.04 },
+      { angle: 0.5, speed: 0.00007, distRatio: 0.69, size: 14, colors: ["#7ec8e3", "#9fd5e0", "#5fb8c9"], name: "uranus", hasRing: true, moons: 2, tilt: 1.71, eccentricity: 0.05, inclination: 0.01 },
+      { angle: 3.5, speed: 0.00005, distRatio: 0.80, size: 13, colors: ["#3f51b5", "#5c6bc0", "#283593"], name: "neptune", hasRing: false, moons: 1, tilt: 0.49, eccentricity: 0.01, inclination: 0.03 },
     ];
 
-    const planets = planetDefs.map(p => ({
+    const planets: PlanetDef[] = planetDefs.map(p => ({
       ...p,
-      angle: p.angle,
       moonAngles: Array.from({ length: p.moons }, () => Math.random() * Math.PI * 2),
       rotationPhase: Math.random() * Math.PI * 2,
     }));
 
-    // Nebula clouds
+    // Nebulae
     const nebulae = [
-      { x: 0.2, y: 0.3, r: 0.25, h: 260, s: 50, l: 20, a: 0.025 },
-      { x: 0.7, y: 0.6, r: 0.3, h: 320, s: 40, l: 15, a: 0.02 },
-      { x: 0.5, y: 0.8, r: 0.2, h: 200, s: 60, l: 25, a: 0.015 },
+      { x: 0.15, y: 0.25, r: 0.22, h: 260, s: 45, l: 18, a: 0.02 },
+      { x: 0.75, y: 0.55, r: 0.28, h: 320, s: 35, l: 14, a: 0.018 },
+      { x: 0.45, y: 0.85, r: 0.18, h: 200, s: 55, l: 22, a: 0.012 },
     ];
 
-    // Helper: draw a 3D planet with bands and shading
-    const drawPlanet = (
-      px: number, py: number, size: number,
-      colors: string[], shadowAngle: number,
-      name: string, rotPhase: number, time: number
-    ) => {
-      ctx.save();
+    // Pre-render planet textures for performance
+    const planetTextures = new Map<string, HTMLCanvasElement>();
 
-      // Clip to circle
-      ctx.beginPath();
-      ctx.arc(px, py, size, 0, Math.PI * 2);
-      ctx.closePath();
-      ctx.clip();
+    const createPlanetTexture = (name: string, size: number, colors: string[]) => {
+      const s = size * 4; // higher res
+      const offscreen = document.createElement("canvas");
+      offscreen.width = s * 2;
+      offscreen.height = s * 2;
+      const oc = offscreen.getContext("2d");
+      if (!oc) return offscreen;
 
-      // Base gradient (3D sphere shading)
-      const lightOffX = -Math.cos(shadowAngle) * size * 0.35;
-      const lightOffY = -Math.sin(shadowAngle) * size * 0.35;
-      const baseGrad = ctx.createRadialGradient(
-        px + lightOffX, py + lightOffY, size * 0.05,
-        px, py, size
-      );
+      const cx2 = s;
+      const cy2 = s;
+
+      // Base sphere gradient
+      const baseGrad = oc.createRadialGradient(cx2 - s * 0.2, cy2 - s * 0.2, s * 0.05, cx2, cy2, s);
       baseGrad.addColorStop(0, colors[0]);
-      baseGrad.addColorStop(0.5, colors[1]);
+      baseGrad.addColorStop(0.55, colors[1]);
       baseGrad.addColorStop(1, colors[2]);
-      ctx.fillStyle = baseGrad;
-      ctx.fillRect(px - size, py - size, size * 2, size * 2);
 
-      // Atmospheric bands (horizontal stripes for gas giants)
-      if (name === "jupiter" || name === "saturn") {
-        const bandCount = name === "jupiter" ? 8 : 5;
-        for (let i = 0; i < bandCount; i++) {
-          const bandY = py - size + (size * 2 / bandCount) * i + Math.sin(time * 0.0003 + i) * 1.5;
-          const bandH = size * 2 / bandCount * 0.4;
-          ctx.fillStyle = `rgba(0,0,0,${0.06 + Math.sin(i * 1.3) * 0.03})`;
-          ctx.fillRect(px - size, bandY, size * 2, bandH);
+      oc.beginPath();
+      oc.arc(cx2, cy2, s, 0, Math.PI * 2);
+      oc.fillStyle = baseGrad;
+      oc.fill();
+
+      // Surface details by planet type
+      if (name === "jupiter") {
+        // Horizontal bands
+        oc.save();
+        oc.beginPath();
+        oc.arc(cx2, cy2, s, 0, Math.PI * 2);
+        oc.clip();
+        for (let i = 0; i < 12; i++) {
+          const y = cy2 - s + (s * 2 / 12) * i;
+          const h = s * 2 / 12 * 0.35;
+          oc.fillStyle = `rgba(${i % 2 === 0 ? '160,100,40' : '80,50,20'},${0.12 + Math.sin(i * 1.5) * 0.04})`;
+          oc.fillRect(cx2 - s, y, s * 2, h);
         }
-        // Great red spot for Jupiter
-        if (name === "jupiter") {
-          const spotX = px + Math.cos(rotPhase + time * 0.0004) * size * 0.3;
-          const spotY = py + size * 0.2;
-          ctx.beginPath();
-          ctx.ellipse(spotX, spotY, size * 0.18, size * 0.12, 0.2, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(180,80,40,0.35)";
-          ctx.fill();
-        }
+        // Great Red Spot
+        oc.beginPath();
+        oc.ellipse(cx2 + s * 0.25, cy2 + s * 0.18, s * 0.22, s * 0.14, 0.15, 0, Math.PI * 2);
+        const grsGrad = oc.createRadialGradient(cx2 + s * 0.25, cy2 + s * 0.18, 0, cx2 + s * 0.25, cy2 + s * 0.18, s * 0.2);
+        grsGrad.addColorStop(0, "rgba(200,80,30,0.5)");
+        grsGrad.addColorStop(0.6, "rgba(180,70,25,0.3)");
+        grsGrad.addColorStop(1, "rgba(160,60,20,0.1)");
+        oc.fillStyle = grsGrad;
+        oc.fill();
+        oc.restore();
       }
 
-      // Earth features
+      if (name === "saturn") {
+        oc.save();
+        oc.beginPath();
+        oc.arc(cx2, cy2, s, 0, Math.PI * 2);
+        oc.clip();
+        for (let i = 0; i < 8; i++) {
+          const y = cy2 - s + (s * 2 / 8) * i;
+          oc.fillStyle = `rgba(${i % 2 === 0 ? '180,150,80' : '140,110,50'},${0.1})`;
+          oc.fillRect(cx2 - s, y, s * 2, s * 2 / 8 * 0.3);
+        }
+        oc.restore();
+      }
+
       if (name === "earth") {
-        // Subtle cloud wisps
-        for (let i = 0; i < 4; i++) {
-          const cx2 = px + Math.cos(rotPhase + time * 0.0002 + i * 1.5) * size * 0.5;
-          const cy2 = py + Math.sin(i * 2.1) * size * 0.3;
-          ctx.beginPath();
-          ctx.ellipse(cx2, cy2, size * 0.3, size * 0.08, i * 0.5, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(255,255,255,0.15)";
-          ctx.fill();
+        oc.save();
+        oc.beginPath();
+        oc.arc(cx2, cy2, s, 0, Math.PI * 2);
+        oc.clip();
+        // Continents (simplified)
+        const continents = [
+          { x: 0.3, y: 0.35, rx: 0.2, ry: 0.15 },
+          { x: 0.6, y: 0.4, rx: 0.18, ry: 0.25 },
+          { x: 0.45, y: 0.7, rx: 0.12, ry: 0.1 },
+        ];
+        for (const c of continents) {
+          oc.beginPath();
+          oc.ellipse(cx2 - s + s * 2 * c.x, cy2 - s + s * 2 * c.y, s * c.rx, s * c.ry, 0.3, 0, Math.PI * 2);
+          oc.fillStyle = "rgba(45,106,79,0.4)";
+          oc.fill();
         }
+        // Clouds
+        for (let i = 0; i < 5; i++) {
+          oc.beginPath();
+          oc.ellipse(cx2 + Math.cos(i * 1.3) * s * 0.5, cy2 + Math.sin(i * 2.1) * s * 0.3, s * 0.28, s * 0.06, i * 0.4, 0, Math.PI * 2);
+          oc.fillStyle = "rgba(255,255,255,0.12)";
+          oc.fill();
+        }
+        oc.restore();
       }
 
-      // Mars surface texture
       if (name === "mars") {
-        for (let i = 0; i < 3; i++) {
-          const cx2 = px + Math.cos(rotPhase + i * 2) * size * 0.4;
-          const cy2 = py + Math.sin(rotPhase + i * 1.5) * size * 0.3;
-          ctx.beginPath();
-          ctx.arc(cx2, cy2, size * 0.15, 0, Math.PI * 2);
-          ctx.fillStyle = "rgba(100,30,10,0.2)";
-          ctx.fill();
+        oc.save();
+        oc.beginPath();
+        oc.arc(cx2, cy2, s, 0, Math.PI * 2);
+        oc.clip();
+        // Craters
+        const craters = [
+          { x: 0.3, y: 0.4, r: 0.12 },
+          { x: 0.6, y: 0.3, r: 0.08 },
+          { x: 0.5, y: 0.65, r: 0.15 },
+          { x: 0.7, y: 0.6, r: 0.06 },
+        ];
+        for (const c of craters) {
+          oc.beginPath();
+          oc.arc(cx2 - s + s * 2 * c.x, cy2 - s + s * 2 * c.y, s * c.r, 0, Math.PI * 2);
+          oc.fillStyle = "rgba(100,30,10,0.2)";
+          oc.fill();
         }
+        // Polar ice cap
+        oc.beginPath();
+        oc.ellipse(cx2, cy2 - s * 0.85, s * 0.3, s * 0.1, 0, 0, Math.PI * 2);
+        oc.fillStyle = "rgba(255,255,255,0.2)";
+        oc.fill();
+        oc.restore();
       }
 
-      ctx.restore();
+      if (name === "neptune" || name === "uranus") {
+        oc.save();
+        oc.beginPath();
+        oc.arc(cx2, cy2, s, 0, Math.PI * 2);
+        oc.clip();
+        for (let i = 0; i < 4; i++) {
+          const y = cy2 - s + (s * 2 / 4) * i + s * 0.1;
+          oc.fillStyle = `rgba(255,255,255,${0.04 + i * 0.01})`;
+          oc.fillRect(cx2 - s, y, s * 2, s * 0.08);
+        }
+        oc.restore();
+      }
 
-      // Atmosphere glow
-      const glowGrad = ctx.createRadialGradient(px, py, size * 0.9, px, py, size * 1.6);
-      const atmosphereColor = name === "earth" ? "100,180,255" :
-        name === "venus" ? "255,200,100" :
-        name === "mars" ? "255,120,60" :
-        name === "neptune" ? "80,120,255" : `${parseInt(colors[0].slice(1,3),16)},${parseInt(colors[0].slice(3,5),16)},${parseInt(colors[0].slice(5,7),16)}`;
-      glowGrad.addColorStop(0, `rgba(${atmosphereColor},0.12)`);
-      glowGrad.addColorStop(1, "transparent");
-      ctx.beginPath();
-      ctx.arc(px, py, size * 1.6, 0, Math.PI * 2);
-      ctx.fillStyle = glowGrad;
-      ctx.fill();
-
-      // Specular highlight (glossy reflection)
-      const specGrad = ctx.createRadialGradient(
-        px + lightOffX * 0.8, py + lightOffY * 0.8, 0,
-        px + lightOffX * 0.8, py + lightOffY * 0.8, size * 0.5
-      );
-      specGrad.addColorStop(0, "rgba(255,255,255,0.18)");
-      specGrad.addColorStop(0.5, "rgba(255,255,255,0.04)");
+      // 3D specular highlight
+      const specGrad = oc.createRadialGradient(cx2 - s * 0.3, cy2 - s * 0.3, 0, cx2 - s * 0.3, cy2 - s * 0.3, s * 0.6);
+      specGrad.addColorStop(0, "rgba(255,255,255,0.25)");
+      specGrad.addColorStop(0.4, "rgba(255,255,255,0.06)");
       specGrad.addColorStop(1, "transparent");
-      ctx.beginPath();
-      ctx.arc(px, py, size, 0, Math.PI * 2);
-      ctx.fillStyle = specGrad;
-      ctx.fill();
+      oc.beginPath();
+      oc.arc(cx2, cy2, s, 0, Math.PI * 2);
+      oc.fillStyle = specGrad;
+      oc.fill();
 
-      // Terminator shadow (dark side)
-      const termGrad = ctx.createRadialGradient(
-        px - lightOffX * 1.5, py - lightOffY * 1.5, size * 0.2,
-        px - lightOffX * 0.8, py - lightOffY * 0.8, size * 1.1
-      );
-      termGrad.addColorStop(0, "rgba(0,0,0,0.5)");
-      termGrad.addColorStop(0.6, "rgba(0,0,0,0.2)");
+      // Terminator (dark side)
+      const termGrad = oc.createRadialGradient(cx2 + s * 0.5, cy2 + s * 0.3, s * 0.1, cx2 + s * 0.3, cy2 + s * 0.2, s * 1.2);
+      termGrad.addColorStop(0, "rgba(0,0,0,0.55)");
+      termGrad.addColorStop(0.5, "rgba(0,0,0,0.25)");
       termGrad.addColorStop(1, "transparent");
-      ctx.beginPath();
-      ctx.arc(px, py, size, 0, Math.PI * 2);
-      ctx.fillStyle = termGrad;
-      ctx.fill();
+      oc.beginPath();
+      oc.arc(cx2, cy2, s, 0, Math.PI * 2);
+      oc.fillStyle = termGrad;
+      oc.fill();
+
+      return offscreen;
     };
 
-    // Draw rings (Saturn/Uranus style)
-    const drawRings = (px: number, py: number, size: number, colors: string[], tilt: number, name: string) => {
+    // Generate textures
+    for (const p of planets) {
+      planetTextures.set(p.name, createPlanetTexture(p.name, p.size, p.colors));
+    }
+
+    const drawRings = (px: number, py: number, size: number, colors: string[], tiltAngle: number, front: boolean) => {
       ctx.save();
       ctx.translate(px, py);
-      ctx.rotate(name === "uranus" ? 1.2 : 0.3);
+      ctx.rotate(0.35);
 
-      for (let r = 0; r < 3; r++) {
-        const ringR = size * (1.6 + r * 0.35);
-        const ringW = size * 0.12 - r * 0.02;
+      const arcStart = front ? 0 : Math.PI;
+      const arcEnd = front ? Math.PI : Math.PI * 2;
+
+      for (let r = 0; r < 4; r++) {
+        const ringR = size * (1.5 + r * 0.3);
+        const ringW = size * (0.12 - r * 0.02);
+        const alpha = 0.3 - r * 0.06;
         ctx.beginPath();
-        ctx.ellipse(0, 0, ringR, ringR * 0.25, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${parseInt(colors[0].slice(1,3),16)},${parseInt(colors[0].slice(3,5),16)},${parseInt(colors[0].slice(5,7),16)},${0.25 - r * 0.06})`;
+        ctx.ellipse(0, 0, ringR, ringR * 0.22, 0, arcStart, arcEnd);
+        ctx.strokeStyle = `rgba(${parseInt(colors[0].slice(1,3),16)},${parseInt(colors[0].slice(3,5),16)},${parseInt(colors[0].slice(5,7),16)},${alpha})`;
         ctx.lineWidth = ringW;
         ctx.stroke();
       }
-
-      // Ring shadow on planet
-      ctx.beginPath();
-      ctx.ellipse(0, size * 0.08, size * 0.9, size * 0.06, 0, 0, Math.PI);
-      ctx.fillStyle = "rgba(0,0,0,0.08)";
-      ctx.fill();
 
       ctx.restore();
     };
@@ -207,15 +256,22 @@ const SpaceBackground = () => {
     const draw = (time: number) => {
       ctx.clearRect(0, 0, width, height);
 
+      // Deep space gradient background
+      const bgGrad = ctx.createRadialGradient(cx(), cy(), 0, cx(), cy(), Math.max(width, height) * 0.7);
+      bgGrad.addColorStop(0, "rgba(8,8,20,0.03)");
+      bgGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
       // Nebulae
       for (const n of nebulae) {
         const nx = n.x * width;
         const ny = n.y * height;
-        const nr = n.r * width;
-        const breathe = 1 + Math.sin(time * 0.0003) * 0.05;
+        const nr = n.r * Math.max(width, height) * 0.5;
+        const breathe = 1 + Math.sin(time * 0.00025 + n.h) * 0.06;
         const grad = ctx.createRadialGradient(nx, ny, 0, nx, ny, nr * breathe);
         grad.addColorStop(0, `hsla(${n.h}, ${n.s}%, ${n.l}%, ${n.a})`);
-        grad.addColorStop(0.5, `hsla(${n.h + 20}, ${n.s - 10}%, ${n.l - 5}%, ${n.a * 0.5})`);
+        grad.addColorStop(0.4, `hsla(${n.h + 15}, ${n.s - 10}%, ${n.l - 3}%, ${n.a * 0.5})`);
         grad.addColorStop(1, "transparent");
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, width, height);
@@ -229,24 +285,24 @@ const SpaceBackground = () => {
         ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
         ctx.fillStyle = star.color;
         ctx.fill();
-        if (star.r > 1.4) {
+        if (star.r > 1.5) {
           ctx.beginPath();
-          ctx.arc(star.x, star.y, star.r * 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(200,220,255,${opacity * 0.08})`;
+          ctx.arc(star.x, star.y, star.r * 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(200,220,255,${opacity * 0.06})`;
           ctx.fill();
         }
         ctx.globalAlpha = 1;
       }
 
       // Shooting stars
-      if (time - lastShoot > 3000 + Math.random() * 5000) {
+      if (time - lastShoot > 4000 + Math.random() * 6000) {
         lastShoot = time;
         shootingStars.push({
           x: Math.random() * width,
-          y: Math.random() * height * 0.4,
-          vx: (Math.random() - 0.3) * 10,
-          vy: Math.random() * 5 + 3,
-          life: 0, maxLife: 35 + Math.random() * 25,
+          y: Math.random() * height * 0.35,
+          vx: (Math.random() - 0.3) * 12,
+          vy: Math.random() * 6 + 3,
+          life: 0, maxLife: 30 + Math.random() * 20,
           width: Math.random() * 1.5 + 0.8,
         });
       }
@@ -255,12 +311,12 @@ const SpaceBackground = () => {
         ss.x += ss.vx; ss.y += ss.vy; ss.life++;
         const alpha = 1 - ss.life / ss.maxLife;
         if (alpha <= 0) { shootingStars.splice(i, 1); continue; }
-        const grad = ctx.createLinearGradient(ss.x, ss.y, ss.x - ss.vx * 6, ss.y - ss.vy * 6);
-        grad.addColorStop(0, `rgba(255,255,255,${alpha * 0.8})`);
+        const grad = ctx.createLinearGradient(ss.x, ss.y, ss.x - ss.vx * 8, ss.y - ss.vy * 8);
+        grad.addColorStop(0, `rgba(255,255,255,${alpha * 0.9})`);
         grad.addColorStop(1, "rgba(255,255,255,0)");
         ctx.beginPath();
         ctx.moveTo(ss.x, ss.y);
-        ctx.lineTo(ss.x - ss.vx * 6, ss.y - ss.vy * 6);
+        ctx.lineTo(ss.x - ss.vx * 8, ss.y - ss.vy * 8);
         ctx.strokeStyle = grad;
         ctx.lineWidth = ss.width;
         ctx.stroke();
@@ -269,17 +325,18 @@ const SpaceBackground = () => {
       const scx = cx();
       const scy = cy();
 
-      // Sun with realistic corona
-      const sunPulse = 1 + Math.sin(time * 0.0008) * 0.04;
-      const sunSize = 28 * sunPulse;
+      // Sun with detailed corona
+      const sunPulse = 1 + Math.sin(time * 0.0006) * 0.03;
+      const sunSize = 26 * sunPulse;
 
-      // Solar corona layers
-      for (let layer = 5; layer >= 0; layer--) {
-        const r = sunSize * (2.5 + layer * 1.8);
-        const a = 0.015 - layer * 0.002;
-        const grad = ctx.createRadialGradient(scx, scy, sunSize * 0.5, scx, scy, r);
-        grad.addColorStop(0, `rgba(255,200,50,${a})`);
-        grad.addColorStop(0.4, `rgba(255,160,30,${a * 0.5})`);
+      // Multi-layer corona
+      for (let layer = 6; layer >= 0; layer--) {
+        const r = sunSize * (2 + layer * 1.5);
+        const a = 0.012 - layer * 0.0015;
+        const grad = ctx.createRadialGradient(scx, scy, sunSize * 0.3, scx, scy, r);
+        grad.addColorStop(0, `rgba(255,210,60,${a})`);
+        grad.addColorStop(0.3, `rgba(255,170,40,${a * 0.6})`);
+        grad.addColorStop(0.7, `rgba(255,120,20,${a * 0.3})`);
         grad.addColorStop(1, "transparent");
         ctx.beginPath();
         ctx.arc(scx, scy, r, 0, Math.PI * 2);
@@ -287,88 +344,106 @@ const SpaceBackground = () => {
         ctx.fill();
       }
 
-      // Sun surface with granulation effect
-      const sunGrad = ctx.createRadialGradient(scx - sunSize * 0.15, scy - sunSize * 0.15, 0, scx, scy, sunSize);
-      sunGrad.addColorStop(0, "rgba(255,255,220,0.98)");
-      sunGrad.addColorStop(0.3, "rgba(255,230,120,0.9)");
-      sunGrad.addColorStop(0.6, "rgba(255,190,60,0.7)");
-      sunGrad.addColorStop(0.85, "rgba(255,140,30,0.4)");
+      // Sun surface
+      const sunGrad = ctx.createRadialGradient(scx - sunSize * 0.12, scy - sunSize * 0.12, 0, scx, scy, sunSize);
+      sunGrad.addColorStop(0, "rgba(255,255,230,0.98)");
+      sunGrad.addColorStop(0.25, "rgba(255,235,130,0.92)");
+      sunGrad.addColorStop(0.5, "rgba(255,200,70,0.75)");
+      sunGrad.addColorStop(0.8, "rgba(255,150,30,0.4)");
       sunGrad.addColorStop(1, "rgba(255,100,10,0.0)");
       ctx.beginPath();
       ctx.arc(scx, scy, sunSize, 0, Math.PI * 2);
       ctx.fillStyle = sunGrad;
       ctx.fill();
 
-      // Orbit paths
+      // Solar flares (dynamic)
+      for (let f = 0; f < 5; f++) {
+        const flareAngle = time * 0.0002 + f * Math.PI * 0.4;
+        const flareLen = sunSize * (0.3 + Math.sin(time * 0.001 + f * 2) * 0.15);
+        const fx = scx + Math.cos(flareAngle) * (sunSize + flareLen * 0.3);
+        const fy = scy + Math.sin(flareAngle) * (sunSize + flareLen * 0.3);
+        const fGrad = ctx.createRadialGradient(fx, fy, 0, fx, fy, flareLen);
+        fGrad.addColorStop(0, "rgba(255,200,100,0.12)");
+        fGrad.addColorStop(1, "transparent");
+        ctx.beginPath();
+        ctx.arc(fx, fy, flareLen, 0, Math.PI * 2);
+        ctx.fillStyle = fGrad;
+        ctx.fill();
+      }
+
+      // Orbit paths (subtle ellipses)
       for (const p of planets) {
         const dist = p.distRatio * minDim();
         ctx.beginPath();
-        ctx.arc(scx, scy, dist, 0, Math.PI * 2);
-        ctx.strokeStyle = "rgba(255,255,255,0.02)";
+        ctx.ellipse(scx, scy, dist, dist * 0.55, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255,255,255,0.025)";
         ctx.lineWidth = 0.5;
-        ctx.setLineDash([3, 10]);
+        ctx.setLineDash([4, 12]);
         ctx.stroke();
         ctx.setLineDash([]);
       }
 
-      // Planets
-      for (const p of planets) {
+      // Sort planets by Y position for depth ordering
+      const planetPositions = planets.map(p => {
         p.angle += p.speed;
-        p.rotationPhase += 0.008;
+        p.rotationPhase += 0.006;
         const dist = p.distRatio * minDim();
-        const px = scx + Math.cos(p.angle) * dist;
-        const py = scy + Math.sin(p.angle) * dist * 0.6; // Elliptical orbit for depth
+        const ecc = p.eccentricity;
+        const r = dist * (1 - ecc * ecc) / (1 + ecc * Math.cos(p.angle));
+        const px = scx + Math.cos(p.angle) * r;
+        const py = scy + Math.sin(p.angle) * r * 0.55;
+        return { ...p, px, py, dist };
+      });
 
-        const shadowAngle = Math.atan2(py - scy, px - scx);
+      planetPositions.sort((a, b) => a.py - b.py);
 
-        // Draw back rings (behind planet)
+      for (const p of planetPositions) {
+        const { px, py } = p;
+        const texture = planetTextures.get(p.name);
+
+        // Draw back rings
         if (p.hasRing) {
-          ctx.save();
-          ctx.translate(px, py);
-          ctx.rotate(p.name === "uranus" ? 1.2 : 0.3);
-          for (let r = 0; r < 3; r++) {
-            const ringR = p.size * (1.6 + r * 0.35);
-            ctx.beginPath();
-            ctx.ellipse(0, 0, ringR, ringR * 0.25, 0, Math.PI, Math.PI * 2);
-            ctx.strokeStyle = `rgba(${parseInt(p.colors[0].slice(1,3),16)},${parseInt(p.colors[0].slice(3,5),16)},${parseInt(p.colors[0].slice(5,7),16)},${0.15 - r * 0.04})`;
-            ctx.lineWidth = p.size * 0.1 - r * 0.015;
-            ctx.stroke();
-          }
-          ctx.restore();
+          drawRings(px, py, p.size, p.colors, p.tilt, false);
         }
 
-        // Planet body
-        drawPlanet(px, py, p.size, p.colors, shadowAngle, p.name, p.rotationPhase, time);
+        // Atmosphere glow
+        const atmColor = p.name === "earth" ? "100,180,255" :
+          p.name === "venus" ? "255,200,100" :
+          p.name === "mars" ? "255,120,60" :
+          p.name === "neptune" ? "80,120,255" :
+          p.name === "uranus" ? "130,210,230" :
+          p.name === "jupiter" ? "200,160,80" :
+          "180,180,200";
+        const atmGrad = ctx.createRadialGradient(px, py, p.size * 0.85, px, py, p.size * 1.8);
+        atmGrad.addColorStop(0, `rgba(${atmColor},0.1)`);
+        atmGrad.addColorStop(1, "transparent");
+        ctx.beginPath();
+        ctx.arc(px, py, p.size * 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = atmGrad;
+        ctx.fill();
 
-        // Front rings (in front of planet)
-        if (p.hasRing) {
-          ctx.save();
-          ctx.translate(px, py);
-          ctx.rotate(p.name === "uranus" ? 1.2 : 0.3);
-          for (let r = 0; r < 3; r++) {
-            const ringR = p.size * (1.6 + r * 0.35);
-            ctx.beginPath();
-            ctx.ellipse(0, 0, ringR, ringR * 0.25, 0, 0, Math.PI);
-            ctx.strokeStyle = `rgba(${parseInt(p.colors[0].slice(1,3),16)},${parseInt(p.colors[0].slice(3,5),16)},${parseInt(p.colors[0].slice(5,7),16)},${0.2 - r * 0.05})`;
-            ctx.lineWidth = p.size * 0.1 - r * 0.015;
-            ctx.stroke();
-          }
-          ctx.restore();
+        // Draw planet from pre-rendered texture
+        if (texture) {
+          ctx.drawImage(texture, px - p.size, py - p.size, p.size * 2, p.size * 2);
         }
 
-        // Moons
+        // Front rings
+        if (p.hasRing) {
+          drawRings(px, py, p.size, p.colors, p.tilt, true);
+        }
+
+        // Moons with orbital motion
         for (let m = 0; m < p.moonAngles.length; m++) {
-          p.moonAngles[m] += 0.003 + m * 0.0015;
-          const moonDist = p.size * 2 + m * p.size * 0.7;
+          p.moonAngles[m] += 0.004 + m * 0.002;
+          const moonDist = p.size * (1.8 + m * 0.6);
           const mx = px + Math.cos(p.moonAngles[m]) * moonDist;
-          const my = py + Math.sin(p.moonAngles[m]) * moonDist * 0.5;
-          const moonSize = Math.max(1.5, p.size * 0.1);
+          const my = py + Math.sin(p.moonAngles[m]) * moonDist * 0.45;
+          const moonSize = Math.max(1.2, p.size * 0.09);
 
-          // Moon with mini 3D shading
           const mGrad = ctx.createRadialGradient(mx - moonSize * 0.3, my - moonSize * 0.3, 0, mx, my, moonSize);
-          mGrad.addColorStop(0, "rgba(220,220,235,0.9)");
-          mGrad.addColorStop(0.7, "rgba(160,160,180,0.7)");
-          mGrad.addColorStop(1, "rgba(80,80,100,0.5)");
+          mGrad.addColorStop(0, "rgba(230,230,240,0.9)");
+          mGrad.addColorStop(0.6, "rgba(170,170,190,0.7)");
+          mGrad.addColorStop(1, "rgba(90,90,110,0.5)");
           ctx.beginPath();
           ctx.arc(mx, my, moonSize, 0, Math.PI * 2);
           ctx.fillStyle = mGrad;
@@ -390,6 +465,10 @@ const SpaceBackground = () => {
         star.x = Math.random() * width;
         star.y = Math.random() * height;
       });
+      // Re-generate textures on resize
+      for (const p of planets) {
+        planetTextures.set(p.name, createPlanetTexture(p.name, p.size, p.colors));
+      }
     };
     window.addEventListener("resize", handleResize);
 
@@ -403,7 +482,7 @@ const SpaceBackground = () => {
     <canvas
       ref={canvasRef}
       className="fixed inset-0 z-0 pointer-events-none"
-      style={{ opacity: 0.75 }}
+      style={{ opacity: 0.8 }}
     />
   );
 };

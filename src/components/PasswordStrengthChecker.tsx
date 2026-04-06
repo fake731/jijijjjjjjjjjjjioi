@@ -114,9 +114,10 @@ const PasswordStrengthChecker = ({ externalPassword }: Props) => {
       {/* Input */}
       <div className="relative mb-6">
         {!loading && !user && (
-          <div className="absolute inset-0 z-10 rounded-xl bg-background/80 backdrop-blur-sm flex items-center justify-center gap-2 border border-border">
+          <div className="absolute inset-0 z-10 rounded-xl bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center gap-2 border border-border">
             <Lock className="w-4 h-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">سجل دخول لاستخدام الأداة</span>
+            <a href="/تسجيل-الدخول" className="text-xs text-primary hover:underline">تسجيل الدخول</a>
           </div>
         )}
         <input
