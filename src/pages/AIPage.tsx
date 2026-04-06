@@ -626,33 +626,24 @@ const AIPage = () => {
                   </div>
                   {/* Quick Suggestion Buttons */}
                   <div className="flex flex-wrap justify-center gap-3 max-w-lg">
-                    {[
-                      { label: language === "ar" ? "شرح أداة Nmap" : "Explain Nmap tool", iconName: "Search", color: "text-cyan-400" },
-                      { label: language === "ar" ? "كتابة سكربت Python" : "Write Python script", iconName: "Code", color: "text-green-400" },
-                      { label: language === "ar" ? "مفاهيم اختبار الاختراق" : "Penetration testing concepts", iconName: "Shield", color: "text-amber-400" },
-                      { label: language === "ar" ? "سؤال تقني" : "Technical question", iconName: "Monitor", color: "text-purple-400" },
-                    ].map((suggestion, idx) => {
-                      const iconMap: Record<string, any> = {
-                        Search: require("lucide-react").Search,
-                        Code: require("lucide-react").Code,
-                        Shield: require("lucide-react").Shield,
-                        Monitor: require("lucide-react").Monitor,
-                      };
-                      const IconComp = iconMap[suggestion.iconName];
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            if (!user) return;
-                            setInput(suggestion.label);
-                          }}
-                          className="flex items-center gap-2 px-4 py-3 rounded-xl bg-secondary/80 border border-border/50 text-foreground text-sm hover:border-primary/50 hover:bg-primary/10 transition-all duration-200"
-                        >
-                          <IconComp className={`w-5 h-5 ${suggestion.color}`} />
-                          <span>{suggestion.label}</span>
-                        </button>
-                      );
-                    })}
+                    {([
+                      { label: language === "ar" ? "شرح أداة Nmap" : "Explain Nmap tool", Icon: Search, color: "text-cyan-400" },
+                      { label: language === "ar" ? "كتابة سكربت Python" : "Write Python script", Icon: Code, color: "text-green-400" },
+                      { label: language === "ar" ? "مفاهيم اختبار الاختراق" : "Penetration testing concepts", Icon: Shield, color: "text-amber-400" },
+                      { label: language === "ar" ? "سؤال تقني" : "Technical question", Icon: Monitor, color: "text-purple-400" },
+                    ] as const).map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          if (!user) return;
+                          setInput(suggestion.label);
+                        }}
+                        className="flex items-center gap-2 px-4 py-3 rounded-xl bg-secondary/80 border border-border/50 text-foreground text-sm hover:border-primary/50 hover:bg-primary/10 transition-all duration-200"
+                      >
+                        <suggestion.Icon className={`w-5 h-5 ${suggestion.color}`} />
+                        <span>{suggestion.label}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
               ) : (
