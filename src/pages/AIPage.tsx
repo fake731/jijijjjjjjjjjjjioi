@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload, Copy, LogIn, History, Plus, Trash2 } from "lucide-react";
+import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload, Copy, LogIn, History, Plus, Trash2, Search, Code, Shield, Monitor } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "react-router-dom";
@@ -626,12 +626,12 @@ const AIPage = () => {
                   </div>
                   {/* Quick Suggestion Buttons */}
                   <div className="flex flex-wrap justify-center gap-3 max-w-lg">
-                    {[
-                      { label: language === "ar" ? "شرح أداة Nmap" : "Explain Nmap tool", icon: "🔍" },
-                      { label: language === "ar" ? "كتابة سكربت Python" : "Write Python script", icon: "🐍" },
-                      { label: language === "ar" ? "مفاهيم اختبار الاختراق" : "Penetration testing concepts", icon: "🛡️" },
-                      { label: language === "ar" ? "سؤال تقني" : "Technical question", icon: "💻" },
-                    ].map((suggestion, idx) => (
+                    {([
+                      { label: language === "ar" ? "شرح أداة Nmap" : "Explain Nmap tool", Icon: Search, color: "text-cyan-400" },
+                      { label: language === "ar" ? "كتابة سكربت Python" : "Write Python script", Icon: Code, color: "text-green-400" },
+                      { label: language === "ar" ? "مفاهيم اختبار الاختراق" : "Penetration testing concepts", Icon: Shield, color: "text-amber-400" },
+                      { label: language === "ar" ? "سؤال تقني" : "Technical question", Icon: Monitor, color: "text-purple-400" },
+                    ] as const).map((suggestion, idx) => (
                       <button
                         key={idx}
                         onClick={() => {
@@ -640,7 +640,7 @@ const AIPage = () => {
                         }}
                         className="flex items-center gap-2 px-4 py-3 rounded-xl bg-secondary/80 border border-border/50 text-foreground text-sm hover:border-primary/50 hover:bg-primary/10 transition-all duration-200"
                       >
-                        <span className="text-lg">{suggestion.icon}</span>
+                        <suggestion.Icon className={`w-5 h-5 ${suggestion.color}`} />
                         <span>{suggestion.label}</span>
                       </button>
                     ))}

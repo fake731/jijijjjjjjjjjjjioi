@@ -107,7 +107,7 @@ const toolColors: Record<string, string> = {
 
 const ToolsPage = () => {
   const { user } = useAuth();
-  const [expandedTool, setExpandedTool] = useState<number | null>(0);
+  const [expandedTool, setExpandedTool] = useState<number | null>(null);
   const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [language, setLanguage] = useState<"ar" | "en">("ar");
@@ -363,6 +363,7 @@ const ToolsPage = () => {
                             className={`flex items-start gap-3 rounded-xl bg-secondary/50 hover:bg-secondary/80 transition-colors group ${
                               viewMode === "compact" ? "p-2" : "p-3"
                             }`}
+                            onCopy={(e) => { if (!user) { e.preventDefault(); toast.error("سجل دخول أولاً لنسخ الأوامر"); } }}
                           >
                             <span className={`rounded-lg bg-primary/20 text-primary flex items-center justify-center font-bold flex-shrink-0 ${
                               viewMode === "compact" ? "w-6 h-6 text-xs" : "w-7 h-7 text-xs"
@@ -371,7 +372,7 @@ const ToolsPage = () => {
                             </span>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <code className="text-primary text-xs font-mono bg-background/50 px-2 py-0.5 rounded break-all" dir="ltr">
+                                <code className={`text-primary text-xs font-mono bg-background/50 px-2 py-0.5 rounded break-all ${!user ? 'select-none' : ''}`} dir="ltr">
                                   {cmd.command}
                                 </code>
                                 <button

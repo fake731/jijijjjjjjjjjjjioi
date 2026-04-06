@@ -85,8 +85,8 @@ const PrivacyPolicyPage = () => {
       title: "التواصل",
       content: [
         "لأي استفسارات حول الخصوصية، تواصل معنا عبر صفحة الاستفسارات",
-        "أو عبر انستغرام: @0oscp",
       ],
+      extraLink: { text: "أو عبر انستغرام: @0oscp", url: "https://www.instagram.com/0oscp" },
     },
   ];
 
@@ -128,6 +128,14 @@ const PrivacyPolicyPage = () => {
                       <span>{item}</span>
                     </li>
                   ))}
+                  {(section as any).extraLink && (
+                    <li className="flex items-start gap-2 text-muted-foreground">
+                      <span className="text-primary mt-1.5 text-xs">●</span>
+                      <a href={(section as any).extraLink.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        {(section as any).extraLink.text}
+                      </a>
+                    </li>
+                  )}
                 </ul>
               </div>
             ))}
