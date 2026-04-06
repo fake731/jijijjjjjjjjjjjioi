@@ -451,6 +451,18 @@ const SpaceBackground = () => {
         }
       }
 
+      // Watermark "Qusay"
+      ctx.save();
+      ctx.globalAlpha = 0.04;
+      ctx.font = `bold ${minDim() * 0.15}px monospace`;
+      ctx.fillStyle = "#8b5cf6";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.translate(cx(), cy());
+      ctx.rotate(-0.2);
+      ctx.fillText("Qusay", 0, 0);
+      ctx.restore();
+
       animationId = requestAnimationFrame(draw);
     };
 
