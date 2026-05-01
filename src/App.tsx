@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,13 +5,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { LanguageProvider } from "@/hooks/use-language";
-import { AuthProvider, useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
+import { AuthProvider } from "@/hooks/useAuth";
 import { AnimatePresence, motion } from "framer-motion";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import SpaceBackground from "@/components/SpaceBackground";
 import CustomCursor from "@/components/CustomCursor";
 import LoginExportCard from "@/components/LoginExportCard";
+import { usePageVisit } from "@/hooks/usePageVisit";
 import Index from "./pages/Index";
 import AIPage from "./pages/AIPage";
 import AI2Page from "./pages/AI2Page";
@@ -31,6 +30,7 @@ import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import DeveloperPage from "./pages/DeveloperPage";
 import DevLoginPage from "./pages/DevLoginPage";
 import UserDashboardPage from "./pages/UserDashboardPage";
+import QuizPage from "./pages/QuizPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,18 +42,8 @@ const pageVariants = {
 };
 
 const PageVisitTracker = () => {
-  const location = useLocation();
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (!user) return;
-    supabase.from("page_visits").insert({
-      user_id: user.id,
-      page_path: location.pathname,
-      user_agent: navigator.userAgent,
-    }).then(() => {});
-  }, [location.pathname, user]);
-
+  // Tracks every page view for both guests and signed-in users, with IP geo data.
+  usePageVisit();
   return null;
 };
 
@@ -84,6 +74,7 @@ const AnimatedRoutes = () => {
             <Route path="/دخول-المطور" element={<DevLoginPage />} />
             <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
             <Route path="/لوحة-التحكم" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
+            <Route path="/الاختبار" element={<QuizPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </motion.div>
