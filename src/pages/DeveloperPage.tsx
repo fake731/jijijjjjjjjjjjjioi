@@ -44,6 +44,8 @@ import BackupRestoreTab from "@/components/developer/tabs/BackupRestoreTab";
 import FeatureFlagsTab from "@/components/developer/tabs/FeatureFlagsTab";
 import AISettingsTab from "@/components/developer/tabs/AISettingsTab";
 import UserSegmentsTab from "@/components/developer/tabs/UserSegmentsTab";
+import SiteContentTab from "@/components/developer/tabs/SiteContentTab";
+import AILimitsTab from "@/components/developer/tabs/AILimitsTab";
 
 const sectionTitles: Record<DevSection, string> = {
   overview: "لوحة القيادة",
@@ -80,6 +82,8 @@ const sectionTitles: Record<DevSection, string> = {
   "user-segments": "شرائح المستخدمين",
   "performance": "الأداء",
   "inquiries": "الاستفسارات",
+  "site-content": "محرر محتوى الموقع",
+  "ai-limits": "حدود AI للمستخدمين",
 };
 
 const DeveloperContent = () => {
@@ -125,6 +129,8 @@ const DeveloperContent = () => {
       case "feature-flags": return <FeatureFlagsTab />;
       case "ai-settings": return <AISettingsTab />;
       case "user-segments": return <UserSegmentsTab />;
+      case "site-content": return <SiteContentTab />;
+      case "ai-limits": return <AILimitsTab />;
       default: return <OverviewTab />;
     }
   };
