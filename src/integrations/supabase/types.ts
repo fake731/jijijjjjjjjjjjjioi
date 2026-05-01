@@ -131,6 +131,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ip_logs: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          id: string
+          ip_address: string
+          isp: string | null
+          page_path: string | null
+          region: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          ip_address: string
+          isp?: string | null
+          page_path?: string | null
+          region?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string
+          isp?: string | null
+          page_path?: string | null
+          region?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       login_exports: {
         Row: {
           exported_at: string
@@ -181,21 +220,30 @@ export type Database = {
       }
       page_visits: {
         Row: {
+          city: string | null
+          country: string | null
           id: string
+          ip_address: string | null
           page_path: string
           user_agent: string | null
           user_id: string | null
           visited_at: string
         }
         Insert: {
+          city?: string | null
+          country?: string | null
           id?: string
+          ip_address?: string | null
           page_path: string
           user_agent?: string | null
           user_id?: string | null
           visited_at?: string
         }
         Update: {
+          city?: string | null
+          country?: string | null
           id?: string
+          ip_address?: string | null
           page_path?: string
           user_agent?: string | null
           user_id?: string | null
@@ -284,6 +332,84 @@ export type Database = {
           privacy_accepted?: boolean | null
           privacy_accepted_at?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      quiz_attempts: {
+        Row: {
+          category: string
+          created_at: string
+          details: Json | null
+          difficulty: string
+          id: string
+          score: number
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          details?: Json | null
+          difficulty: string
+          id?: string
+          score?: number
+          total_questions?: number
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          details?: Json | null
+          difficulty?: string
+          id?: string
+          score?: number
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          category: string
+          challenge_prompt: string | null
+          correct_index: number
+          created_at: string
+          created_by: string | null
+          difficulty: string
+          explanation: string | null
+          id: string
+          options: Json
+          question: string
+          question_type: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          challenge_prompt?: string | null
+          correct_index?: number
+          created_at?: string
+          created_by?: string | null
+          difficulty: string
+          explanation?: string | null
+          id?: string
+          options?: Json
+          question: string
+          question_type?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          challenge_prompt?: string | null
+          correct_index?: number
+          created_at?: string
+          created_by?: string | null
+          difficulty?: string
+          explanation?: string | null
+          id?: string
+          options?: Json
+          question?: string
+          question_type?: string
+          updated_at?: string
         }
         Relationships: []
       }
