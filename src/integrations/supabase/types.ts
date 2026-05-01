@@ -287,6 +287,69 @@ export type Database = {
         }
         Relationships: []
       }
+      site_content: {
+        Row: {
+          content_key: string
+          content_value: string
+          created_at: string
+          description: string | null
+          id: string
+          page: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          content_key: string
+          content_value: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          page?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          content_key?: string
+          content_value?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          page?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      user_ai_limits: {
+        Row: {
+          created_at: string
+          daily_limit: number
+          id: string
+          set_by: string | null
+          unlimited: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_limit?: number
+          id?: string
+          set_by?: string | null
+          unlimited?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_limit?: number
+          id?: string
+          set_by?: string | null
+          unlimited?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

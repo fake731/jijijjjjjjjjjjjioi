@@ -226,6 +226,22 @@ const AuthPage = () => {
       } else if (mode === "signup") {
         if (!privacyAccepted) { toast.error("يجب الموافقة على سياسة الخصوصية للمتابعة"); setLoading(false); return; }
         if (!fullName.trim()) { toast.error("يرجى إدخال الاسم الرباعي"); setLoading(false); return; }
+        // Validate name and email length + banned words
+        const BANNED = ["kali","instagram","insta","admin","root","test","user","qusay","k","i"];
+        const trimmedName = fullName.trim();
+        const emailLocal = (email.split("@")[0] || "").toLowerCase();
+        const nameWords = trimmedName.split(/\s+/).filter(Boolean);
+        if (trimmedName.length < 3) { toast.error("الاسم يجب أن يكون 3 أحرف على الأقل"); setLoading(false); return; }
+        if (nameWords.some(w => w.length < 2)) { toast.error("لا يُسمح بأسماء من حرف واحد"); setLoading(false); return; }
+        if (emailLocal.length < 3) { toast.error("بريد إلكتروني قصير جداً (3 أحرف على الأقل قبل @)"); setLoading(false); return; }
+        if (BANNED.includes(emailLocal) || BANNED.includes(trimmedName.toLowerCase())) {
+          toast.error("هذا الاسم/البريد غير مسموح به");
+          setLoading(false); return;
+        }
+        if (nameWords.some(w => BANNED.includes(w.toLowerCase()))) {
+          toast.error("الاسم يحتوي على كلمة محظورة");
+          setLoading(false); return;
+        }
         const deviceType = getDeviceType();
         const { data, error } = await supabase.auth.signUp({
           email, password,
