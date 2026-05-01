@@ -3,7 +3,7 @@ import {
   Users, Eye, MessageSquare, Globe, UserPlus, Activity, Shield, Settings, Bell, Megaphone, 
   BarChart3, Download, Zap, Monitor, ShieldCheck, TrendingUp, Clock, Bot,
   Wifi, Database, FileText, AlertTriangle, Lock, Key, Server, 
-  Map, Smartphone, Search, UserX, ToggleLeft, Fingerprint, type LucideIcon 
+  Map, Smartphone, Search, UserX, ToggleLeft, Fingerprint, FileEdit, Gauge, type LucideIcon 
 } from "lucide-react";
 
 export type DevSection = 
@@ -14,7 +14,8 @@ export type DevSection =
   | "user-search-advanced" | "session-monitor" | "geo-map" 
   | "permission-manager" | "system-health" | "audit-trail" 
   | "content-moderation" | "backup-restore" | "feature-flags" 
-  | "user-segments" | "performance" | "inquiries" | "ai-settings";
+  | "user-segments" | "performance" | "inquiries" | "ai-settings"
+  | "site-content" | "ai-limits";
 
 interface NavItem {
   id: DevSection;
@@ -81,6 +82,8 @@ const navGroups: { title: string; items: NavItem[] }[] = [
       { id: "backup-restore", label: "النسخ الاحتياطي", icon: Download, group: "system" },
       { id: "feature-flags", label: "تبديل الميزات", icon: ToggleLeft, group: "system" },
       { id: "ai-settings", label: "إعدادات AI", icon: Bot, group: "system" },
+      { id: "ai-limits", label: "حدود AI للمستخدمين", icon: Gauge, group: "system" },
+      { id: "site-content", label: "محرر محتوى الموقع", icon: FileEdit, group: "system" },
       { id: "export", label: "تصدير البيانات", icon: Download, group: "system" },
     ],
   },
