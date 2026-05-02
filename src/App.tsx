@@ -11,6 +11,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import SpaceBackground from "@/components/SpaceBackground";
 import CustomCursor from "@/components/CustomCursor";
 import LoginExportCard from "@/components/LoginExportCard";
+import InlineContentEditor from "@/components/InlineContentEditor";
+import { SiteContentProvider } from "@/hooks/useSiteContent";
 import { usePageVisit } from "@/hooks/usePageVisit";
 import Index from "./pages/Index";
 import AIPage from "./pages/AIPage";
@@ -88,16 +90,19 @@ const App = () => (
     <ThemeProvider>
       <LanguageProvider>
         <AuthProvider>
-          <TooltipProvider>
-            <SpaceBackground />
-            <CustomCursor />
-            <LoginExportCard />
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AnimatedRoutes />
-            </BrowserRouter>
-          </TooltipProvider>
+          <SiteContentProvider>
+            <TooltipProvider>
+              <SpaceBackground />
+              <CustomCursor />
+              <LoginExportCard />
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <InlineContentEditor />
+                <AnimatedRoutes />
+              </BrowserRouter>
+            </TooltipProvider>
+          </SiteContentProvider>
         </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
