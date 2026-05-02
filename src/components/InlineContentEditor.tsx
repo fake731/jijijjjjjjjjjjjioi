@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Pencil, X, Save, Plus, Loader2, Trash2 } from "lucide-react";
+import { Pencil, X, Save, Plus, Loader2, Trash2, MousePointerClick } from "lucide-react";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { useLocation } from "react-router-dom";
 
@@ -20,12 +20,43 @@ const InlineContentEditor = () => {
   const [savingId, setSavingId] = useState<string | null>(null);
   const [newItem, setNewItem] = useState({ key: "", value: "" });
   const [creating, setCreating] = useState(false);
+  const [pickMode, setPickMode] = useState(false);
+  const [picked, setPicked] = useState<{ key: string; value: string; id?: string } | null>(null);
+  const [pickedDraft, setPickedDraft] = useState("");
+  const [pickedSaving, setPickedSaving] = useState(false);
 
   useEffect(() => {
     if (!user) { setIsDeveloper(false); return; }
     supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "developer").maybeSingle()
       .then(({ data }) => setIsDeveloper(!!data));
   }, [user]);
+
+  // Pick-mode: highlight + capture clicks on tagged elements
+  useEffect(() => {
+    if (!pickMode) {
+      document.body.classList.remove("ice-pickmode");
+      return;
+    }
+    document.body.classList.add("ice-pickmode");
+    const onClick = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement)?.closest?.("[data-content-key]") as HTMLElement | null;
+      if (!target) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const key = target.getAttribute("data-content-key") || "";
+      const existing = content[key];
+      const value = existing?.value ?? (target.textContent || "");
+      setPicked({ key, value, id: existing?.id });
+      setPickedDraft(value);
+      setPickMode(false);
+      setOpen(true);
+    };
+    document.addEventListener("click", onClick, true);
+    return () => {
+      document.removeEventListener("click", onClick, true);
+      document.body.classList.remove("ice-pickmode");
+    };
+  }, [pickMode, content]);
 
   // Hide on developer-internal pages
   if (!isDeveloper) return null;
@@ -75,8 +106,60 @@ const InlineContentEditor = () => {
     refresh();
   };
 
+  const savePicked = async () => {
+    if (!picked) return;
+    setPickedSaving(true);
+    if (picked.id) {
+      const { error } = await supabase.from("site_content")
+        .update({ content_value: pickedDraft, updated_by: user?.id })
+        .eq("id", picked.id);
+      setPickedSaving(false);
+      if (error) { toast.error(error.message); return; }
+    } else {
+      const { error } = await supabase.from("site_content").insert({
+        content_key: picked.key,
+        content_value: pickedDraft,
+        page: location.pathname,
+        updated_by: user?.id,
+      });
+      setPickedSaving(false);
+      if (error) { toast.error(error.message); return; }
+    }
+    toast.success("تم الحفظ");
+    setPicked(null);
+    setPickedDraft("");
+    refresh();
+  };
+
   return (
     <>
+      {/* Pick mode global styles */}
+      <style>{`
+        body.ice-pickmode [data-content-key] {
+          outline: 2px dashed hsl(var(--primary) / 0.7) !important;
+          outline-offset: 3px;
+          cursor: crosshair !important;
+          transition: outline-color 0.15s;
+        }
+        body.ice-pickmode [data-content-key]:hover {
+          outline-color: hsl(var(--primary)) !important;
+          background: hsl(var(--primary) / 0.08) !important;
+        }
+      `}</style>
+
+      {/* Pick mode toggle */}
+      <button
+        onClick={() => { setPickMode(p => !p); if (!pickMode) setOpen(false); }}
+        className={`fixed top-20 left-[4.25rem] z-[60] w-11 h-11 rounded-full shadow-lg transition-all flex items-center justify-center backdrop-blur-xl border ${
+          pickMode
+            ? "bg-primary text-primary-foreground border-primary scale-110 shadow-primary/50"
+            : "bg-card/70 text-primary border-primary/30 hover:scale-105"
+        }`}
+        title={pickMode ? "إلغاء وضع التحديد" : "وضع التحديد المرئي (انقر على نص لتعديله)"}
+      >
+        <MousePointerClick className="w-5 h-5" />
+      </button>
+
       {/* Floating pencil button */}
       <button
         onClick={() => setOpen(o => !o)}
@@ -85,6 +168,30 @@ const InlineContentEditor = () => {
       >
         {open ? <X className="w-5 h-5" /> : <Pencil className="w-5 h-5" />}
       </button>
+
+      {/* Picked element quick-edit popup */}
+      {picked && (
+        <div className="fixed inset-x-4 bottom-24 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[420px] z-[70] rounded-2xl border border-primary/40 bg-card/90 backdrop-blur-2xl shadow-2xl p-4" dir="rtl">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-bold text-foreground">تعديل العنصر المحدد</p>
+            <button onClick={() => { setPicked(null); setPickedDraft(""); }} className="text-muted-foreground hover:text-foreground">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <code className="block text-[10px] text-primary font-mono mb-2 truncate" dir="ltr">{picked.key}</code>
+          <Textarea
+            value={pickedDraft}
+            onChange={e => setPickedDraft(e.target.value)}
+            rows={4}
+            className="text-sm mb-2"
+            autoFocus
+          />
+          <Button onClick={savePicked} disabled={pickedSaving || !pickedDraft.trim()} className="w-full gap-2 h-9">
+            {pickedSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            حفظ التغيير
+          </Button>
+        </div>
+      )}
 
       {open && (
         <div className="fixed top-20 left-4 z-[59] w-[min(420px,calc(100vw-2rem))] max-h-[75vh] overflow-y-auto rounded-2xl border border-primary/30 bg-card/95 backdrop-blur-xl shadow-2xl p-4 mt-12" dir="rtl">
