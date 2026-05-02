@@ -17,8 +17,8 @@ interface Props {
 const EditableText = ({ contentKey, fallback, as: Tag = "span", className }: Props) => {
   const { get } = useSiteContent();
   const value = get(contentKey, fallback);
-  // @ts-expect-error dynamic tag prop
-  return <Tag data-content-key={contentKey} className={className}>{value}</Tag>;
+  const Component = Tag as any;
+  return <Component data-content-key={contentKey} className={className}>{value}</Component>;
 };
 
 export default EditableText;
