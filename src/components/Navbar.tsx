@@ -17,30 +17,36 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
 
   useEffect(() => {
-    if (!user) { setIsDeveloper(false); setUnreadCount(0); return; }
+    if (!user) {
+      setIsDeveloper(false);
+      // Guests still see broadcast notifications (user_id = null)
+      fetchUnreadCount();
+      return;
+    }
     supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "developer").maybeSingle()
       .then(({ data }) => setIsDeveloper(!!data));
     fetchUnreadCount();
   }, [user]);
 
   const fetchUnreadCount = async () => {
-    if (!user) return;
-    const { count } = await supabase
-      .from("notifications")
-      .select("*", { count: "exact", head: true })
-      .or(`user_id.eq.${user.id},user_id.is.null`)
-      .eq("is_read", false);
+    const filter = user
+      ? supabase.from("notifications").select("*", { count: "exact", head: true })
+          .or(`user_id.eq.${user.id},user_id.is.null`).eq("is_read", false)
+      : supabase.from("notifications").select("*", { count: "exact", head: true })
+          .is("user_id", null).eq("is_read", false);
+    const { count } = await filter;
     setUnreadCount(count || 0);
   };
 
   const fetchNotifications = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .or(`user_id.eq.${user.id},user_id.is.null`)
-      .order("created_at", { ascending: false })
-      .limit(20);
+    const q = user
+      ? supabase.from("notifications").select("*")
+          .or(`user_id.eq.${user.id},user_id.is.null`)
+          .order("created_at", { ascending: false }).limit(20)
+      : supabase.from("notifications").select("*")
+          .is("user_id", null)
+          .order("created_at", { ascending: false }).limit(20);
+    const { data } = await q;
     setNotifications(data || []);
   };
 
