@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import {
   Code, Shield, Network, Bug, Cpu, GraduationCap,
-  CheckCircle2, XCircle, Trophy, Sparkles, ArrowRight, Loader2, LogIn
+  CheckCircle2, XCircle, Trophy, Sparkles, ArrowRight, Loader2, LogIn,
+  Globe, Database, Terminal, Lock, KeyRound, FileCode, Server, Smartphone, Wifi, Binary
 } from "lucide-react";
 
 interface QuizQuestion {
@@ -31,6 +32,16 @@ const CATEGORIES = [
   { id: "cybersecurity", label: "أمن سيبراني", icon: Shield, color: "text-cyan-400", bg: "bg-cyan-500/10", border: "border-cyan-500/30" },
   { id: "networks", label: "شبكات", icon: Network, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/30" },
   { id: "vulnerabilities", label: "اكتشاف ثغرات", icon: Bug, color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/30" },
+  { id: "javascript", label: "JavaScript", icon: FileCode, color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/30" },
+  { id: "web_security", label: "أمن الويب", icon: Globe, color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/30" },
+  { id: "linux", label: "Linux & Bash", icon: Terminal, color: "text-lime-400", bg: "bg-lime-500/10", border: "border-lime-500/30" },
+  { id: "cryptography", label: "التشفير", icon: Lock, color: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/30" },
+  { id: "passwords", label: "كلمات المرور", icon: KeyRound, color: "text-pink-400", bg: "bg-pink-500/10", border: "border-pink-500/30" },
+  { id: "databases", label: "قواعد البيانات", icon: Database, color: "text-teal-400", bg: "bg-teal-500/10", border: "border-teal-500/30" },
+  { id: "servers", label: "إدارة السيرفرات", icon: Server, color: "text-fuchsia-400", bg: "bg-fuchsia-500/10", border: "border-fuchsia-500/30" },
+  { id: "mobile_security", label: "أمن الهاتف", icon: Smartphone, color: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/30" },
+  { id: "wireless", label: "اختراق الشبكات اللاسلكية", icon: Wifi, color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/30" },
+  { id: "reverse_engineering", label: "الهندسة العكسية", icon: Binary, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/30" },
 ];
 
 const LEVELS = [
@@ -196,16 +207,29 @@ const QuizPage = () => {
                 {CATEGORIES.map(c => {
                   const Icon = c.icon;
                   const active = category === c.id;
+                  const locked = !user;
                   return (
                     <button
                       key={c.id}
-                      onClick={() => setCategory(c.id)}
+                      onClick={() => {
+                        if (locked) {
+                          toast.error("سجّل دخول لاختيار التخصص");
+                          navigate("/تسجيل-الدخول");
+                          return;
+                        }
+                        setCategory(c.id);
+                      }}
                       className={`relative p-4 rounded-2xl border backdrop-blur-xl transition-all text-right ${
                         active
                           ? `${c.bg} ${c.border} shadow-lg scale-[1.02]`
-                          : "border-border/30 bg-card/40 hover:bg-card/60"
+                          : locked
+                            ? "border-border/20 bg-card/30 opacity-60 cursor-not-allowed"
+                            : "border-border/30 bg-card/40 hover:bg-card/60"
                       }`}
                     >
+                      {locked && (
+                        <Lock className="absolute top-2 left-2 w-3.5 h-3.5 text-muted-foreground" />
+                      )}
                       <div className={`w-10 h-10 rounded-xl ${c.bg} ${c.border} border flex items-center justify-center mb-2`}>
                         <Icon className={`w-5 h-5 ${c.color}`} />
                       </div>
