@@ -17,30 +17,36 @@ const Navbar = () => {
   const { user, signOut } = useAuth();
 
   useEffect(() => {
-    if (!user) { setIsDeveloper(false); setUnreadCount(0); return; }
+    if (!user) {
+      setIsDeveloper(false);
+      // Guests still see broadcast notifications (user_id = null)
+      fetchUnreadCount();
+      return;
+    }
     supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "developer").maybeSingle()
       .then(({ data }) => setIsDeveloper(!!data));
     fetchUnreadCount();
   }, [user]);
 
   const fetchUnreadCount = async () => {
-    if (!user) return;
-    const { count } = await supabase
-      .from("notifications")
-      .select("*", { count: "exact", head: true })
-      .or(`user_id.eq.${user.id},user_id.is.null`)
-      .eq("is_read", false);
+    const filter = user
+      ? supabase.from("notifications").select("*", { count: "exact", head: true })
+          .or(`user_id.eq.${user.id},user_id.is.null`).eq("is_read", false)
+      : supabase.from("notifications").select("*", { count: "exact", head: true })
+          .is("user_id", null).eq("is_read", false);
+    const { count } = await filter;
     setUnreadCount(count || 0);
   };
 
   const fetchNotifications = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("notifications")
-      .select("*")
-      .or(`user_id.eq.${user.id},user_id.is.null`)
-      .order("created_at", { ascending: false })
-      .limit(20);
+    const q = user
+      ? supabase.from("notifications").select("*")
+          .or(`user_id.eq.${user.id},user_id.is.null`)
+          .order("created_at", { ascending: false }).limit(20)
+      : supabase.from("notifications").select("*")
+          .is("user_id", null)
+          .order("created_at", { ascending: false }).limit(20);
+    const { data } = await q;
     setNotifications(data || []);
   };
 
@@ -82,7 +88,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/30">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/40 backdrop-blur-2xl border-b border-primary/15 shadow-[0_2px_24px_-8px_hsl(var(--primary)/0.25)]">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -94,7 +100,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-2xl bg-card/30 backdrop-blur-xl border border-border/20">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -113,11 +119,10 @@ const Navbar = () => {
           {/* Theme Toggle & Auth */}
           <div className="hidden lg:flex items-center gap-3">
             <ThemeToggle />
-            {user && (
-              <div className="relative">
+            <div className="relative">
                 <button
                   onClick={toggleNotifications}
-                  className="relative w-10 h-10 rounded-xl bg-secondary/50 border border-border/30 flex items-center justify-center hover:bg-secondary transition-colors"
+                  className="relative w-10 h-10 rounded-xl bg-card/40 backdrop-blur-xl border border-primary/20 flex items-center justify-center hover:bg-primary/10 transition-colors"
                 >
                   <Bell className="w-4 h-4 text-muted-foreground" />
                   {unreadCount > 0 && (
@@ -127,10 +132,10 @@ const Navbar = () => {
                   )}
                 </button>
                 {showNotifications && (
-                  <div className="absolute left-0 top-12 w-80 max-h-96 bg-card border border-border/30 rounded-xl shadow-2xl overflow-hidden z-50" dir="rtl">
+                  <div className="absolute left-0 top-12 w-80 max-h-96 bg-card/80 backdrop-blur-2xl border border-primary/20 rounded-2xl shadow-2xl overflow-hidden z-50" dir="rtl">
                     <div className="p-3 border-b border-border/20 flex items-center justify-between">
                       <h3 className="text-sm font-bold text-foreground">الإشعارات</h3>
-                      {unreadCount > 0 && (
+                      {user && unreadCount > 0 && (
                         <button onClick={markAllRead} className="text-xs text-primary hover:underline">
                           قراءة الكل
                         </button>
@@ -143,7 +148,7 @@ const Navbar = () => {
                         notifications.map((n) => (
                           <div
                             key={n.id}
-                            onClick={() => !n.is_read && markAsRead(n.id)}
+                            onClick={() => user && !n.is_read && markAsRead(n.id)}
                             className={`p-3 border-b border-border/10 cursor-pointer hover:bg-secondary/30 transition-colors ${!n.is_read ? "bg-primary/5" : ""}`}
                           >
                             <div className="flex items-start gap-2">
@@ -162,8 +167,7 @@ const Navbar = () => {
                     </div>
                   </div>
                 )}
-              </div>
-            )}
+            </div>
             {user ? (
               <div className="flex items-center gap-2">
                 {isDeveloper && (
@@ -210,12 +214,10 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
-            {user ? (
-              <>
-                <div className="relative">
+            <div className="relative">
                   <button
                     onClick={toggleNotifications}
-                    className="relative w-10 h-10 rounded-xl bg-secondary/50 border border-border/30 flex items-center justify-center"
+                    className="relative w-10 h-10 rounded-xl bg-card/40 backdrop-blur-xl border border-primary/20 flex items-center justify-center"
                   >
                     <Bell className="w-4 h-4 text-muted-foreground" />
                     {unreadCount > 0 && (
@@ -225,10 +227,10 @@ const Navbar = () => {
                     )}
                   </button>
                   {showNotifications && (
-                    <div className="absolute left-0 top-12 w-72 max-h-80 bg-card border border-border/30 rounded-xl shadow-2xl overflow-hidden z-50" dir="rtl">
+                    <div className="absolute left-0 top-12 w-72 max-h-80 bg-card/80 backdrop-blur-2xl border border-primary/20 rounded-2xl shadow-2xl overflow-hidden z-50" dir="rtl">
                       <div className="p-3 border-b border-border/20 flex items-center justify-between">
                         <h3 className="text-sm font-bold text-foreground">الإشعارات</h3>
-                        {unreadCount > 0 && (
+                        {user && unreadCount > 0 && (
                           <button onClick={markAllRead} className="text-xs text-primary hover:underline">
                             قراءة الكل
                           </button>
@@ -241,7 +243,7 @@ const Navbar = () => {
                           notifications.map((n) => (
                             <div
                               key={n.id}
-                              onClick={() => !n.is_read && markAsRead(n.id)}
+                              onClick={() => user && !n.is_read && markAsRead(n.id)}
                               className={`p-3 border-b border-border/10 cursor-pointer hover:bg-secondary/30 ${!n.is_read ? "bg-primary/5" : ""}`}
                             >
                               <div className="flex items-start gap-2">
@@ -257,7 +259,9 @@ const Navbar = () => {
                       </div>
                     </div>
                   )}
-                </div>
+            </div>
+            {user ? (
+              <>
                 <Link
                   to="/الملف-الشخصي"
                   className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center"
