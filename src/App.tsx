@@ -12,6 +12,7 @@ import SpaceBackground from "@/components/SpaceBackground";
 import CustomCursor from "@/components/CustomCursor";
 import LoginExportCard from "@/components/LoginExportCard";
 import InlineContentEditor from "@/components/InlineContentEditor";
+import InstagramFab from "@/components/InstagramFab";
 import { SiteContentProvider } from "@/hooks/useSiteContent";
 import { usePageVisit } from "@/hooks/usePageVisit";
 import Index from "./pages/Index";
@@ -95,6 +96,7 @@ const App = () => (
               <SpaceBackground />
               <CustomCursor />
               <LoginExportCard />
+              <InstagramFab />
               <Toaster />
               <Sonner />
               <BrowserRouter>
