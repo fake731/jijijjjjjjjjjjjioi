@@ -214,12 +214,10 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center gap-2">
-            {user ? (
-              <>
-                <div className="relative">
+            <div className="relative">
                   <button
                     onClick={toggleNotifications}
-                    className="relative w-10 h-10 rounded-xl bg-secondary/50 border border-border/30 flex items-center justify-center"
+                    className="relative w-10 h-10 rounded-xl bg-card/40 backdrop-blur-xl border border-primary/20 flex items-center justify-center"
                   >
                     <Bell className="w-4 h-4 text-muted-foreground" />
                     {unreadCount > 0 && (
@@ -229,10 +227,10 @@ const Navbar = () => {
                     )}
                   </button>
                   {showNotifications && (
-                    <div className="absolute left-0 top-12 w-72 max-h-80 bg-card border border-border/30 rounded-xl shadow-2xl overflow-hidden z-50" dir="rtl">
+                    <div className="absolute left-0 top-12 w-72 max-h-80 bg-card/80 backdrop-blur-2xl border border-primary/20 rounded-2xl shadow-2xl overflow-hidden z-50" dir="rtl">
                       <div className="p-3 border-b border-border/20 flex items-center justify-between">
                         <h3 className="text-sm font-bold text-foreground">الإشعارات</h3>
-                        {unreadCount > 0 && (
+                        {user && unreadCount > 0 && (
                           <button onClick={markAllRead} className="text-xs text-primary hover:underline">
                             قراءة الكل
                           </button>
@@ -245,7 +243,7 @@ const Navbar = () => {
                           notifications.map((n) => (
                             <div
                               key={n.id}
-                              onClick={() => !n.is_read && markAsRead(n.id)}
+                              onClick={() => user && !n.is_read && markAsRead(n.id)}
                               className={`p-3 border-b border-border/10 cursor-pointer hover:bg-secondary/30 ${!n.is_read ? "bg-primary/5" : ""}`}
                             >
                               <div className="flex items-start gap-2">
@@ -261,7 +259,9 @@ const Navbar = () => {
                       </div>
                     </div>
                   )}
-                </div>
+            </div>
+            {user ? (
+              <>
                 <Link
                   to="/الملف-الشخصي"
                   className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center"
