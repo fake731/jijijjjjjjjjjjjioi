@@ -76,6 +76,7 @@ const Navbar = () => {
     { label: t("nav.home"), path: "/" },
     { label: t("nav.guide"), path: "/الدليل" },
     { label: t("nav.tools"), path: "/الادوات" },
+    { label: t("nav.programming"), path: "/البرمجة" },
     { label: t("nav.scripts"), path: "/السكربتات" },
     { label: t("nav.ai"), path: "/الذكاء" },
     { label: t("nav.scanner"), path: "/الاوامر" },

@@ -21,8 +21,10 @@ const InlineContentEditor = () => {
   const [newItem, setNewItem] = useState({ key: "", value: "" });
   const [creating, setCreating] = useState(false);
   const [pickMode, setPickMode] = useState(false);
-  const [picked, setPicked] = useState<{ key: string; value: string; id?: string } | null>(null);
+  const [picked, setPicked] = useState<{ key: string; value: string; id?: string; style?: Record<string,string> } | null>(null);
   const [pickedDraft, setPickedDraft] = useState("");
+  const [pickedColor, setPickedColor] = useState("");
+  const [pickedBg, setPickedBg] = useState("");
   const [pickedSaving, setPickedSaving] = useState(false);
 
   useEffect(() => {
@@ -46,8 +48,10 @@ const InlineContentEditor = () => {
       const key = target.getAttribute("data-content-key") || "";
       const existing = content[key];
       const value = existing?.value ?? (target.textContent || "");
-      setPicked({ key, value, id: existing?.id });
+      setPicked({ key, value, id: existing?.id, style: existing?.style || {} });
       setPickedDraft(value);
+      setPickedColor((existing?.style as any)?.color || "");
+      setPickedBg((existing?.style as any)?.backgroundColor || "");
       setPickMode(false);
       setOpen(true);
     };
@@ -109,9 +113,12 @@ const InlineContentEditor = () => {
   const savePicked = async () => {
     if (!picked) return;
     setPickedSaving(true);
+    const style_overrides: Record<string,string> = { ...(picked.style || {}) };
+    if (pickedColor) style_overrides.color = pickedColor; else delete style_overrides.color;
+    if (pickedBg) style_overrides.backgroundColor = pickedBg; else delete style_overrides.backgroundColor;
     if (picked.id) {
       const { error } = await supabase.from("site_content")
-        .update({ content_value: pickedDraft, updated_by: user?.id })
+        .update({ content_value: pickedDraft, updated_by: user?.id, style_overrides })
         .eq("id", picked.id);
       setPickedSaving(false);
       if (error) { toast.error(error.message); return; }
@@ -121,6 +128,7 @@ const InlineContentEditor = () => {
         content_value: pickedDraft,
         page: location.pathname,
         updated_by: user?.id,
+        style_overrides,
       });
       setPickedSaving(false);
       if (error) { toast.error(error.message); return; }
@@ -128,6 +136,8 @@ const InlineContentEditor = () => {
     toast.success("تم الحفظ");
     setPicked(null);
     setPickedDraft("");
+    setPickedColor("");
+    setPickedBg("");
     refresh();
   };
 
@@ -186,6 +196,24 @@ const InlineContentEditor = () => {
             className="text-sm mb-2"
             autoFocus
           />
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <div>
+              <Label className="text-[10px] text-muted-foreground">لون النص</Label>
+              <div className="flex items-center gap-1">
+                <input type="color" value={pickedColor || "#ffffff"} onChange={e => setPickedColor(e.target.value)} className="w-9 h-9 rounded-lg border border-border/40 bg-transparent cursor-pointer" />
+                <Input dir="ltr" value={pickedColor} onChange={e => setPickedColor(e.target.value)} placeholder="#color" className="h-9 text-xs flex-1" />
+                {pickedColor && <button onClick={() => setPickedColor("")} className="text-xs text-muted-foreground hover:text-destructive px-1">×</button>}
+              </div>
+            </div>
+            <div>
+              <Label className="text-[10px] text-muted-foreground">لون الخلفية</Label>
+              <div className="flex items-center gap-1">
+                <input type="color" value={pickedBg || "#000000"} onChange={e => setPickedBg(e.target.value)} className="w-9 h-9 rounded-lg border border-border/40 bg-transparent cursor-pointer" />
+                <Input dir="ltr" value={pickedBg} onChange={e => setPickedBg(e.target.value)} placeholder="transparent" className="h-9 text-xs flex-1" />
+                {pickedBg && <button onClick={() => setPickedBg("")} className="text-xs text-muted-foreground hover:text-destructive px-1">×</button>}
+              </div>
+            </div>
+          </div>
           <Button onClick={savePicked} disabled={pickedSaving || !pickedDraft.trim()} className="w-full gap-2 h-9">
             {pickedSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             حفظ التغيير

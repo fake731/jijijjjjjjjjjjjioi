@@ -1,4 +1,4 @@
-import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail, GraduationCap } from "lucide-react";
+import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail, GraduationCap, Code2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -41,6 +41,15 @@ const FeaturesSection = () => {
       color: "text-green-500",
       bg: "bg-green-500/10",
       border: "border-green-500/30",
+    },
+    {
+      icon: Code2,
+      title: "البرمجة",
+      description: "تعلم Python و C++ و JS وأكثر مع شرح كامل",
+      link: "/البرمجة",
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/30",
     },
     {
       icon: BookOpen,
