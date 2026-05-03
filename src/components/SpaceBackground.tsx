@@ -51,14 +51,14 @@ const SpaceBackground = () => {
     }
 
     const planetDefs: Omit<PlanetDef, 'moonAngles' | 'rotationPhase'>[] = [
-      { angle: 0, speed: 0.0008, distRatio: 0.10, size: 6, colors: ["#b5b5b5", "#8a8a8a", "#5e5e5e"], name: "mercury", hasRing: false, moons: 0, tilt: 0.03, eccentricity: 0.2, inclination: 0.12 },
-      { angle: 1.5, speed: 0.0006, distRatio: 0.16, size: 10, colors: ["#e8c56d", "#d4a937", "#b88a20"], name: "venus", hasRing: false, moons: 0, tilt: 0.05, eccentricity: 0.01, inclination: 0.06 },
-      { angle: 3, speed: 0.0004, distRatio: 0.23, size: 11, colors: ["#4a90d9", "#2d6a4f", "#3a7d44"], name: "earth", hasRing: false, moons: 1, tilt: 0.41, eccentricity: 0.017, inclination: 0 },
-      { angle: 4.2, speed: 0.00032, distRatio: 0.31, size: 9, colors: ["#c1440e", "#e07a3a", "#8b3a0f"], name: "mars", hasRing: false, moons: 2, tilt: 0.44, eccentricity: 0.09, inclination: 0.03 },
-      { angle: 2, speed: 0.00016, distRatio: 0.43, size: 24, colors: ["#c88b3a", "#e3a857", "#a0722a"], name: "jupiter", hasRing: false, moons: 4, tilt: 0.05, eccentricity: 0.05, inclination: 0.02 },
-      { angle: 5, speed: 0.00011, distRatio: 0.56, size: 20, colors: ["#e8d68c", "#c9a94e", "#d4b96a"], name: "saturn", hasRing: true, moons: 3, tilt: 0.47, eccentricity: 0.06, inclination: 0.04 },
-      { angle: 0.5, speed: 0.00007, distRatio: 0.69, size: 14, colors: ["#7ec8e3", "#9fd5e0", "#5fb8c9"], name: "uranus", hasRing: true, moons: 2, tilt: 1.71, eccentricity: 0.05, inclination: 0.01 },
-      { angle: 3.5, speed: 0.00005, distRatio: 0.80, size: 13, colors: ["#3f51b5", "#5c6bc0", "#283593"], name: "neptune", hasRing: false, moons: 1, tilt: 0.49, eccentricity: 0.01, inclination: 0.03 },
+      { angle: 0, speed: 0.0040, distRatio: 0.10, size: 6, colors: ["#b5b5b5", "#8a8a8a", "#5e5e5e"], name: "mercury", hasRing: false, moons: 0, tilt: 0.03, eccentricity: 0.2, inclination: 0.12 },
+      { angle: 1.5, speed: 0.0030, distRatio: 0.16, size: 10, colors: ["#e8c56d", "#d4a937", "#b88a20"], name: "venus", hasRing: false, moons: 0, tilt: 0.05, eccentricity: 0.01, inclination: 0.06 },
+      { angle: 3, speed: 0.0022, distRatio: 0.23, size: 11, colors: ["#4a90d9", "#2d6a4f", "#3a7d44"], name: "earth", hasRing: false, moons: 1, tilt: 0.41, eccentricity: 0.017, inclination: 0 },
+      { angle: 4.2, speed: 0.0017, distRatio: 0.31, size: 9, colors: ["#c1440e", "#e07a3a", "#8b3a0f"], name: "mars", hasRing: false, moons: 2, tilt: 0.44, eccentricity: 0.09, inclination: 0.03 },
+      { angle: 2, speed: 0.0009, distRatio: 0.43, size: 24, colors: ["#c88b3a", "#e3a857", "#a0722a"], name: "jupiter", hasRing: false, moons: 4, tilt: 0.05, eccentricity: 0.05, inclination: 0.02 },
+      { angle: 5, speed: 0.0006, distRatio: 0.56, size: 20, colors: ["#e8d68c", "#c9a94e", "#d4b96a"], name: "saturn", hasRing: true, moons: 3, tilt: 0.47, eccentricity: 0.06, inclination: 0.04 },
+      { angle: 0.5, speed: 0.0004, distRatio: 0.69, size: 14, colors: ["#7ec8e3", "#9fd5e0", "#5fb8c9"], name: "uranus", hasRing: true, moons: 2, tilt: 1.71, eccentricity: 0.05, inclination: 0.01 },
+      { angle: 3.5, speed: 0.00028, distRatio: 0.80, size: 13, colors: ["#3f51b5", "#5c6bc0", "#283593"], name: "neptune", hasRing: false, moons: 1, tilt: 0.49, eccentricity: 0.01, inclination: 0.03 },
     ];
 
     const planets: PlanetDef[] = planetDefs.map(p => ({

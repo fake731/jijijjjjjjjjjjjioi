@@ -1,4 +1,4 @@
-import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail } from "lucide-react";
+import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -77,6 +77,15 @@ const FeaturesSection = () => {
       color: "text-pink-500",
       bg: "bg-pink-500/10",
       border: "border-pink-500/30",
+    },
+    {
+      icon: GraduationCap,
+      title: "الاختبار",
+      description: "اختبر مهاراتك في 15 تخصصاً مع ثلاث مستويات",
+      link: "/الاختبار",
+      color: "text-violet-500",
+      bg: "bg-violet-500/10",
+      border: "border-violet-500/30",
     },
     {
       icon: Download,
