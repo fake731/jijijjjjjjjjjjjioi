@@ -34,6 +34,7 @@ import DeveloperPage from "./pages/DeveloperPage";
 import DevLoginPage from "./pages/DevLoginPage";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import QuizPage from "./pages/QuizPage";
+import ProgrammingPage from "./pages/ProgrammingPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -78,6 +79,7 @@ const AnimatedRoutes = () => {
             <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
             <Route path="/لوحة-التحكم" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
             <Route path="/الاختبار" element={<QuizPage />} />
+            <Route path="/البرمجة" element={<ProgrammingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </motion.div>
