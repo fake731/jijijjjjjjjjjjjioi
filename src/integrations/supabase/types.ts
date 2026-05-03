@@ -368,6 +368,51 @@ export type Database = {
         }
         Relationships: []
       }
+      programming_content: {
+        Row: {
+          category: string
+          code_example: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          difficulty: string
+          explanation: string | null
+          id: string
+          language: string
+          order_index: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          code_example?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string
+          explanation?: string | null
+          id?: string
+          language: string
+          order_index?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          code_example?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string
+          explanation?: string | null
+          id?: string
+          language?: string
+          order_index?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quiz_attempts: {
         Row: {
           category: string
@@ -454,6 +499,7 @@ export type Database = {
           description: string | null
           id: string
           page: string
+          style_overrides: Json
           updated_at: string
           updated_by: string | null
         }
@@ -464,6 +510,7 @@ export type Database = {
           description?: string | null
           id?: string
           page?: string
+          style_overrides?: Json
           updated_at?: string
           updated_by?: string | null
         }
@@ -474,6 +521,7 @@ export type Database = {
           description?: string | null
           id?: string
           page?: string
+          style_overrides?: Json
           updated_at?: string
           updated_by?: string | null
         }
@@ -505,6 +553,33 @@ export type Database = {
           set_by?: string | null
           unlimited?: boolean
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_key: string
+          badge_label: string
+          earned_at: string
+          id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          badge_key: string
+          badge_label: string
+          earned_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          badge_key?: string
+          badge_label?: string
+          earned_at?: string
+          id?: string
+          metadata?: Json | null
           user_id?: string
         }
         Relationships: []
