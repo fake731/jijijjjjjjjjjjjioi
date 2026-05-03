@@ -2,7 +2,7 @@ import { useEffect, useState, createContext, useContext, ReactNode, useCallback 
 import { supabase } from "@/integrations/supabase/client";
 
 interface SiteContentMap {
-  [key: string]: { id: string; value: string; description?: string | null };
+  [key: string]: { id: string; value: string; description?: string | null; style?: Record<string, string> };
 }
 
 interface Ctx {
@@ -24,10 +24,10 @@ export const SiteContentProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
-    const { data } = await supabase.from("site_content").select("id, content_key, content_value, description");
+    const { data } = await supabase.from("site_content").select("id, content_key, content_value, description, style_overrides");
     const map: SiteContentMap = {};
     (data || []).forEach((c: any) => {
-      map[c.content_key] = { id: c.id, value: c.content_value, description: c.description };
+      map[c.content_key] = { id: c.id, value: c.content_value, description: c.description, style: c.style_overrides || {} };
     });
     setContent(map);
     setLoading(false);

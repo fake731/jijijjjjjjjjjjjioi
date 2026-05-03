@@ -15,10 +15,11 @@ interface Props {
  * Developers can switch to "pick mode" in InlineContentEditor and click directly to edit.
  */
 const EditableText = ({ contentKey, fallback, as: Tag = "span", className }: Props) => {
-  const { get } = useSiteContent();
+  const { get, content } = useSiteContent();
   const value = get(contentKey, fallback);
+  const style = content[contentKey]?.style || {};
   const Component = Tag as any;
-  return <Component data-content-key={contentKey} className={className}>{value}</Component>;
+  return <Component data-content-key={contentKey} className={className} style={style}>{value}</Component>;
 };
 
 export default EditableText;
