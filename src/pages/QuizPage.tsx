@@ -277,13 +277,13 @@ const QuizPage = () => {
   return (
     <div className="min-h-screen bg-background relative">
       <Navbar />
-      <main className="container mx-auto px-3 sm:px-4 pt-24 pb-12 max-w-4xl" dir="rtl">
+      <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-6xl" dir="rtl">
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl mb-3">
             <GraduationCap className="w-4 h-4 text-primary" />
             <span className="text-xs text-primary font-medium">قسم الاختبار</span>
           </div>
-          <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-2">اختبر مهاراتك</h1>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 text-glow-sm">اختبر مهاراتك</h1>
           <p className="text-xs md:text-sm text-muted-foreground">15 تخصصاً · مع تايمر · شارات إنجاز · صعوبة ديناميكية</p>
         </div>
 
