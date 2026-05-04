@@ -89,7 +89,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-3 left-3 right-3 lg:left-6 lg:right-6 z-50 rounded-2xl bg-card/45 backdrop-blur-2xl border border-primary/20 shadow-[0_8px_32px_-12px_hsl(var(--primary)/0.35)]">
+    <nav className="fixed top-3 left-3 right-3 lg:left-6 lg:right-6 z-50 rounded-2xl bg-card/20 backdrop-blur-2xl border border-primary/25 shadow-[0_8px_32px_-12px_hsl(var(--primary)/0.4)]">
       <div className="px-3 lg:px-5">
         <div className="flex items-center justify-between h-14 lg:h-16 gap-2">
           {/* Logo */}
