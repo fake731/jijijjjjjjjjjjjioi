@@ -412,8 +412,8 @@
 
 @layer components {
   .cyber-card {
-    @apply relative overflow-hidden rounded-2xl border border-primary/15 bg-card/40 backdrop-blur-2xl;
-    @apply transition-all duration-300 hover:border-primary/40 hover:bg-card/55 hover:box-glow-sm;
+    @apply relative overflow-hidden rounded-2xl border border-primary/20 bg-card/20 backdrop-blur-2xl;
+    @apply transition-all duration-300 hover:border-primary/45 hover:bg-card/30 hover:box-glow-sm;
   }
 
   .cyber-button {
@@ -448,13 +448,13 @@
 
   /* Global glass utilities */
   .glass {
-    @apply bg-card/40 backdrop-blur-2xl border border-primary/15 rounded-2xl;
+    @apply bg-card/20 backdrop-blur-2xl border border-primary/20 rounded-2xl;
   }
   .glass-strong {
-    @apply bg-card/60 backdrop-blur-2xl border border-primary/25 rounded-2xl shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.35)];
+    @apply bg-card/35 backdrop-blur-2xl border border-primary/30 rounded-2xl shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.4)];
   }
   .glass-soft {
-    @apply bg-card/25 backdrop-blur-xl border border-border/20 rounded-2xl;
+    @apply bg-card/15 backdrop-blur-xl border border-border/20 rounded-2xl;
   }
 }
 
