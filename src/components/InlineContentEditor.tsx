@@ -146,15 +146,17 @@ const InlineContentEditor = () => {
       {/* Pick mode global styles */}
       <style>{`
         body.ice-pickmode [data-content-key] {
-          outline: 2px dashed hsl(var(--primary) / 0.7) !important;
-          outline-offset: 3px;
-          cursor: crosshair !important;
-          transition: outline-color 0.15s;
+          outline: 1.5px dashed hsl(var(--primary) / 0.5) !important;
+          outline-offset: 2px;
+          cursor: text !important;
+          border-radius: 4px;
+          transition: outline-color 0.15s, background 0.15s;
         }
         body.ice-pickmode [data-content-key]:hover {
-          outline-color: hsl(var(--primary)) !important;
-          background: hsl(var(--primary) / 0.08) !important;
+          outline: 2px solid hsl(var(--primary)) !important;
+          background: hsl(var(--primary) / 0.12) !important;
         }
+        body.ice-pickmode * { user-select: text !important; }
       `}</style>
 
       {/* Pick mode toggle */}
