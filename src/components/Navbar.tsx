@@ -101,7 +101,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-2xl bg-card/30 backdrop-blur-xl border border-border/20">
+          <div className="hidden lg:flex items-center gap-1 px-2 py-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
