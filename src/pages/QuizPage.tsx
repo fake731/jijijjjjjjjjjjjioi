@@ -277,13 +277,13 @@ const QuizPage = () => {
   return (
     <div className="min-h-screen bg-background relative">
       <Navbar />
-      <main className="container mx-auto px-3 sm:px-4 pt-24 pb-12 max-w-4xl" dir="rtl">
+      <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-6xl" dir="rtl">
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl mb-3">
             <GraduationCap className="w-4 h-4 text-primary" />
             <span className="text-xs text-primary font-medium">قسم الاختبار</span>
           </div>
-          <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-2">اختبر مهاراتك</h1>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 text-glow-sm">اختبر مهاراتك</h1>
           <p className="text-xs md:text-sm text-muted-foreground">15 تخصصاً · مع تايمر · شارات إنجاز · صعوبة ديناميكية</p>
         </div>
 
@@ -347,8 +347,8 @@ const QuizPage = () => {
             )}
 
             <div>
-              <h2 className="text-sm font-bold text-foreground mb-3">اختر التخصص</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+              <h2 className="text-lg md:text-xl font-bold text-foreground mb-4">اختر التخصص</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {CATEGORIES.map(c => {
                   const Icon = c.icon;
                   const active = category === c.id;
@@ -360,17 +360,17 @@ const QuizPage = () => {
                         if (locked) { toast.error("سجّل دخول أولاً"); navigate("/تسجيل-الدخول"); return; }
                         setCategory(c.id);
                       }}
-                      className={`relative p-3 sm:p-4 rounded-2xl border backdrop-blur-2xl transition-all text-right ${
-                        active ? `${c.bg} ${c.border} shadow-lg scale-[1.02]`
-                          : locked ? "border-border/20 bg-card/30 opacity-60"
-                          : "border-border/30 bg-card/40 hover:bg-card/60"
+                      className={`relative p-4 sm:p-5 rounded-2xl border backdrop-blur-2xl transition-all text-right ${
+                        active ? `${c.bg} ${c.border} shadow-lg scale-[1.03]`
+                          : locked ? "border-border/20 bg-card/15 opacity-60"
+                          : "border-border/30 bg-card/20 hover:bg-card/35"
                       }`}
                     >
                       {locked && <Lock className="absolute top-2 left-2 w-3.5 h-3.5 text-muted-foreground" />}
-                      <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${c.bg} ${c.border} border flex items-center justify-center mb-2`}>
-                        <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${c.color}`} />
+                      <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl ${c.bg} ${c.border} border flex items-center justify-center mb-3`}>
+                        <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${c.color}`} />
                       </div>
-                      <p className="font-bold text-foreground text-xs sm:text-sm">{c.label}</p>
+                      <p className="font-bold text-foreground text-sm sm:text-base">{c.label}</p>
                     </button>
                   );
                 })}
@@ -378,19 +378,19 @@ const QuizPage = () => {
             </div>
 
             <div>
-              <h2 className="text-sm font-bold text-foreground mb-3">اختر المستوى</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+              <h2 className="text-lg md:text-xl font-bold text-foreground mb-4">اختر المستوى</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {LEVELS.map(l => {
                   const active = difficulty === l.id;
                   return (
                     <button key={l.id} onClick={() => setDifficulty(l.id)}
-                      className={`p-3 sm:p-4 rounded-2xl border backdrop-blur-2xl transition-all ${
-                        active ? `${l.bg} border-current ${l.color} scale-[1.02]`
-                          : "border-border/30 bg-card/40 text-foreground hover:bg-card/60"
+                      className={`p-4 sm:p-5 rounded-2xl border backdrop-blur-2xl transition-all ${
+                        active ? `${l.bg} border-current ${l.color} scale-[1.03]`
+                          : "border-border/30 bg-card/20 text-foreground hover:bg-card/35"
                       }`}
                     >
-                      <p className="font-bold text-xs sm:text-sm">{l.label}</p>
-                      <p className="text-[10px] mt-0.5 opacity-70">{l.time}ث/سؤال</p>
+                      <p className="font-bold text-sm sm:text-base">{l.label}</p>
+                      <p className="text-xs mt-1 opacity-70">{l.time}ث/سؤال</p>
                     </button>
                   );
                 })}
