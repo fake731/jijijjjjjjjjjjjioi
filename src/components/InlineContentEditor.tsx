@@ -21,11 +21,6 @@ const InlineContentEditor = () => {
   const [newItem, setNewItem] = useState({ key: "", value: "" });
   const [creating, setCreating] = useState(false);
   const [pickMode, setPickMode] = useState(false);
-  const [picked, setPicked] = useState<{ key: string; value: string; id?: string; style?: Record<string,string> } | null>(null);
-  const [pickedDraft, setPickedDraft] = useState("");
-  const [pickedColor, setPickedColor] = useState("");
-  const [pickedBg, setPickedBg] = useState("");
-  const [pickedSaving, setPickedSaving] = useState(false);
 
   useEffect(() => {
     if (!user) { setIsDeveloper(false); return; }
@@ -33,34 +28,80 @@ const InlineContentEditor = () => {
       .then(({ data }) => setIsDeveloper(!!data));
   }, [user]);
 
-  // Pick-mode: highlight + capture clicks on tagged elements
+  // Pick-mode: make tagged elements directly contentEditable; save on blur to DB
   useEffect(() => {
     if (!pickMode) {
       document.body.classList.remove("ice-pickmode");
+      document.querySelectorAll<HTMLElement>("[data-content-key]").forEach(el => {
+        el.removeAttribute("contenteditable");
+        el.removeAttribute("spellcheck");
+      });
       return;
     }
     document.body.classList.add("ice-pickmode");
-    const onClick = (e: MouseEvent) => {
-      const target = (e.target as HTMLElement)?.closest?.("[data-content-key]") as HTMLElement | null;
-      if (!target) return;
-      e.preventDefault();
-      e.stopPropagation();
-      const key = target.getAttribute("data-content-key") || "";
-      const existing = content[key];
-      const value = existing?.value ?? (target.textContent || "");
-      setPicked({ key, value, id: existing?.id, style: existing?.style || {} });
-      setPickedDraft(value);
-      setPickedColor((existing?.style as any)?.color || "");
-      setPickedBg((existing?.style as any)?.backgroundColor || "");
-      setPickMode(false);
-      setOpen(true);
+
+    const els = Array.from(document.querySelectorAll<HTMLElement>("[data-content-key]"));
+    const originals = new Map<HTMLElement, string>();
+
+    const onFocus = (e: FocusEvent) => {
+      const el = e.currentTarget as HTMLElement;
+      originals.set(el, el.textContent || "");
     };
-    document.addEventListener("click", onClick, true);
+
+    const onBlur = async (e: FocusEvent) => {
+      const el = e.currentTarget as HTMLElement;
+      const key = el.getAttribute("data-content-key") || "";
+      const newVal = (el.textContent || "").trim();
+      const oldVal = originals.get(el) || "";
+      if (!newVal || newVal === oldVal) return;
+      const existing = content[key];
+      if (existing?.id) {
+        const { error } = await supabase.from("site_content")
+          .update({ content_value: newVal, updated_by: user?.id })
+          .eq("id", existing.id);
+        if (error) { toast.error(error.message); el.textContent = oldVal; return; }
+      } else {
+        const { error } = await supabase.from("site_content").insert({
+          content_key: key, content_value: newVal,
+          page: location.pathname, updated_by: user?.id,
+        });
+        if (error) { toast.error(error.message); el.textContent = oldVal; return; }
+      }
+      toast.success("تم الحفظ");
+      refresh();
+    };
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        (e.currentTarget as HTMLElement).blur();
+      }
+      if (e.key === "Escape") {
+        const el = e.currentTarget as HTMLElement;
+        el.textContent = originals.get(el) || "";
+        el.blur();
+      }
+    };
+
+    els.forEach(el => {
+      el.setAttribute("contenteditable", "true");
+      el.setAttribute("spellcheck", "false");
+      el.addEventListener("focus", onFocus);
+      el.addEventListener("blur", onBlur);
+      el.addEventListener("keydown", onKey);
+    });
+
     return () => {
-      document.removeEventListener("click", onClick, true);
+      els.forEach(el => {
+        el.removeAttribute("contenteditable");
+        el.removeAttribute("spellcheck");
+        el.removeEventListener("focus", onFocus);
+        el.removeEventListener("blur", onBlur);
+        el.removeEventListener("keydown", onKey);
+      });
       document.body.classList.remove("ice-pickmode");
     };
-  }, [pickMode, content]);
+  }, [pickMode, content, user, location.pathname, refresh]);
 
   // Hide on developer-internal pages
   if (!isDeveloper) return null;
@@ -110,51 +151,22 @@ const InlineContentEditor = () => {
     refresh();
   };
 
-  const savePicked = async () => {
-    if (!picked) return;
-    setPickedSaving(true);
-    const style_overrides: Record<string,string> = { ...(picked.style || {}) };
-    if (pickedColor) style_overrides.color = pickedColor; else delete style_overrides.color;
-    if (pickedBg) style_overrides.backgroundColor = pickedBg; else delete style_overrides.backgroundColor;
-    if (picked.id) {
-      const { error } = await supabase.from("site_content")
-        .update({ content_value: pickedDraft, updated_by: user?.id, style_overrides })
-        .eq("id", picked.id);
-      setPickedSaving(false);
-      if (error) { toast.error(error.message); return; }
-    } else {
-      const { error } = await supabase.from("site_content").insert({
-        content_key: picked.key,
-        content_value: pickedDraft,
-        page: location.pathname,
-        updated_by: user?.id,
-        style_overrides,
-      });
-      setPickedSaving(false);
-      if (error) { toast.error(error.message); return; }
-    }
-    toast.success("تم الحفظ");
-    setPicked(null);
-    setPickedDraft("");
-    setPickedColor("");
-    setPickedBg("");
-    refresh();
-  };
-
   return (
     <>
       {/* Pick mode global styles */}
       <style>{`
         body.ice-pickmode [data-content-key] {
-          outline: 1.5px dashed hsl(var(--primary) / 0.5) !important;
+          outline: 1.5px dashed hsl(var(--primary) / 0.45) !important;
           outline-offset: 2px;
           cursor: text !important;
           border-radius: 4px;
-          transition: outline-color 0.15s, background 0.15s;
+        }
+        body.ice-pickmode [data-content-key]:focus {
+          outline: 2px solid hsl(var(--primary)) !important;
+          background: hsl(var(--primary) / 0.08) !important;
         }
         body.ice-pickmode [data-content-key]:hover {
-          outline: 2px solid hsl(var(--primary)) !important;
-          background: hsl(var(--primary) / 0.12) !important;
+          outline: 2px solid hsl(var(--primary) / 0.8) !important;
         }
         body.ice-pickmode * { user-select: text !important; }
       `}</style>
@@ -181,45 +193,9 @@ const InlineContentEditor = () => {
         {open ? <X className="w-5 h-5" /> : <Pencil className="w-5 h-5" />}
       </button>
 
-      {/* Picked element quick-edit popup */}
-      {picked && (
-        <div className="fixed inset-x-4 bottom-24 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-[420px] z-[70] rounded-2xl border border-primary/40 bg-card/90 backdrop-blur-2xl shadow-2xl p-4" dir="rtl">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-bold text-foreground">تعديل العنصر المحدد</p>
-            <button onClick={() => { setPicked(null); setPickedDraft(""); }} className="text-muted-foreground hover:text-foreground">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <code className="block text-[10px] text-primary font-mono mb-2 truncate" dir="ltr">{picked.key}</code>
-          <Textarea
-            value={pickedDraft}
-            onChange={e => setPickedDraft(e.target.value)}
-            rows={4}
-            className="text-sm mb-2"
-            autoFocus
-          />
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <div>
-              <Label className="text-[10px] text-muted-foreground">لون النص</Label>
-              <div className="flex items-center gap-1">
-                <input type="color" value={pickedColor || "#ffffff"} onChange={e => setPickedColor(e.target.value)} className="w-9 h-9 rounded-lg border border-border/40 bg-transparent cursor-pointer" />
-                <Input dir="ltr" value={pickedColor} onChange={e => setPickedColor(e.target.value)} placeholder="#color" className="h-9 text-xs flex-1" />
-                {pickedColor && <button onClick={() => setPickedColor("")} className="text-xs text-muted-foreground hover:text-destructive px-1">×</button>}
-              </div>
-            </div>
-            <div>
-              <Label className="text-[10px] text-muted-foreground">لون الخلفية</Label>
-              <div className="flex items-center gap-1">
-                <input type="color" value={pickedBg || "#000000"} onChange={e => setPickedBg(e.target.value)} className="w-9 h-9 rounded-lg border border-border/40 bg-transparent cursor-pointer" />
-                <Input dir="ltr" value={pickedBg} onChange={e => setPickedBg(e.target.value)} placeholder="transparent" className="h-9 text-xs flex-1" />
-                {pickedBg && <button onClick={() => setPickedBg("")} className="text-xs text-muted-foreground hover:text-destructive px-1">×</button>}
-              </div>
-            </div>
-          </div>
-          <Button onClick={savePicked} disabled={pickedSaving || !pickedDraft.trim()} className="w-full gap-2 h-9">
-            {pickedSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            حفظ التغيير
-          </Button>
+      {pickMode && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] px-4 py-2 rounded-full glass text-xs text-foreground shadow-lg" dir="rtl">
+          انقر على أي نص لتعديله مباشرة • Enter للحفظ • Esc للإلغاء
         </div>
       )}
 

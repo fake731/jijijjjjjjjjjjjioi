@@ -92,17 +92,17 @@ const ProgrammingPage = () => {
   return (
     <div className="min-h-screen bg-background relative" dir="rtl">
       <Navbar />
-      <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-7xl">
+      <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-[1600px]">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 border border-primary/25 backdrop-blur-xl mb-6">
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm text-primary font-medium">قسم البرمجة الشامل</span>
           </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-5 text-glow-sm">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-6 text-glow-sm">
             تعلّم البرمجة من الصفر
           </h1>
-          <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Python، C++، JavaScript، الأمن السيبراني، الشبكات، واكتشاف الثغرات — كل شيء في مكان واحد.
           </p>
         </div>
@@ -141,7 +141,7 @@ const ProgrammingPage = () => {
           />
         </div>
 
-        {/* Content */}
+        {/* Content — grouped by category (theory + practice) */}
         {loading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -154,26 +154,43 @@ const ProgrammingPage = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {filtered.map(it => {
+          <div className="space-y-12">
+            {Object.entries(filtered.reduce<Record<string, ProgrammingItem[]>>((acc, it) => {
+              (acc[it.category] = acc[it.category] || []).push(it);
+              return acc;
+            }, {})).map(([cat, list]) => (
+              <section key={cat}>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-px flex-1 bg-gradient-to-l from-primary/40 to-transparent" />
+                  <h2 className="text-2xl md:text-3xl font-bold text-primary px-4 py-1.5 rounded-full glass">
+                    {cat}
+                  </h2>
+                  <div className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" />
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {list.map(it => {
               const diff = DIFFICULTY_LABEL[it.difficulty] || DIFFICULTY_LABEL.beginner;
               return (
-                <Card key={it.id} className="overflow-hidden hover:border-primary/40 transition-all">
-                  <CardContent className="p-6 space-y-4">
+                <Card key={it.id} className="overflow-hidden hover:border-primary/45 transition-all">
+                  <CardContent className="p-7 space-y-5">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-bold text-foreground text-xl md:text-2xl leading-tight">{it.title}</h3>
+                      <h3 className="font-bold text-foreground text-2xl md:text-3xl leading-tight">{it.title}</h3>
                       <span className={`text-xs px-3 py-1 rounded-full border whitespace-nowrap ${diff.color}`}>
                         {diff.label}
                       </span>
                     </div>
                     {it.description && (
-                      <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{it.description}</p>
+                      <div className="p-4 rounded-xl glass-soft">
+                        <p className="text-xs font-bold text-primary mb-2">الجانب النظري:</p>
+                        <p className="text-base md:text-lg text-muted-foreground leading-loose">{it.description}</p>
+                      </div>
                     )}
                     {it.code_example && (
                       <div className="relative">
+                        <p className="text-xs font-bold text-primary mb-2">الجانب العملي:</p>
                         <pre
                           dir="ltr"
-                          className={`text-sm bg-secondary/40 border border-border/30 rounded-xl p-4 overflow-x-auto font-mono leading-relaxed ${
+                          className={`text-sm md:text-base bg-card/30 backdrop-blur-xl border border-primary/20 rounded-xl p-5 overflow-x-auto font-mono leading-relaxed ${
                             !user ? "select-none" : ""
                           }`}
                         >
@@ -181,7 +198,7 @@ const ProgrammingPage = () => {
                         </pre>
                         <button
                           onClick={() => handleCopy(it.id, it.code_example || "")}
-                          className="absolute top-2 left-2 w-9 h-9 rounded-lg bg-card/60 backdrop-blur border border-border/40 flex items-center justify-center hover:bg-primary/15 transition-colors"
+                          className="absolute top-8 left-2 w-9 h-9 rounded-lg glass flex items-center justify-center hover:bg-primary/15 transition-colors"
                           title="نسخ"
                         >
                           {copiedId === it.id ? (
@@ -193,15 +210,18 @@ const ProgrammingPage = () => {
                       </div>
                     )}
                     {it.explanation && (
-                      <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
-                        <p className="text-xs font-bold text-primary mb-2">شرح:</p>
-                        <p className="text-sm md:text-base text-foreground/90 leading-relaxed">{it.explanation}</p>
+                      <div className="p-4 rounded-xl glass-soft">
+                        <p className="text-xs font-bold text-primary mb-2">شرح تفصيلي:</p>
+                        <p className="text-base md:text-lg text-foreground/90 leading-loose">{it.explanation}</p>
                       </div>
                     )}
                   </CardContent>
                 </Card>
               );
             })}
+                </div>
+              </section>
+            ))}
           </div>
         )}
       </main>
