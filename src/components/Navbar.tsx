@@ -16,6 +16,15 @@ const Navbar = () => {
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
 
+  // Decode URL-encoded pathname so Arabic routes match correctly (e.g. %D8%A7%D9%84%D8%AF%D9%84%D9%8A%D9%84 → /الدليل)
+  const currentPath = (() => {
+    try { return decodeURIComponent(location.pathname); } catch { return location.pathname; }
+  })();
+  const isActive = (path: string) => {
+    if (path === "/") return currentPath === "/";
+    return currentPath === path || currentPath.startsWith(path + "/");
+  };
+
   useEffect(() => {
     if (!user) {
       setIsDeveloper(false);
@@ -107,7 +116,7 @@ const Navbar = () => {
                 key={item.path}
                 to={item.path}
                 className={
-                  location.pathname === item.path
+                  isActive(item.path)
                     ? "nav-link-active"
                     : "nav-link"
                 }
@@ -302,7 +311,7 @@ const Navbar = () => {
                   to={item.path}
                   onClick={() => setIsOpen(false)}
                   className={
-                    location.pathname === item.path
+                    isActive(item.path)
                       ? "nav-link-active text-center"
                       : "nav-link text-center"
                   }
