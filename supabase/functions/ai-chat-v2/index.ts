@@ -44,23 +44,43 @@ serve(async (req) => {
       }
     }
 
-    // Check daily chat limit (3 per day)
+    // Daily chat limit — developers and explicitly-unlimited users bypass it.
     if (userId) {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const { count } = await supabaseAdmin
-        .from("ai_chat_logs")
-        .select("id", { count: "exact", head: true })
+      const { data: roleRow } = await supabaseAdmin
+        .from("user_roles")
+        .select("role")
         .eq("user_id", userId)
-        .gte("created_at", todayStart.toISOString());
+        .eq("role", "developer")
+        .maybeSingle();
+      const isDeveloper = !!roleRow;
 
-      if (count !== null && count >= 3) {
-        const limitMsg = language === "ar"
-          ? "لقد استنفدت الحد اليومي (3 محادثات). حاول مرة أخرى غداً."
-          : "You've reached your daily limit (3 chats). Try again tomorrow.";
-        return new Response(JSON.stringify({ error: limitMsg }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+      if (!isDeveloper) {
+        const { data: limitRow } = await supabaseAdmin
+          .from("user_ai_limits")
+          .select("daily_limit, unlimited")
+          .eq("user_id", userId)
+          .maybeSingle();
+        const unlimited = !!limitRow?.unlimited;
+        const dailyLimit = typeof limitRow?.daily_limit === "number" ? limitRow.daily_limit : 3;
+
+        if (!unlimited) {
+          const todayStart = new Date();
+          todayStart.setHours(0, 0, 0, 0);
+          const { count } = await supabaseAdmin
+            .from("ai_chat_logs")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", userId)
+            .gte("created_at", todayStart.toISOString());
+
+          if (count !== null && count >= dailyLimit) {
+            const limitMsg = language === "ar"
+              ? `لقد استنفدت الحد اليومي (${dailyLimit} محادثات). حاول مرة أخرى غداً.`
+              : `You've reached your daily limit (${dailyLimit} chats). Try again tomorrow.`;
+            return new Response(JSON.stringify({ error: limitMsg }), {
+              status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+        }
       }
     }
 

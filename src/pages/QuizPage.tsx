@@ -129,7 +129,18 @@ const QuizPage = () => {
       .eq("difficulty", diff)
       .limit(limit);
     if (error) throw error;
-    return ((data || []) as any).map((q: any) => ({ ...q, options: Array.isArray(q.options) ? q.options : [] })) as QuizQuestion[];
+    return ((data || []) as any).map((q: any) => {
+      const opts: string[] = Array.isArray(q.options) ? q.options : [];
+      // Shuffle option order so correct answer is not always at the same position
+      const indexed = opts.map((o, i) => ({ o, i }));
+      for (let k = indexed.length - 1; k > 0; k--) {
+        const j = Math.floor(Math.random() * (k + 1));
+        [indexed[k], indexed[j]] = [indexed[j], indexed[k]];
+      }
+      const newOptions = indexed.map(x => x.o);
+      const newCorrect = indexed.findIndex(x => x.i === q.correct_index);
+      return { ...q, options: newOptions, correct_index: newCorrect >= 0 ? newCorrect : q.correct_index };
+    }) as QuizQuestion[];
   };
 
   const startQuiz = async () => {

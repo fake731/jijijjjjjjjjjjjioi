@@ -124,12 +124,12 @@ const FeaturesSection = () => {
             <Link
               key={index}
               to={feature.link}
-              className="cyber-card p-6 group"
+              className="glass p-6 group hover:border-primary/45 hover:bg-card/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_hsl(var(--primary)/0.4)]"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Icon */}
               <div className="mb-4 transition-transform duration-300 group-hover:scale-110">
-                <div className={`w-12 h-12 rounded-xl ${feature.bg} border ${feature.border} flex items-center justify-center group-hover:box-glow-sm transition-all duration-300`}>
+                <div className={`w-12 h-12 rounded-xl backdrop-blur-xl ${feature.bg} border ${feature.border} flex items-center justify-center group-hover:box-glow-sm transition-all duration-300`}>
                   <feature.icon className={`w-6 h-6 ${feature.color}`} />
                 </div>
               </div>
