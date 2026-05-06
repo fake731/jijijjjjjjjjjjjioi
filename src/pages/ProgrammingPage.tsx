@@ -181,13 +181,13 @@ const ProgrammingPage = () => {
                     </div>
                     {it.description && (
                       <div className="p-5 rounded-2xl glass-soft">
-                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">📘 الجانب النظري</p>
+                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">الجانب النظري</p>
                         <p className="text-lg md:text-xl text-foreground/85 leading-loose">{it.description}</p>
                       </div>
                     )}
                     {it.code_example && (
                       <div className="relative p-5 rounded-2xl glass-soft">
-                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">⚡ الجانب العملي</p>
+                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">الجانب العملي</p>
                         <pre
                           dir="ltr"
                           className={`text-base md:text-lg bg-card/20 backdrop-blur-2xl border border-primary/25 rounded-xl p-6 overflow-x-auto font-mono leading-relaxed ${
@@ -211,7 +211,7 @@ const ProgrammingPage = () => {
                     )}
                     {it.explanation && (
                       <div className="p-5 rounded-2xl glass-soft">
-                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">🔍 شرح تفصيلي</p>
+                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">شرح تفصيلي</p>
                         <p className="text-lg md:text-xl text-foreground/90 leading-loose">{it.explanation}</p>
                       </div>
                     )}
