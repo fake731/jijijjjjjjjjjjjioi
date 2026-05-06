@@ -1,4 +1,4 @@
-import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail, GraduationCap, Code2 } from "lucide-react";
+import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail, Trophy, Braces } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/hooks/use-language";
 
@@ -43,13 +43,13 @@ const FeaturesSection = () => {
       border: "border-green-500/30",
     },
     {
-      icon: Code2,
+      icon: Braces,
       title: "البرمجة",
       description: "تعلم Python و C++ و JS وأكثر مع شرح كامل",
       link: "/البرمجة",
-      color: "text-emerald-500",
-      bg: "bg-emerald-500/10",
-      border: "border-emerald-500/30",
+      color: "text-fuchsia-400",
+      bg: "bg-fuchsia-500/10",
+      border: "border-fuchsia-500/30",
     },
     {
       icon: BookOpen,
@@ -88,13 +88,13 @@ const FeaturesSection = () => {
       border: "border-pink-500/30",
     },
     {
-      icon: GraduationCap,
+      icon: Trophy,
       title: "الاختبار",
       description: "اختبر مهاراتك في 15 تخصصاً مع ثلاث مستويات",
       link: "/الاختبار",
-      color: "text-violet-500",
-      bg: "bg-violet-500/10",
-      border: "border-violet-500/30",
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/30",
     },
     {
       icon: Download,

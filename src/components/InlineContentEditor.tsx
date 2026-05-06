@@ -160,7 +160,12 @@ const InlineContentEditor = () => {
           outline-offset: 2px;
           cursor: text !important;
           border-radius: 4px;
+          pointer-events: auto !important;
+          user-select: text !important;
+          -webkit-user-select: text !important;
         }
+        body.ice-pickmode [data-content-key],
+        body.ice-pickmode [data-content-key] * { cursor: text !important; }
         body.ice-pickmode [data-content-key]:focus {
           outline: 2px solid hsl(var(--primary)) !important;
           background: hsl(var(--primary) / 0.08) !important;
@@ -169,6 +174,7 @@ const InlineContentEditor = () => {
           outline: 2px solid hsl(var(--primary) / 0.8) !important;
         }
         body.ice-pickmode * { user-select: text !important; }
+        body.ice-pickmode [data-content-key] [contenteditable="true"] { outline: none; }
       `}</style>
 
       {/* Pick mode toggle */}
