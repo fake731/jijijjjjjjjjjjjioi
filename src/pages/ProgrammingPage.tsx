@@ -92,17 +92,17 @@ const ProgrammingPage = () => {
   return (
     <div className="min-h-screen bg-background relative" dir="rtl">
       <Navbar />
-      <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-[1600px]">
+      <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-[1800px]">
         {/* Header */}
         <div className="text-center mb-14">
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 border border-primary/25 backdrop-blur-xl mb-6">
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm text-primary font-medium">قسم البرمجة الشامل</span>
           </div>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground mb-6 text-glow-sm">
+          <h1 className="text-6xl md:text-8xl lg:text-[7rem] font-bold text-foreground mb-6 text-glow-sm leading-tight">
             تعلّم البرمجة من الصفر
           </h1>
-          <p className="text-lg md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-3xl text-muted-foreground max-w-5xl mx-auto leading-relaxed">
             Python، C++، JavaScript، الأمن السيبراني، الشبكات، واكتشاف الثغرات — كل شيء في مكان واحد.
           </p>
         </div>
@@ -167,30 +167,30 @@ const ProgrammingPage = () => {
                   </h2>
                   <div className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" />
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {list.map(it => {
               const diff = DIFFICULTY_LABEL[it.difficulty] || DIFFICULTY_LABEL.beginner;
               return (
-                <Card key={it.id} className="overflow-hidden hover:border-primary/45 transition-all">
-                  <CardContent className="p-7 space-y-5">
+                <Card key={it.id} className="overflow-hidden hover:border-primary/45 transition-all glass-strong">
+                  <CardContent className="p-8 md:p-10 space-y-6">
                     <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-bold text-foreground text-2xl md:text-3xl leading-tight">{it.title}</h3>
-                      <span className={`text-xs px-3 py-1 rounded-full border whitespace-nowrap ${diff.color}`}>
+                      <h3 className="font-bold text-foreground text-3xl md:text-4xl leading-tight">{it.title}</h3>
+                      <span className={`text-sm px-4 py-1.5 rounded-full border whitespace-nowrap ${diff.color}`}>
                         {diff.label}
                       </span>
                     </div>
                     {it.description && (
-                      <div className="p-4 rounded-xl glass-soft">
-                        <p className="text-xs font-bold text-primary mb-2">الجانب النظري:</p>
-                        <p className="text-base md:text-lg text-muted-foreground leading-loose">{it.description}</p>
+                      <div className="p-5 rounded-2xl glass-soft">
+                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">📘 الجانب النظري</p>
+                        <p className="text-lg md:text-xl text-foreground/85 leading-loose">{it.description}</p>
                       </div>
                     )}
                     {it.code_example && (
-                      <div className="relative">
-                        <p className="text-xs font-bold text-primary mb-2">الجانب العملي:</p>
+                      <div className="relative p-5 rounded-2xl glass-soft">
+                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">⚡ الجانب العملي</p>
                         <pre
                           dir="ltr"
-                          className={`text-sm md:text-base bg-card/30 backdrop-blur-xl border border-primary/20 rounded-xl p-5 overflow-x-auto font-mono leading-relaxed ${
+                          className={`text-base md:text-lg bg-card/20 backdrop-blur-2xl border border-primary/25 rounded-xl p-6 overflow-x-auto font-mono leading-relaxed ${
                             !user ? "select-none" : ""
                           }`}
                         >
@@ -198,21 +198,21 @@ const ProgrammingPage = () => {
                         </pre>
                         <button
                           onClick={() => handleCopy(it.id, it.code_example || "")}
-                          className="absolute top-8 left-2 w-9 h-9 rounded-lg glass flex items-center justify-center hover:bg-primary/15 transition-colors"
+                          className="absolute top-12 left-6 w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-primary/15 transition-colors"
                           title="نسخ"
                         >
                           {copiedId === it.id ? (
-                            <Check className="w-4 h-4 text-emerald-500" />
+                            <Check className="w-5 h-5 text-emerald-500" />
                           ) : (
-                            <Copy className="w-4 h-4 text-muted-foreground" />
+                            <Copy className="w-5 h-5 text-muted-foreground" />
                           )}
                         </button>
                       </div>
                     )}
                     {it.explanation && (
-                      <div className="p-4 rounded-xl glass-soft">
-                        <p className="text-xs font-bold text-primary mb-2">شرح تفصيلي:</p>
-                        <p className="text-base md:text-lg text-foreground/90 leading-loose">{it.explanation}</p>
+                      <div className="p-5 rounded-2xl glass-soft">
+                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">🔍 شرح تفصيلي</p>
+                        <p className="text-lg md:text-xl text-foreground/90 leading-loose">{it.explanation}</p>
                       </div>
                     )}
                   </CardContent>
