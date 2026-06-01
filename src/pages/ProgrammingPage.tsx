@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { toast } from "sonner";
 import {
   Code2, Search, Copy, Check, Cpu, FileCode, Shield, Network, Bug,
@@ -162,64 +163,74 @@ const ProgrammingPage = () => {
               <section key={cat}>
                 <div className="flex items-center gap-3 mb-5">
                   <div className="h-px flex-1 bg-gradient-to-l from-primary/40 to-transparent" />
-                  <h2 className="text-2xl md:text-3xl font-bold text-primary px-4 py-1.5 rounded-full glass">
+                  <h2 className="text-3xl md:text-4xl font-bold text-primary px-6 py-2 rounded-full glass">
                     {cat}
                   </h2>
                   <div className="h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent" />
                 </div>
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            {list.map(it => {
-              const diff = DIFFICULTY_LABEL[it.difficulty] || DIFFICULTY_LABEL.beginner;
-              return (
-                <Card key={it.id} className="overflow-hidden hover:border-primary/45 transition-all glass-strong">
-                  <CardContent className="p-8 md:p-10 space-y-6">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-bold text-foreground text-3xl md:text-4xl leading-tight">{it.title}</h3>
-                      <span className={`text-sm px-4 py-1.5 rounded-full border whitespace-nowrap ${diff.color}`}>
-                        {diff.label}
-                      </span>
-                    </div>
-                    {it.description && (
-                      <div className="p-5 rounded-2xl glass-soft">
-                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">الجانب النظري</p>
-                        <p className="text-lg md:text-xl text-foreground/85 leading-loose">{it.description}</p>
-                      </div>
-                    )}
-                    {it.code_example && (
-                      <div className="relative p-5 rounded-2xl glass-soft">
-                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">الجانب العملي</p>
-                        <pre
-                          dir="ltr"
-                          className={`text-base md:text-lg bg-card/20 backdrop-blur-2xl border border-primary/25 rounded-xl p-6 overflow-x-auto font-mono leading-relaxed ${
-                            !user ? "select-none" : ""
-                          }`}
-                        >
-                          <code>{it.code_example}</code>
-                        </pre>
-                        <button
-                          onClick={() => handleCopy(it.id, it.code_example || "")}
-                          className="absolute top-12 left-6 w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-primary/15 transition-colors"
-                          title="نسخ"
-                        >
-                          {copiedId === it.id ? (
-                            <Check className="w-5 h-5 text-emerald-500" />
-                          ) : (
-                            <Copy className="w-5 h-5 text-muted-foreground" />
-                          )}
-                        </button>
-                      </div>
-                    )}
-                    {it.explanation && (
-                      <div className="p-5 rounded-2xl glass-soft">
-                        <p className="text-sm font-bold text-primary mb-3 tracking-wide">شرح تفصيلي</p>
-                        <p className="text-lg md:text-xl text-foreground/90 leading-loose">{it.explanation}</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-                </div>
+                <Accordion type="multiple" className="space-y-4">
+                  {list.map(it => {
+                    const diff = DIFFICULTY_LABEL[it.difficulty] || DIFFICULTY_LABEL.beginner;
+                    return (
+                      <AccordionItem
+                        key={it.id}
+                        value={it.id}
+                        className="glass-strong border-b-0 overflow-hidden data-[state=open]:border-primary/45 transition-all"
+                      >
+                        <AccordionTrigger className="px-6 md:px-8 py-6 hover:no-underline">
+                          <div className="flex items-center justify-between gap-4 w-full">
+                            <h3 className="font-bold text-foreground text-2xl md:text-3xl lg:text-4xl leading-tight text-right">
+                              {it.title}
+                            </h3>
+                            <span className={`text-xs md:text-sm px-3 md:px-4 py-1.5 rounded-full border whitespace-nowrap ${diff.color}`}>
+                              {diff.label}
+                            </span>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-6 md:px-8 pb-8">
+                          <div className="space-y-6">
+                            {it.description && (
+                              <div className="p-5 rounded-2xl glass-soft">
+                                <p className="text-sm font-bold text-primary mb-3 tracking-wide">الجانب النظري</p>
+                                <p className="text-lg md:text-xl text-foreground/85 leading-loose">{it.description}</p>
+                              </div>
+                            )}
+                            {it.code_example && (
+                              <div className="relative p-5 rounded-2xl glass-soft">
+                                <p className="text-sm font-bold text-primary mb-3 tracking-wide">الجانب العملي</p>
+                                <pre
+                                  dir="ltr"
+                                  className={`text-base md:text-lg bg-card/20 backdrop-blur-2xl border border-primary/25 rounded-xl p-6 overflow-x-auto font-mono leading-relaxed ${
+                                    !user ? "select-none" : ""
+                                  }`}
+                                >
+                                  <code>{it.code_example}</code>
+                                </pre>
+                                <button
+                                  onClick={() => handleCopy(it.id, it.code_example || "")}
+                                  className="absolute top-12 left-6 w-10 h-10 rounded-lg glass flex items-center justify-center hover:bg-primary/15 transition-colors"
+                                  title="نسخ"
+                                >
+                                  {copiedId === it.id ? (
+                                    <Check className="w-5 h-5 text-emerald-500" />
+                                  ) : (
+                                    <Copy className="w-5 h-5 text-muted-foreground" />
+                                  )}
+                                </button>
+                              </div>
+                            )}
+                            {it.explanation && (
+                              <div className="p-5 rounded-2xl glass-soft">
+                                <p className="text-sm font-bold text-primary mb-3 tracking-wide">شرح تفصيلي</p>
+                                <p className="text-lg md:text-xl text-foreground/90 leading-loose">{it.explanation}</p>
+                              </div>
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
               </section>
             ))}
           </div>
