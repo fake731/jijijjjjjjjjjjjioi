@@ -64,15 +64,6 @@ const ProgrammingPage = () => {
     })();
   }, []);
 
-  const filtered = useMemo(() => {
-    return items.filter(i =>
-      i.language === activeLang &&
-      (search === "" ||
-        i.title.toLowerCase().includes(search.toLowerCase()) ||
-        (i.description || "").toLowerCase().includes(search.toLowerCase()))
-    );
-  }, [items, activeLang, search]);
-
   const handleCopy = (id: string, code: string) => {
     if (!user) {
       toast.error("سجّل دخول لنسخ الكود");
