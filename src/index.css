@@ -358,6 +358,28 @@
     }
   }
 
+  /* Global glass sweep — every card/surface in the site becomes translucent glass */
+  .bg-card {
+    background-color: hsl(var(--card) / 0.15) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+  .bg-secondary {
+    background-color: hsl(var(--secondary) / 0.25) !important;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+  .bg-popover {
+    background-color: hsl(var(--popover) / 0.85) !important;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+  .bg-muted {
+    background-color: hsl(var(--muted) / 0.4) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
   *, *::before, *::after {
     font-family: 'ip1Font', sans-serif !important;
   }
