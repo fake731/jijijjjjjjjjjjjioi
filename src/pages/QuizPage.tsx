@@ -288,7 +288,7 @@ const QuizPage = () => {
   return (
     <div className="min-h-screen bg-background relative">
       <Navbar />
-      <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-6xl" dir="rtl">
+      <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-[1900px]" dir="rtl">
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl mb-3">
             <GraduationCap className="w-4 h-4 text-primary" />

@@ -337,6 +337,25 @@
     direction: rtl;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+  }
+
+  /* Promote animated/interactive layers to GPU for 60fps across devices */
+  a, button, [role="button"], .cyber-card, .glass, .glass-strong, .glass-soft,
+  [data-state], .animate-float, .animate-pulse-glow, .animate-fade-in {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  a:hover, button:hover, [role="button"]:hover,
+  .cyber-card:hover, .glass:hover, .glass-strong:hover, .glass-soft:hover {
+    will-change: transform, opacity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
   }
 
   *, *::before, *::after {
@@ -353,6 +372,13 @@
 }
 
 @layer utilities {
+  /* 60fps smooth-motion helpers */
+  .smooth-60 {
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+
   .text-glow {
     text-shadow: 0 0 20px hsl(var(--cyber-cyan) / 0.8),
                  0 0 40px hsl(var(--cyber-cyan) / 0.6),
