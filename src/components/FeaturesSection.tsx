@@ -119,12 +119,15 @@ const FeaturesSection = () => {
         </h2>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          className="grid gap-6"
+          style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))" }}
+        >
           {features.map((feature, index) => (
             <Link
               key={index}
               to={feature.link}
-              className="bg-card/10 backdrop-blur-3xl border border-primary/20 rounded-2xl p-6 group hover:border-primary/45 hover:bg-card/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_40px_-10px_hsl(var(--primary)/0.4)]"
+              className="glass-strong p-6 group transition-transform duration-200 hover:-translate-y-1 focus-visible:-translate-y-1 focus-visible:outline-none"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Icon */}
@@ -135,12 +138,18 @@ const FeaturesSection = () => {
               </div>
 
               {/* Title */}
-              <h3 className="text-xl font-bold text-primary mb-3 group-hover:text-glow-sm transition-all duration-300">
+              <h3
+                className="font-bold text-primary mb-3 group-hover:text-glow-sm transition-all duration-300"
+                style={{ fontSize: "clamp(1.15rem, 2.6vw, 1.45rem)" }}
+              >
                 {feature.title}
               </h3>
 
               {/* Description */}
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <p
+                className="text-muted-foreground leading-relaxed"
+                style={{ fontSize: "clamp(0.9rem, 1.8vw, 1rem)" }}
+              >
                 {feature.description}
               </p>
             </Link>
