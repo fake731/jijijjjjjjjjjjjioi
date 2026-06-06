@@ -355,6 +355,36 @@
     *, *::before, *::after {
       animation-duration: 0.001ms !important;
       transition-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
+    .animate-float, .animate-pulse-glow {
+      animation: none !important;
+    }
+    /* drop heavy glows on reduced-motion */
+    .text-glow, .text-glow-sm { text-shadow: none !important; }
+    .box-glow, .box-glow-sm { box-shadow: none !important; }
+  }
+
+  /* Lighter shadows on mobile to save GPU/paint */
+  @media (max-width: 768px) {
+    .text-glow {
+      text-shadow: 0 0 10px hsl(var(--cyber-cyan) / 0.55);
+    }
+    .text-glow-sm {
+      text-shadow: 0 0 6px hsl(var(--cyber-cyan) / 0.45);
+    }
+    .box-glow {
+      box-shadow: 0 0 10px hsl(var(--cyber-cyan) / 0.22);
+    }
+    .box-glow-sm {
+      box-shadow: 0 0 6px hsl(var(--cyber-cyan) / 0.15);
+    }
+    /* reduce blur cost on phones */
+    .glass, .glass-strong, .glass-soft, .cyber-card,
+    .bg-card, .bg-secondary, .bg-popover, .bg-muted {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
   }
 
@@ -499,12 +529,30 @@
   /* Global glass utilities */
   .glass {
     @apply bg-card/15 backdrop-blur-2xl border border-primary/20 rounded-2xl;
+    background-image: linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.02) 40%, transparent 70%);
+    transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  }
+  .glass:hover, .glass:focus-within {
+    border-color: hsl(var(--primary) / 0.45);
+    box-shadow: 0 10px 32px -12px hsl(var(--primary) / 0.45), inset 0 1px 0 hsl(var(--primary) / 0.18);
   }
   .glass-strong {
     @apply bg-card/25 backdrop-blur-2xl border border-primary/30 rounded-2xl shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.35)];
+    background-image: linear-gradient(135deg, hsl(var(--primary) / 0.12), hsl(var(--primary) / 0.03) 45%, transparent 75%);
+    transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  }
+  .glass-strong:hover, .glass-strong:focus-within {
+    border-color: hsl(var(--primary) / 0.55);
+    box-shadow: 0 16px 44px -14px hsl(var(--primary) / 0.55), inset 0 1px 0 hsl(var(--primary) / 0.22);
   }
   .glass-soft {
     @apply bg-card/10 backdrop-blur-xl border border-border/20 rounded-2xl;
+    background-image: linear-gradient(135deg, hsl(var(--primary) / 0.05), transparent 60%);
+    transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+  }
+  .glass-soft:hover, .glass-soft:focus-within {
+    border-color: hsl(var(--primary) / 0.35);
+    box-shadow: 0 8px 24px -12px hsl(var(--primary) / 0.35);
   }
 }
 
