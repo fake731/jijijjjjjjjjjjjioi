@@ -101,10 +101,10 @@ const ProgrammingPage = () => {
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm text-primary font-medium">قسم البرمجة الشامل</span>
           </div>
-          <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold text-foreground mb-6 text-glow-sm leading-[0.95]">
+          <h1 className="text-7xl md:text-9xl lg:text-[11rem] font-bold text-foreground mb-8 text-glow-sm leading-[0.95]">
             تعلّم البرمجة من الصفر
           </h1>
-          <p className="text-xl md:text-3xl lg:text-4xl text-muted-foreground max-w-5xl mx-auto leading-relaxed">
+          <p className="text-2xl md:text-4xl lg:text-5xl text-muted-foreground max-w-6xl mx-auto leading-relaxed">
             Python، C++، JavaScript، الأمن السيبراني، الشبكات، واكتشاف الثغرات — كل شيء في مكان واحد.
           </p>
         </div>
@@ -126,7 +126,7 @@ const ProgrammingPage = () => {
             <Loader2 className="w-10 h-10 animate-spin text-primary" />
           </div>
         ) : (
-          <div className="max-w-6xl mx-auto space-y-6">
+          <div className="max-w-[1700px] mx-auto space-y-8">
             {LANGUAGES.map(L => {
               const list = filteredByLang[L.id] || [];
               if (search.trim() && list.length === 0) return null;
@@ -136,21 +136,21 @@ const ProgrammingPage = () => {
                 <div key={L.id} className="glass-strong overflow-hidden transform-gpu will-change-transform">
                   <button
                     onClick={() => { setOpenLang(prev => prev === L.id ? null : L.id); setOpenTopic(null); }}
-                    className="w-full flex items-center justify-between p-7 md:p-9 hover:bg-primary/5 transition-colors duration-200"
+                    className="w-full flex items-center justify-between p-8 md:p-12 hover:bg-primary/5 transition-colors duration-200"
                   >
-                    <div className="flex items-center gap-5 md:gap-7">
-                      <div className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl ${L.bg} border ${L.border} backdrop-blur-2xl flex items-center justify-center`}>
-                        <Icon className={`w-8 h-8 md:w-10 md:h-10 ${L.color}`} />
+                    <div className="flex items-center gap-6 md:gap-9">
+                      <div className={`w-20 h-20 md:w-28 md:h-28 rounded-3xl ${L.bg} border ${L.border} backdrop-blur-2xl flex items-center justify-center`}>
+                        <Icon className={`w-10 h-10 md:w-14 md:h-14 ${L.color}`} />
                       </div>
                       <div className="text-right">
-                        <h2 className={`text-3xl md:text-5xl font-bold ${L.color}`}>{L.label}</h2>
-                        <p className="text-sm md:text-lg text-muted-foreground mt-1">{counts[L.id] || 0} درس</p>
+                        <h2 className={`text-4xl md:text-7xl font-bold ${L.color}`}>{L.label}</h2>
+                        <p className="text-base md:text-2xl text-muted-foreground mt-2">{counts[L.id] || 0} درس</p>
                       </div>
                     </div>
                     {isOpen ? (
-                      <ChevronUp className="w-7 h-7 md:w-9 md:h-9 text-primary" />
+                      <ChevronUp className="w-9 h-9 md:w-12 md:h-12 text-primary" />
                     ) : (
-                      <ChevronDown className="w-7 h-7 md:w-9 md:h-9 text-muted-foreground" />
+                      <ChevronDown className="w-9 h-9 md:w-12 md:h-12 text-muted-foreground" />
                     )}
                   </button>
                   <AnimatePresence initial={false}>
@@ -162,7 +162,7 @@ const ProgrammingPage = () => {
                         transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
                         className="overflow-hidden transform-gpu will-change-transform"
                       >
-                        <div className="border-t border-primary/15 p-4 md:p-6 space-y-3 md:space-y-4">
+                        <div className="border-t border-primary/15 p-5 md:p-8 space-y-4 md:space-y-6">
                           {list.length === 0 ? (
                             <div className="text-center py-10">
                               <BookOpen className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
@@ -176,19 +176,19 @@ const ProgrammingPage = () => {
                               <div key={tid} className="glass overflow-hidden">
                                 <button
                                   onClick={() => setOpenTopic(prev => prev === tid ? null : tid)}
-                                  className="w-full flex items-center justify-between gap-4 px-5 md:px-7 py-5 md:py-6 hover:bg-primary/5 transition-colors duration-200"
+                                  className="w-full flex items-center justify-between gap-4 px-6 md:px-9 py-6 md:py-8 hover:bg-primary/5 transition-colors duration-200"
                                 >
-                                  <h3 className="font-bold text-foreground text-xl md:text-3xl text-right leading-tight flex-1">
+                                  <h3 className="font-bold text-foreground text-2xl md:text-4xl text-right leading-tight flex-1">
                                     {it.title}
                                   </h3>
                                   <div className="flex items-center gap-3">
-                                    <span className={`text-xs md:text-sm px-3 md:px-4 py-1.5 rounded-full border whitespace-nowrap ${diff.color}`}>
+                                    <span className={`text-sm md:text-base px-4 md:px-5 py-2 rounded-full border whitespace-nowrap ${diff.color}`}>
                                       {diff.label}
                                     </span>
                                     {isTopicOpen ? (
-                                      <ChevronUp className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+                                      <ChevronUp className="w-6 h-6 md:w-8 md:h-8 text-primary" />
                                     ) : (
-                                      <ChevronDown className="w-5 h-5 md:w-6 md:h-6 text-muted-foreground" />
+                                      <ChevronDown className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground" />
                                     )}
                                   </div>
                                 </button>
@@ -201,19 +201,19 @@ const ProgrammingPage = () => {
                                       transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
                                       className="overflow-hidden transform-gpu will-change-transform"
                                     >
-                                      <div className="border-t border-primary/10 p-5 md:p-7 space-y-5">
+                                      <div className="border-t border-primary/10 p-6 md:p-9 space-y-6 md:space-y-7">
                                         {it.description && (
-                                          <div className="p-5 md:p-6 rounded-2xl glass-soft">
-                                            <p className="text-sm md:text-base font-bold text-primary mb-3 tracking-wide">الجانب النظري</p>
-                                            <p className="text-base md:text-xl text-foreground/85 leading-loose">{it.description}</p>
+                                          <div className="p-6 md:p-8 rounded-2xl glass-soft">
+                                            <p className="text-base md:text-lg font-bold text-primary mb-4 tracking-wide">الجانب النظري</p>
+                                            <p className="text-lg md:text-2xl text-foreground/85 leading-loose">{it.description}</p>
                                           </div>
                                         )}
                                         {it.code_example && (
-                                          <div className="relative p-5 md:p-6 rounded-2xl glass-soft">
-                                            <p className="text-sm md:text-base font-bold text-primary mb-3 tracking-wide">الجانب العملي</p>
+                                          <div className="relative p-6 md:p-8 rounded-2xl glass-soft">
+                                            <p className="text-base md:text-lg font-bold text-primary mb-4 tracking-wide">الجانب العملي</p>
                                             <pre
                                               dir="ltr"
-                                              className={`text-sm md:text-lg bg-card/15 backdrop-blur-2xl border border-primary/20 rounded-2xl p-5 md:p-6 overflow-x-auto font-mono leading-relaxed ${
+                                              className={`text-base md:text-xl bg-card/15 backdrop-blur-2xl rounded-2xl p-6 md:p-7 overflow-x-auto font-mono leading-relaxed ${
                                                 !user ? "select-none" : ""
                                               }`}
                                             >
@@ -221,21 +221,21 @@ const ProgrammingPage = () => {
                                             </pre>
                                             <button
                                               onClick={() => handleCopy(it.id, it.code_example || "")}
-                                              className="absolute top-12 left-6 w-10 h-10 rounded-xl glass flex items-center justify-center hover:bg-primary/15 transition-colors duration-200"
+                                              className="absolute top-14 left-7 w-12 h-12 rounded-xl glass flex items-center justify-center hover:bg-primary/15 transition-colors duration-200"
                                               title="نسخ"
                                             >
                                               {copiedId === it.id ? (
-                                                <Check className="w-5 h-5 text-emerald-500" />
+                                                <Check className="w-6 h-6 text-emerald-500" />
                                               ) : (
-                                                <Copy className="w-5 h-5 text-muted-foreground" />
+                                                <Copy className="w-6 h-6 text-muted-foreground" />
                                               )}
                                             </button>
                                           </div>
                                         )}
                                         {it.explanation && (
-                                          <div className="p-5 md:p-6 rounded-2xl glass-soft">
-                                            <p className="text-sm md:text-base font-bold text-primary mb-3 tracking-wide">شرح تفصيلي</p>
-                                            <p className="text-base md:text-xl text-foreground/90 leading-loose">{it.explanation}</p>
+                                          <div className="p-6 md:p-8 rounded-2xl glass-soft">
+                                            <p className="text-base md:text-lg font-bold text-primary mb-4 tracking-wide">شرح تفصيلي</p>
+                                            <p className="text-lg md:text-2xl text-foreground/90 leading-loose">{it.explanation}</p>
                                           </div>
                                         )}
                                       </div>
