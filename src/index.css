@@ -490,20 +490,10 @@
 
 @layer components {
   .cyber-card {
-    @apply relative overflow-hidden rounded-3xl bg-card/15 backdrop-blur-2xl;
-    @apply transition-all duration-300 ease-out hover:bg-card/25;
-    border: 1px solid transparent;
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.06),
-      0 24px 60px -36px hsl(var(--primary) / 0.45);
+    @apply relative overflow-hidden rounded-2xl border border-primary/20 bg-card/15 backdrop-blur-2xl;
+    @apply transition-all duration-200 ease-out hover:border-primary/40 hover:bg-card/25;
     transform: translateZ(0);
     will-change: transform, opacity;
-  }
-  .cyber-card:hover, .cyber-card:focus-within {
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.12),
-      0 0 0 1px hsl(var(--primary) / 0.18),
-      0 36px 80px -36px hsl(var(--primary) / 0.6);
   }
 
   .cyber-button {
@@ -538,59 +528,25 @@
 
   /* Global glass utilities */
   .glass {
-    @apply bg-card/15 backdrop-blur-2xl rounded-3xl;
-    border: 1px solid transparent;
-    background-image:
-      linear-gradient(180deg, hsl(var(--card) / 0.55), hsl(var(--card) / 0.18)),
-      radial-gradient(120% 80% at 0% 0%, hsl(var(--primary) / 0.10), transparent 55%);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.06),
-      0 1px 0 hsl(var(--primary) / 0.05),
-      0 20px 50px -30px hsl(var(--primary) / 0.35);
-    transition: box-shadow 280ms ease, transform 280ms ease, background-color 280ms ease;
+    @apply bg-card/15 backdrop-blur-2xl border border-primary/15 rounded-2xl;
+    transition: background-color 200ms ease, border-color 200ms ease;
   }
   .glass:hover, .glass:focus-within {
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.10),
-      0 0 0 1px hsl(var(--primary) / 0.18),
-      0 30px 70px -30px hsl(var(--primary) / 0.55);
+    @apply border-primary/30 bg-card/20;
   }
   .glass-strong {
-    @apply bg-card/25 backdrop-blur-2xl rounded-[28px];
-    border: 1px solid transparent;
-    background-image:
-      linear-gradient(180deg, hsl(var(--card) / 0.7), hsl(var(--card) / 0.25)),
-      radial-gradient(140% 90% at 100% 0%, hsl(var(--primary) / 0.14), transparent 55%);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.08),
-      0 30px 80px -40px hsl(var(--primary) / 0.5);
-    transition: box-shadow 320ms ease, transform 320ms ease;
+    @apply bg-card/20 backdrop-blur-2xl border border-primary/20 rounded-2xl;
+    transition: background-color 200ms ease, border-color 200ms ease;
   }
   .glass-strong:hover, .glass-strong:focus-within {
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.14),
-      0 0 0 1px hsl(var(--primary) / 0.22),
-      0 40px 100px -40px hsl(var(--primary) / 0.7);
+    @apply border-primary/35 bg-card/30;
   }
   .glass-soft {
-    @apply bg-card/10 backdrop-blur-xl rounded-2xl;
-    border: 1px solid transparent;
-    background-image:
-      linear-gradient(180deg, hsl(var(--card) / 0.4), hsl(var(--card) / 0.12)),
-      radial-gradient(100% 70% at 0% 0%, hsl(var(--primary) / 0.06), transparent 60%);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.05);
-    transition: box-shadow 240ms ease;
+    @apply bg-card/10 backdrop-blur-xl border border-border/15 rounded-2xl;
+    transition: background-color 200ms ease, border-color 200ms ease;
   }
   .glass-soft:hover, .glass-soft:focus-within {
-    box-shadow:
-      inset 0 1px 0 hsl(0 0% 100% / 0.10),
-      0 18px 40px -22px hsl(var(--primary) / 0.4);
+    @apply border-primary/25 bg-card/15;
   }
 }
 

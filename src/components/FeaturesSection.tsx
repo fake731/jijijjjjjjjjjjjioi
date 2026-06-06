@@ -127,13 +127,13 @@ const FeaturesSection = () => {
             <Link
               key={index}
               to={feature.link}
-              className="glass-strong p-7 group transition-transform duration-300 hover:-translate-y-1.5 focus-visible:-translate-y-1.5 focus-visible:outline-none"
+              className="glass-strong p-6 group transition-transform duration-200 hover:-translate-y-1 focus-visible:-translate-y-1 focus-visible:outline-none"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Icon */}
-              <div className="mb-5 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3">
-                <div className={`w-14 h-14 rounded-2xl backdrop-blur-2xl ${feature.bg} flex items-center justify-center shadow-[inset_0_1px_0_hsl(0_0%_100%/0.08),0_10px_30px_-12px_hsl(var(--primary)/0.35)] transition-all duration-500`}>
-                  <feature.icon className={`w-7 h-7 ${feature.color}`} />
+              <div className="mb-4 transition-transform duration-300 group-hover:scale-110">
+                <div className={`w-12 h-12 rounded-xl backdrop-blur-2xl ${feature.bg} border ${feature.border} flex items-center justify-center transition-all duration-300`}>
+                  <feature.icon className={`w-6 h-6 ${feature.color}`} />
                 </div>
               </div>
 
