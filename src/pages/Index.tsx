@@ -43,14 +43,14 @@ const Index = () => {
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <Navbar />
       <main>
         <HeroSection />
 
         {/* Notifications Section */}
         {user && notifications.length > 0 && (
-          <section className="py-6 bg-background relative" dir="rtl">
+          <section className="py-6 relative" dir="rtl">
             <div className="container mx-auto px-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ const Index = () => {
         )}
 
         {/* Quick Search Section */}
-        <section className="py-8 bg-background relative">
+        <section className="py-8 relative">
           <div className="container mx-auto px-4">
             <QuickSearch />
           </div>
