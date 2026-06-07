@@ -528,25 +528,25 @@
 
   /* Global glass utilities */
   .glass {
-    @apply bg-card/15 backdrop-blur-2xl border border-primary/15 rounded-2xl;
+    @apply bg-card/5 backdrop-blur-2xl border border-primary/15 rounded-2xl;
     transition: background-color 200ms ease, border-color 200ms ease;
   }
   .glass:hover, .glass:focus-within {
-    @apply border-primary/30 bg-card/20;
+    @apply border-primary/30 bg-card/10;
   }
   .glass-strong {
-    @apply bg-card/20 backdrop-blur-2xl border border-primary/20 rounded-2xl;
+    @apply bg-card/10 backdrop-blur-2xl border border-primary/20 rounded-2xl;
     transition: background-color 200ms ease, border-color 200ms ease;
   }
   .glass-strong:hover, .glass-strong:focus-within {
-    @apply border-primary/35 bg-card/30;
+    @apply border-primary/35 bg-card/15;
   }
   .glass-soft {
-    @apply bg-card/10 backdrop-blur-xl border border-border/15 rounded-2xl;
+    @apply bg-card/5 backdrop-blur-xl border border-border/15 rounded-2xl;
     transition: background-color 200ms ease, border-color 200ms ease;
   }
   .glass-soft:hover, .glass-soft:focus-within {
-    @apply border-primary/25 bg-card/15;
+    @apply border-primary/25 bg-card/10;
   }
 }
 
