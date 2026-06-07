@@ -535,7 +535,7 @@
     @apply border-primary/30 bg-card/10;
   }
   .glass-strong {
-    @apply bg-card/8 backdrop-blur-2xl border border-primary/20 rounded-2xl;
+    @apply bg-card/10 backdrop-blur-2xl border border-primary/20 rounded-2xl;
     transition: background-color 200ms ease, border-color 200ms ease;
   }
   .glass-strong:hover, .glass-strong:focus-within {
