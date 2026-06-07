@@ -15,6 +15,7 @@ import InlineContentEditor from "@/components/InlineContentEditor";
 import InstagramFab from "@/components/InstagramFab";
 import { SiteContentProvider } from "@/hooks/useSiteContent";
 import { usePageVisit } from "@/hooks/usePageVisit";
+import { useDeviceNotifications } from "@/hooks/useDeviceNotifications";
 import Index from "./pages/Index";
 import AIPage from "./pages/AIPage";
 import AI2Page from "./pages/AI2Page";
@@ -48,6 +49,12 @@ const pageVariants = {
 const PageVisitTracker = () => {
   // Tracks every page view for both guests and signed-in users, with IP geo data.
   usePageVisit();
+  return null;
+};
+
+const DeviceNotifications = () => {
+  // Surfaces new in-DB notifications as native device notifications.
+  useDeviceNotifications();
   return null;
 };
 
@@ -103,6 +110,7 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <InlineContentEditor />
+                <DeviceNotifications />
                 <AnimatedRoutes />
               </BrowserRouter>
             </TooltipProvider>
