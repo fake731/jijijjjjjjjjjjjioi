@@ -134,12 +134,14 @@ export const DeveloperProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchAllData = async () => {
     setRefreshing(true);
-    const [profilesRes, visitsRes, logsRes, notifsRes, rolesRes] = await Promise.all([
+    const [profilesRes, visitsRes, logsRes, notifsRes, rolesRes, visitsCountRes, aiCountRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("page_visits").select("*").order("visited_at", { ascending: false }).limit(1000),
       supabase.from("ai_chat_logs").select("*").order("created_at", { ascending: false }).limit(1000),
       supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("user_roles").select("*"),
+      supabase.from("page_visits").select("*", { count: "exact", head: true }),
+      supabase.from("ai_chat_logs").select("*", { count: "exact", head: true }),
     ]);
     const p = profilesRes.data || [];
     const v = visitsRes.data || [];
@@ -147,7 +149,11 @@ export const DeveloperProvider = ({ children }: { children: ReactNode }) => {
     setProfiles(p);
     setVisits(v);
     setAiLogs(l);
-    setStats({ totalUsers: p.length, totalVisits: v.length, totalAiChats: l.length });
+    setStats({
+      totalUsers: p.length,
+      totalVisits: visitsCountRes.count ?? v.length,
+      totalAiChats: aiCountRes.count ?? l.length,
+    });
     setSentNotifications(notifsRes.data || []);
     const rm: Record<string, string> = {};
     (rolesRes.data || []).forEach((r: any) => { rm[r.user_id] = r.role; });
