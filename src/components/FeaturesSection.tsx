@@ -1,9 +1,31 @@
 import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail, Trophy, Braces } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/hooks/use-language";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
+
+const handleTiltMove = (e: React.MouseEvent<HTMLElement>) => {
+  const el = e.currentTarget;
+  const rect = el.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const px = x / rect.width;
+  const py = y / rect.height;
+  el.style.setProperty("--tilt-x", `${(0.5 - py) * 10}deg`);
+  el.style.setProperty("--tilt-y", `${(px - 0.5) * 10}deg`);
+  el.style.setProperty("--spot-x", `${px * 100}%`);
+  el.style.setProperty("--spot-y", `${py * 100}%`);
+  el.style.setProperty("--spot-opacity", "1");
+};
+const handleTiltLeave = (e: React.MouseEvent<HTMLElement>) => {
+  const el = e.currentTarget;
+  el.style.setProperty("--tilt-x", "0deg");
+  el.style.setProperty("--tilt-y", "0deg");
+  el.style.setProperty("--spot-opacity", "0");
+};
 
 const FeaturesSection = () => {
   const { t } = useLanguage();
+  useScrollReveal();
   
   const features = [
     {
@@ -127,12 +149,14 @@ const FeaturesSection = () => {
             <Link
               key={index}
               to={feature.link}
-              className="glass-strong p-6 group transition-transform duration-200 hover:-translate-y-1 focus-visible:-translate-y-1 focus-visible:outline-none"
+              className="glass-strong glass-interactive glow-border reveal-on-scroll p-6 group focus-visible:outline-none"
               style={{ animationDelay: `${index * 0.1}s` }}
+              onMouseMove={handleTiltMove}
+              onMouseLeave={handleTiltLeave}
             >
               {/* Icon */}
-              <div className="mb-4 transition-transform duration-300 group-hover:scale-110">
-                <div className={`w-12 h-12 rounded-xl backdrop-blur-2xl ${feature.bg} border ${feature.border} flex items-center justify-center transition-all duration-300`}>
+              <div className="mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+                <div className={`w-12 h-12 rounded-xl backdrop-blur-2xl ${feature.bg} border ${feature.border} flex items-center justify-center transition-all duration-300 group-hover:shadow-[0_0_24px_-4px_currentColor]`}>
                   <feature.icon className={`w-6 h-6 ${feature.color}`} />
                 </div>
               </div>
