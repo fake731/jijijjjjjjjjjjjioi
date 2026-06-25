@@ -27,13 +27,13 @@ const HeroSection = () => {
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Button asChild size="lg" className="gap-2 h-12 px-6">
+          <Button asChild size="lg" className="gap-2 h-12 px-6 cta-glow">
             <Link to="/الادوات">
               استكشف الأدوات
               <ArrowLeft className="w-4 h-4" />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="gap-2 h-12 px-6 backdrop-blur-xl">
+          <Button asChild size="lg" variant="outline" className="gap-2 h-12 px-6 backdrop-blur-xl glow-border">
             <Link to="/الدليل">
               <BookOpen className="w-4 h-4" />
               ابدأ التعلم
