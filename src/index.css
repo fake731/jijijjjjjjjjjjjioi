@@ -548,6 +548,131 @@
   .glass-soft:hover, .glass-soft:focus-within {
     @apply border-primary/25 bg-card/10;
   }
+
+  /* ===== Interactive glass card: 3D tilt + spotlight ===== */
+  .glass-interactive {
+    position: relative;
+    transform-style: preserve-3d;
+    transform: perspective(900px)
+      rotateX(var(--tilt-x, 0deg))
+      rotateY(var(--tilt-y, 0deg))
+      translateZ(0);
+    transition: transform 250ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      box-shadow 250ms ease,
+      border-color 250ms ease;
+    will-change: transform;
+  }
+  .glass-interactive::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: var(--spot-opacity, 0);
+    background: radial-gradient(
+      400px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      hsl(var(--primary) / 0.18),
+      transparent 55%
+    );
+    transition: opacity 250ms ease;
+    z-index: 1;
+  }
+  .glass-interactive:hover {
+    box-shadow:
+      0 18px 40px -16px hsl(var(--primary) / 0.35),
+      0 0 0 1px hsl(var(--primary) / 0.25) inset;
+  }
+  .glass-interactive > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ===== Animated gradient border (conic rotation) ===== */
+  .glow-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .glow-border::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--border-angle, 0deg),
+      hsl(var(--primary) / 0.0),
+      hsl(var(--primary) / 0.55),
+      hsl(var(--primary) / 0.0) 35%,
+      hsl(var(--primary) / 0.0) 70%,
+      hsl(var(--primary) / 0.55),
+      hsl(var(--primary) / 0.0)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 300ms ease;
+    animation: border-spin 6s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-border:hover::after,
+  .glow-border:focus-within::after {
+    opacity: 1;
+  }
+
+  /* ===== CTA glow pulse ===== */
+  .cta-glow {
+    position: relative;
+    animation: cta-pulse 2.6s ease-in-out infinite;
+  }
+
+  /* ===== Scroll reveal ===== */
+  .reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: opacity, transform;
+  }
+  .reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animated border angle (needs registered property for animation in some browsers) */
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes border-spin {
+  to { --border-angle: 360deg; }
+}
+
+@keyframes cta-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 hsl(var(--primary) / 0.45),
+      0 6px 24px -8px hsl(var(--primary) / 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px hsl(var(--primary) / 0.0),
+      0 10px 32px -8px hsl(var(--primary) / 0.65);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-interactive,
+  .glow-border::after,
+  .cta-glow,
+  .reveal-on-scroll { animation: none !important; transition: none !important; }
+  .reveal-on-scroll { opacity: 1; transform: none; }
 }
 
 /* Animation keyframes */
