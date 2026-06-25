@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen } from "lucide-react";
+import { useTypewriter } from "@/hooks/useTypewriter";
 
 const HeroSection = () => {
+  const typed = useTypewriter("منصة للأمن السيبراني", 55, 400);
   return (
     <section
       aria-label="hero"
@@ -19,8 +21,8 @@ const HeroSection = () => {
             Qusay Kali
           </span>
         </h1>
-        <p className="text-xl md:text-2xl text-foreground/90 mb-3 font-bold">
-          منصة للأمن السيبراني
+        <p className="text-xl md:text-2xl text-foreground/90 mb-3 font-bold caret min-h-[2rem]">
+          {typed}
         </p>
         <p className="text-sm md:text-base text-muted-foreground mb-8 max-w-xl mx-auto">
           دليلك الشامل لتعلم الأمن السيبراني من الصفر إلى الاحتراف
