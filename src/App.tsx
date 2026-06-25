@@ -12,6 +12,7 @@ import SpaceBackground from "@/components/SpaceBackground";
 import CustomCursor from "@/components/CustomCursor";
 import MagneticCursorGlow from "@/components/MagneticCursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
+import ScrollToTopFab from "@/components/ScrollToTopFab";
 import LoginExportCard from "@/components/LoginExportCard";
 import InlineContentEditor from "@/components/InlineContentEditor";
 import InstagramFab from "@/components/InstagramFab";
@@ -110,6 +111,8 @@ const App = () => (
               <ScrollProgress />
               <LoginExportCard />
               <InstagramFab />
+              <ScrollToTopFab />
+              <div className="noise-overlay" aria-hidden />
               <Toaster />
               <Sonner />
               <BrowserRouter>
