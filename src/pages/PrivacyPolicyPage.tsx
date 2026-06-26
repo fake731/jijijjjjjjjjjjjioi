@@ -86,7 +86,7 @@ const PrivacyPolicyPage = () => {
       content: [
         "لأي استفسارات حول الخصوصية، تواصل معنا عبر صفحة الاستفسارات",
       ],
-      extraLink: { text: "أو عبر انستغرام: @0oscp", url: "https://www.instagram.com/0oscp" },
+      extraLink: { text: "أو عبر انستغرام: @qusaykali", url: "https://www.instagram.com/qusaykali" },
     },
   ];
 

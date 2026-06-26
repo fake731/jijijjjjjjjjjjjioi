@@ -883,7 +883,7 @@ const AIPage = () => {
             <div className="flex flex-col items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 mb-6">
               <p className="text-sm text-muted-foreground text-center">{t.passwordHint}</p>
               <a
-                href="https://www.instagram.com/0oscp/"
+                href="https://www.instagram.com/qusaykali/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium hover:opacity-90 transition-opacity"

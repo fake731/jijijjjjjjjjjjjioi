@@ -47,6 +47,7 @@ const ProgrammingPage = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [openLang, setOpenLang] = useState<string | null>("python");
   const [openTopic, setOpenTopic] = useState<string | null>(null);
+  const [difficulty, setDifficulty] = useState<"all" | "beginner" | "intermediate" | "advanced">("all");
 
   useEffect(() => {
     (async () => {
@@ -86,10 +87,11 @@ const ProgrammingPage = () => {
     const result: Record<string, ProgrammingItem[]> = {};
     items.forEach(i => {
       if (q && !i.title.toLowerCase().includes(q) && !(i.description || "").toLowerCase().includes(q)) return;
+      if (difficulty !== "all" && (i.difficulty || "beginner") !== difficulty) return;
       (result[i.language] = result[i.language] || []).push(i);
     });
     return result;
-  }, [items, search]);
+  }, [items, search, difficulty]);
 
   // Group lessons of a language by difficulty for an orderly layout.
   const groupByDifficulty = (list: ProgrammingItem[]) => {
@@ -112,24 +114,47 @@ const ProgrammingPage = () => {
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm text-primary font-medium">قسم البرمجة الشامل</span>
           </div>
-          <h1 className="text-7xl md:text-9xl lg:text-[11rem] font-bold mb-8 leading-[0.95] text-holographic">
-            تعلّم البرمجة من الصفر
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-[1] text-holographic">
+            البرمجة
           </h1>
-          <p className="text-2xl md:text-4xl lg:text-5xl text-muted-foreground max-w-6xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Python، C++، JavaScript، الأمن السيبراني، الشبكات، واكتشاف الثغرات — كل شيء في مكان واحد.
           </p>
           <div className="section-divider" />
         </div>
 
-        {/* Search */}
-        <div className="relative mb-10 max-w-3xl mx-auto">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="ابحث عن درس..."
-            className="pr-12 h-16 text-lg bg-card/15 backdrop-blur-2xl border-primary/20 rounded-2xl"
-          />
+        {/* Search + Filters */}
+        <div className="max-w-3xl mx-auto mb-10 space-y-4">
+          <div className="relative">
+            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="ابحث عن درس..."
+              className="pr-12 h-14 text-base bg-card/15 backdrop-blur-2xl border-primary/20 rounded-2xl"
+            />
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {([
+              { id: "all", label: "الكل", color: "text-primary bg-primary/10 border-primary/30" },
+              { id: "beginner", label: "مبتدئ", color: DIFFICULTY_LABEL.beginner.color },
+              { id: "intermediate", label: "متوسط", color: DIFFICULTY_LABEL.intermediate.color },
+              { id: "advanced", label: "متقدم", color: DIFFICULTY_LABEL.advanced.color },
+            ] as const).map(f => {
+              const active = difficulty === f.id;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setDifficulty(f.id as any)}
+                  className={`px-5 py-2 rounded-full text-sm font-medium border backdrop-blur-2xl transition-all duration-200 hover-lift ${
+                    active ? f.color + " shadow-[0_0_20px_-4px_hsl(var(--primary)/0.5)] scale-105" : "bg-card/15 text-muted-foreground border-border/40 hover:border-primary/40"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Nested collapsibles: Language → Lessons → (theory + practice) */}
