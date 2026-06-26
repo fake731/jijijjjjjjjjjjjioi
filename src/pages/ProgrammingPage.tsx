@@ -198,7 +198,6 @@ const ProgrammingPage = () => {
                                   {bucket.map(it => {
                             const tid = it.id;
                             const isTopicOpen = openTopic === tid;
-                            const ddiff = DIFFICULTY_LABEL[it.difficulty] || DIFFICULTY_LABEL.beginner;
                             return (
                               <div key={tid} className="glass hover-lift overflow-hidden">
                                 <button
