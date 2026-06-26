@@ -760,3 +760,239 @@
   0%, 100% { opacity: 0.3; }
   50% { opacity: 1; }
 }
+
+/* =========================================================
+   BIG VISUAL ADDITIONS — 10 cinematic layers
+   ========================================================= */
+
+/* 1) Aurora gradient mesh ---------------------------------- */
+.aurora-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+  filter: blur(60px) saturate(140%);
+  opacity: 0.55;
+}
+.aurora-blob {
+  position: absolute;
+  width: 55vmax;
+  height: 55vmax;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.aurora-blob-1 {
+  top: -20vmax; left: -10vmax;
+  background: radial-gradient(circle, hsl(var(--primary) / 0.55), transparent 60%);
+  animation: aurora-drift-1 22s ease-in-out infinite alternate;
+}
+.aurora-blob-2 {
+  bottom: -25vmax; right: -15vmax;
+  background: radial-gradient(circle, hsl(280 90% 60% / 0.35), transparent 60%);
+  animation: aurora-drift-2 28s ease-in-out infinite alternate;
+}
+.aurora-blob-3 {
+  top: 30%; left: 40%;
+  background: radial-gradient(circle, hsl(200 100% 55% / 0.28), transparent 60%);
+  animation: aurora-drift-3 35s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift-1 {
+  to { transform: translate3d(15vmax, 10vmax, 0) scale(1.15); }
+}
+@keyframes aurora-drift-2 {
+  to { transform: translate3d(-12vmax, -8vmax, 0) scale(1.2); }
+}
+@keyframes aurora-drift-3 {
+  to { transform: translate3d(-20vmax, 12vmax, 0) scale(0.85); }
+}
+
+/* 2) Shooting stars ---------------------------------------- */
+.shooting-stars-host {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+.shooting-star {
+  position: absolute;
+  width: 140px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.95), hsl(0 0% 100% / 0.9));
+  border-radius: 999px;
+  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.9));
+  transform: rotate(var(--angle, -20deg)) translateX(0);
+  animation: shoot linear forwards;
+  opacity: 0;
+}
+@keyframes shoot {
+  0% { opacity: 0; transform: rotate(var(--angle, -20deg)) translateX(0); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--angle, -20deg)) translateX(-120vw); }
+}
+
+/* 3) Vignette overlay ------------------------------------- */
+.vignette-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: radial-gradient(ellipse at center, transparent 55%, hsl(220 30% 3% / 0.55) 100%);
+}
+
+/* 4) Subtle scanlines ------------------------------------- */
+.scanlines-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    hsl(var(--primary) / 0.025) 3px,
+    transparent 4px
+  );
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}
+
+/* 5) Holographic gradient text ---------------------------- */
+.text-holographic {
+  background: linear-gradient(
+    100deg,
+    hsl(var(--primary)) 0%,
+    hsl(280 90% 70%) 25%,
+    hsl(var(--primary)) 50%,
+    hsl(180 100% 60%) 75%,
+    hsl(var(--primary)) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: holo-slide 6s linear infinite;
+}
+@keyframes holo-slide {
+  to { background-position: 200% center; }
+}
+
+/* 6) Shimmer sweep on cards ------------------------------- */
+.shimmer-sweep { position: relative; overflow: hidden; }
+.shimmer-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    hsl(var(--primary) / 0.18) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 900ms ease;
+  pointer-events: none;
+}
+.shimmer-sweep:hover::after { transform: translateX(120%); }
+
+/* 7) Magnetic lift hover ---------------------------------- */
+.hover-lift {
+  transition: transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 280ms ease;
+}
+.hover-lift:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 24px 60px -22px hsl(var(--primary) / 0.5);
+}
+
+/* 8) Glow ring orbit (for icons) -------------------------- */
+.glow-orbit { position: relative; }
+.glow-orbit::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    hsl(var(--primary) / 0.7) 60deg,
+    transparent 120deg,
+    transparent 240deg,
+    hsl(var(--primary) / 0.5) 300deg,
+    transparent 360deg
+  );
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 300ms ease;
+  animation: orbit-spin 4s linear infinite;
+  z-index: -1;
+}
+.glow-orbit:hover::before { opacity: 1; }
+@keyframes orbit-spin { to { transform: rotate(360deg); } }
+
+/* 9) Animated section divider ---------------------------- */
+.section-divider {
+  position: relative;
+  height: 1px;
+  width: min(80%, 800px);
+  margin: 4rem auto;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    hsl(var(--primary) / 0.45),
+    transparent
+  );
+  overflow: visible;
+}
+.section-divider::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 0;
+  width: 80px;
+  height: 7px;
+  background: radial-gradient(ellipse, hsl(var(--primary) / 0.9), transparent 70%);
+  filter: blur(2px);
+  animation: divider-sweep 4s ease-in-out infinite;
+}
+@keyframes divider-sweep {
+  0%, 100% { left: 0; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: calc(100% - 80px); opacity: 0; }
+}
+
+/* 10) Animated cyber grid floor --------------------------- */
+.cyber-floor {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 35vh;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    linear-gradient(to top, hsl(var(--primary) / 0.08), transparent 70%),
+    linear-gradient(hsl(var(--primary) / 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary) / 0.18) 1px, transparent 1px);
+  background-size: 100% 100%, 50px 50px, 50px 50px;
+  mask-image: linear-gradient(to top, black 0%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to top, black 0%, transparent 95%);
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: bottom;
+  opacity: 0.35;
+  animation: floor-pan 8s linear infinite;
+}
+@keyframes floor-pan {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to   { background-position: 0 0, 0 50px, 0 0; }
+}
+
+/* prefers-reduced-motion guard for new layers */
+@media (prefers-reduced-motion: reduce) {
+  .aurora-blob, .shooting-star, .text-holographic,
+  .glow-orbit::before, .section-divider::before, .cyber-floor {
+    animation: none !important;
+  }
+  .shooting-stars-host { display: none; }
+}
