@@ -13,6 +13,8 @@ import CustomCursor from "@/components/CustomCursor";
 import MagneticCursorGlow from "@/components/MagneticCursorGlow";
 import ScrollProgress from "@/components/ScrollProgress";
 import ScrollToTopFab from "@/components/ScrollToTopFab";
+import ShootingStars from "@/components/ShootingStars";
+import AuroraOverlay from "@/components/AuroraOverlay";
 import LoginExportCard from "@/components/LoginExportCard";
 import InlineContentEditor from "@/components/InlineContentEditor";
 import InstagramFab from "@/components/InstagramFab";
@@ -106,6 +108,8 @@ const App = () => (
           <SiteContentProvider>
             <TooltipProvider>
               <SpaceBackground />
+              <AuroraOverlay />
+              <ShootingStars />
               <CustomCursor />
               <MagneticCursorGlow />
               <ScrollProgress />
@@ -113,6 +117,8 @@ const App = () => (
               <InstagramFab />
               <ScrollToTopFab />
               <div className="noise-overlay" aria-hidden />
+              <div className="vignette-overlay" aria-hidden />
+              <div className="scanlines-overlay" aria-hidden />
               <Toaster />
               <Sonner />
               <BrowserRouter>
