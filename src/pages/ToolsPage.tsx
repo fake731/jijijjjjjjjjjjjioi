@@ -199,7 +199,7 @@ const ToolsPage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-24 pb-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-3 sm:px-4 max-w-[1700px]">
           {/* Header */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
@@ -208,38 +208,55 @@ const ToolsPage = () => {
             className="text-center mb-12"
           >
             <div className="flex justify-center mb-6">
-              <div className="cyber-icon-box">
+              <div className="glow-orbit float-soft w-20 h-20 rounded-3xl bg-primary/10 border border-primary/30 backdrop-blur-2xl flex items-center justify-center">
                 <Terminal className="w-10 h-10 text-primary" />
               </div>
             </div>
             <div className="flex items-center justify-center gap-3 mb-4">
-              <h1 className="text-4xl md:text-5xl font-bold text-primary text-glow">
+              <h1 className="text-5xl md:text-7xl font-bold leading-[1] text-holographic">
                 {t.title}
               </h1>
               <button
                 onClick={() => setLanguage(prev => prev === "ar" ? "en" : "ar")}
-                className="p-2 rounded-lg bg-secondary border border-border/50 hover:border-primary/50 transition-colors"
+                className="p-2 rounded-lg glass hover:border-primary/60 transition-colors"
               >
                 <Globe className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t.subtitle}</p>
+            <p className="text-muted-foreground text-base md:text-xl max-w-2xl mx-auto">{t.subtitle}</p>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-3 max-w-xl mx-auto mt-8">
+              <div className="glass prism-border rounded-2xl p-4 hover-lift">
+                <div className="text-2xl md:text-3xl font-extrabold stat-num">{tools.length}</div>
+                <div className="text-xs text-muted-foreground mt-1">{language === "ar" ? "أداة" : "Tools"}</div>
+              </div>
+              <div className="glass prism-border rounded-2xl p-4 hover-lift">
+                <div className="text-2xl md:text-3xl font-extrabold stat-num">{totalCommands}</div>
+                <div className="text-xs text-muted-foreground mt-1">{language === "ar" ? "أمر" : "Commands"}</div>
+              </div>
+              <div className="glass prism-border rounded-2xl p-4 hover-lift">
+                <div className="text-2xl md:text-3xl font-extrabold stat-num">100%</div>
+                <div className="text-xs text-muted-foreground mt-1">{language === "ar" ? "تعليمي" : "Edu"}</div>
+              </div>
+            </div>
             
             {/* Legal Warning Banner */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-6 max-w-4xl mx-auto p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 backdrop-blur-sm"
+              className="mt-6 max-w-4xl mx-auto p-4 rounded-2xl glass border-yellow-500/30"
             >
-              <p className={`text-yellow-400 text-sm md:text-base font-medium ${language === "ar" ? "text-right" : "text-left"}`} dir={language === "ar" ? "rtl" : "ltr"}>
+              <p className={`text-yellow-300 text-sm md:text-base font-medium ${language === "ar" ? "text-right" : "text-left"}`} dir={language === "ar" ? "rtl" : "ltr"}>
                 {t.legalWarning}
               </p>
             </motion.div>
+            <div className="section-divider" />
           </motion.div>
 
           {/* Search & View Toggle */}
-          <div className="max-w-4xl mx-auto mb-10 flex flex-col md:flex-row gap-4 items-center">
+          <div className="max-w-4xl mx-auto mb-10 flex flex-col md:flex-row gap-3 items-stretch md:items-center">
             <div className="relative flex-1 w-full">
               <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
@@ -247,15 +264,15 @@ const ToolsPage = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={t.search}
-                className="w-full px-4 py-3 pr-12 rounded-xl bg-secondary border border-border/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all"
+                className="w-full h-14 px-4 pr-12 rounded-2xl bg-card/15 backdrop-blur-2xl border border-primary/20 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
                 dir={language === "ar" ? "rtl" : "ltr"}
               />
             </div>
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-2 bg-secondary rounded-xl p-1 border border-border/50">
+            <div className="flex items-center gap-2 glass rounded-2xl p-1">
               <button
                 onClick={() => setViewMode("expanded")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
                   viewMode === "expanded"
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-primary"
@@ -266,7 +283,7 @@ const ToolsPage = () => {
               </button>
               <button
                 onClick={() => setViewMode("compact")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
                   viewMode === "compact"
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-primary"
@@ -281,7 +298,7 @@ const ToolsPage = () => {
           {/* Tools Grid */}
           <motion.div 
             layout
-            className={`max-w-6xl mx-auto ${viewMode === "compact" ? "space-y-2" : "space-y-4"}`}
+            className={`max-w-6xl mx-auto ${viewMode === "compact" ? "space-y-2" : "grid grid-cols-1 lg:grid-cols-2 gap-4"}`}
           >
             {filteredTools.map((tool, index) => (
               <motion.div 
@@ -290,7 +307,7 @@ const ToolsPage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.02 }}
-                className={`cyber-card overflow-hidden ${viewMode === "compact" ? "p-0" : ""}`}
+                className={`glass-strong shimmer-sweep hover-lift overflow-hidden transform-gpu will-change-transform ${viewMode === "compact" ? "p-0" : ""}`}
               >
                 <button
                   onClick={() => setExpandedTool(expandedTool === index ? null : index)}
