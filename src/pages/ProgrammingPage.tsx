@@ -120,6 +120,22 @@ const ProgrammingPage = () => {
           <p className="text-lg md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Python، C++، JavaScript، الأمن السيبراني، الشبكات، واكتشاف الثغرات — كل شيء في مكان واحد.
           </p>
+
+          {/* Stats strip */}
+          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
+            {[
+              { n: items.length, l: "درس" },
+              { n: LANGUAGES.length, l: "مسار" },
+              { n: Object.values(counts).reduce((a,b)=>a+(b||0),0) || 0, l: "محتوى" },
+              { n: 3, l: "مستويات" },
+            ].map((s,i) => (
+              <div key={i} className="glass prism-border rounded-2xl p-4 hover-lift">
+                <div className="text-3xl md:text-4xl font-extrabold stat-num">{s.n}</div>
+                <div className="text-xs md:text-sm text-muted-foreground mt-1">{s.l}</div>
+              </div>
+            ))}
+          </div>
+
           <div className="section-divider" />
         </div>
 
@@ -134,6 +150,27 @@ const ProgrammingPage = () => {
               className="pr-12 h-14 text-base bg-card/15 backdrop-blur-2xl border-primary/20 rounded-2xl"
             />
           </div>
+
+          {/* Language quick-jump chips */}
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {LANGUAGES.map(L => {
+              const Icon = L.icon;
+              const active = openLang === L.id;
+              return (
+                <button
+                  key={L.id}
+                  onClick={() => { setOpenLang(L.id); setOpenTopic(null); }}
+                  data-active={active}
+                  className="glass-chip px-4 py-2 text-sm font-medium inline-flex items-center gap-2"
+                >
+                  <Icon className={`w-4 h-4 ${L.color}`} />
+                  <span className="text-foreground/90">{L.label}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{counts[L.id] || 0}</span>
+                </button>
+              );
+            })}
+          </div>
+
           <div className="flex flex-wrap items-center justify-center gap-2">
             {([
               { id: "all", label: "الكل", color: "text-primary bg-primary/10 border-primary/30" },
