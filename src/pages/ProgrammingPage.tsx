@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import {
   Code2, Search, Copy, Check, Cpu, FileCode, Shield, Network, Bug,
-  Loader2, Sparkles, BookOpen, ChevronDown, ChevronUp
+  Loader2, BookOpen, ChevronDown, ChevronUp
 } from "lucide-react";
 
 interface ProgrammingItem {
