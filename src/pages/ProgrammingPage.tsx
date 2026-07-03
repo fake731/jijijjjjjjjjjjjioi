@@ -115,7 +115,7 @@ const ProgrammingPage = () => {
               <Code2 className="w-10 h-10 text-primary" />
             </div>
           </div>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-[1] text-holographic">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-[1] text-holographic">
             البرمجة
           </h1>
           <div className="section-divider" />
@@ -193,21 +193,21 @@ const ProgrammingPage = () => {
                 <div key={L.id} className="glass-strong shimmer-sweep hover-lift overflow-hidden transform-gpu will-change-transform">
                   <button
                     onClick={() => { setOpenLang(prev => prev === L.id ? null : L.id); setOpenTopic(null); }}
-                    className="w-full flex items-center justify-between p-8 md:p-12 hover:bg-primary/5 transition-colors duration-200"
+                    className="w-full flex items-center justify-between p-5 md:p-7 hover:bg-primary/5 transition-colors duration-200"
                   >
-                    <div className="flex items-center gap-6 md:gap-9">
-                      <div className={`glow-orbit w-20 h-20 md:w-28 md:h-28 rounded-3xl ${L.bg} border ${L.border} backdrop-blur-2xl flex items-center justify-center`}>
-                        <Icon className={`w-10 h-10 md:w-14 md:h-14 ${L.color}`} />
+                    <div className="flex items-center gap-4 md:gap-5">
+                      <div className={`glow-orbit w-14 h-14 md:w-16 md:h-16 rounded-2xl ${L.bg} border ${L.border} backdrop-blur-2xl flex items-center justify-center`}>
+                        <Icon className={`w-7 h-7 md:w-8 md:h-8 ${L.color}`} />
                       </div>
                       <div className="text-right">
-                        <h2 className={`text-4xl md:text-7xl font-bold ${L.color}`}>{L.label}</h2>
-                        <p className="text-base md:text-2xl text-muted-foreground mt-2">{counts[L.id] || 0} درس</p>
+                        <h2 className={`text-2xl md:text-3xl font-bold ${L.color}`}>{L.label}</h2>
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1">{counts[L.id] || 0} درس</p>
                       </div>
                     </div>
                     {isOpen ? (
-                      <ChevronUp className="w-9 h-9 md:w-12 md:h-12 text-primary" />
+                      <ChevronUp className="w-6 h-6 md:w-7 md:h-7 text-primary" />
                     ) : (
-                      <ChevronDown className="w-9 h-9 md:w-12 md:h-12 text-muted-foreground" />
+                      <ChevronDown className="w-6 h-6 md:w-7 md:h-7 text-muted-foreground" />
                     )}
                   </button>
                   <AnimatePresence initial={false}>
