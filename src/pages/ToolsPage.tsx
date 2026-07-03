@@ -183,9 +183,6 @@ const ToolsPage = () => {
 
   const t = {
     title: language === "ar" ? "أدوات كالي لينكس" : "Kali Linux Tools",
-    subtitle: language === "ar" 
-      ? "استكشف أدوات اختبار الاختراق الاحترافية" 
-      : "Explore professional penetration testing tools",
     search: language === "ar" ? "ابحث عن أداة أو أمر..." : "Search for a tool or command...",
     commands: language === "ar" ? "أمر" : "commands",
     expandedView: language === "ar" ? "عرض موسع" : "Expanded",
@@ -223,24 +220,6 @@ const ToolsPage = () => {
                 <Globe className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
-            <p className="text-muted-foreground text-base md:text-xl max-w-2xl mx-auto">{t.subtitle}</p>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-3 max-w-xl mx-auto mt-8">
-              <div className="glass prism-border rounded-2xl p-4 hover-lift">
-                <div className="text-2xl md:text-3xl font-extrabold stat-num">{tools.length}</div>
-                <div className="text-xs text-muted-foreground mt-1">{language === "ar" ? "أداة" : "Tools"}</div>
-              </div>
-              <div className="glass prism-border rounded-2xl p-4 hover-lift">
-                <div className="text-2xl md:text-3xl font-extrabold stat-num">{totalCommands}</div>
-                <div className="text-xs text-muted-foreground mt-1">{language === "ar" ? "أمر" : "Commands"}</div>
-              </div>
-              <div className="glass prism-border rounded-2xl p-4 hover-lift">
-                <div className="text-2xl md:text-3xl font-extrabold stat-num">100%</div>
-                <div className="text-xs text-muted-foreground mt-1">{language === "ar" ? "تعليمي" : "Edu"}</div>
-              </div>
-            </div>
-            
             {/* Legal Warning Banner */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
