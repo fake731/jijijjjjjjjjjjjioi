@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import {
   Code2, Search, Copy, Check, Cpu, FileCode, Shield, Network, Bug,
-  Loader2, Sparkles, BookOpen, ChevronDown, ChevronUp
+  Loader2, BookOpen, ChevronDown, ChevronUp
 } from "lucide-react";
 
 interface ProgrammingItem {
@@ -109,33 +109,15 @@ const ProgrammingPage = () => {
       <Navbar />
       <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-[1900px]">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary/10 border border-primary/25 backdrop-blur-xl mb-6">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm text-primary font-medium">قسم البرمجة الشامل</span>
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
+            <div className="glow-orbit float-soft w-20 h-20 rounded-3xl bg-primary/10 border border-primary/30 backdrop-blur-2xl flex items-center justify-center">
+              <Code2 className="w-10 h-10 text-primary" />
+            </div>
           </div>
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-[1] text-holographic">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-[1] text-holographic">
             البرمجة
           </h1>
-          <p className="text-lg md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Python، C++، JavaScript، الأمن السيبراني، الشبكات، واكتشاف الثغرات — كل شيء في مكان واحد.
-          </p>
-
-          {/* Stats strip */}
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto">
-            {[
-              { n: items.length, l: "درس" },
-              { n: LANGUAGES.length, l: "مسار" },
-              { n: Object.values(counts).reduce((a,b)=>a+(b||0),0) || 0, l: "محتوى" },
-              { n: 3, l: "مستويات" },
-            ].map((s,i) => (
-              <div key={i} className="glass prism-border rounded-2xl p-4 hover-lift">
-                <div className="text-3xl md:text-4xl font-extrabold stat-num">{s.n}</div>
-                <div className="text-xs md:text-sm text-muted-foreground mt-1">{s.l}</div>
-              </div>
-            ))}
-          </div>
-
           <div className="section-divider" />
         </div>
 

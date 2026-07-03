@@ -289,13 +289,16 @@ const QuizPage = () => {
     <div className="min-h-screen bg-background relative">
       <Navbar />
       <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-[1900px]" dir="rtl">
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 backdrop-blur-xl mb-3">
-            <GraduationCap className="w-4 h-4 text-primary" />
-            <span className="text-xs text-primary font-medium">قسم الاختبار</span>
+        <div className="text-center mb-10">
+          <div className="flex justify-center mb-6">
+            <div className="glow-orbit float-soft w-20 h-20 rounded-3xl bg-primary/10 border border-primary/30 backdrop-blur-2xl flex items-center justify-center">
+              <GraduationCap className="w-10 h-10 text-primary" />
+            </div>
           </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 text-glow-sm">اختبر مهاراتك</h1>
-          <p className="text-xs md:text-sm text-muted-foreground">15 تخصصاً · مع تايمر · شارات إنجاز · صعوبة ديناميكية</p>
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-[1] text-holographic">
+            الاختبار
+          </h1>
+          <div className="section-divider" />
         </div>
 
         {!user && step === "select" && (

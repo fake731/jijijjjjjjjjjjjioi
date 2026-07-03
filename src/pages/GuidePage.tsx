@@ -1276,23 +1276,10 @@ const GuidePage = () => {
                 <BookOpen className="w-10 h-10 text-yellow-500" />
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-primary text-glow mb-4">
-              الدليل الكامل للأمن السيبراني
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4 leading-[1] text-holographic">
+              الدليل الكامل
             </h1>
-            <p className="text-muted-foreground text-lg max-w-3xl mx-auto mb-6">
-              تعلم الأمن السيبراني خطوة بخطوة
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <span className="px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
-                {guideTopics.length} قسم رئيسي
-              </span>
-              <span className="px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
-                {totalSubTopics} موضوع فرعي
-              </span>
-              <span className="px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-sm font-medium">
-                +{totalItems} نقطة تعليمية
-              </span>
-            </div>
+            <div className="section-divider" />
           </div>
 
           {/* Guide Topics */}
