@@ -67,22 +67,6 @@ const WebDevPage = () => {
               مرجع شامل — من HTML/CSS إلى React والخوادم والأمن.
             </p>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-3 max-w-xl mx-auto mb-8">
-              <div className="glass prism-border rounded-2xl p-4 hover-lift">
-                <div className="text-2xl md:text-3xl font-extrabold stat-num">{webDevCategories.length}</div>
-                <div className="text-xs text-muted-foreground mt-1">قسم</div>
-              </div>
-              <div className="glass prism-border rounded-2xl p-4 hover-lift">
-                <div className="text-2xl md:text-3xl font-extrabold stat-num">{totalTopics}</div>
-                <div className="text-xs text-muted-foreground mt-1">موضوع</div>
-              </div>
-              <div className="glass prism-border rounded-2xl p-4 hover-lift">
-                <div className="text-2xl md:text-3xl font-extrabold stat-num">∞</div>
-                <div className="text-xs text-muted-foreground mt-1">أمثلة</div>
-              </div>
-            </div>
-
             {/* Search */}
             <div className="max-w-xl mx-auto relative">
               <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
