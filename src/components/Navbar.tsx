@@ -317,7 +317,7 @@ const Navbar = () => {
           />
           <div
             dir="rtl"
-            className="xl:hidden fixed top-0 right-0 bottom-0 z-50 w-[86%] max-w-sm bg-card/70 backdrop-blur-3xl border-l border-primary/20 shadow-[0_20px_80px_-20px_hsl(var(--primary)/0.5)] flex flex-col animate-slide-in-right"
+            className="xl:hidden fixed top-0 right-0 bottom-0 z-50 w-[86%] max-w-sm bg-card/70 backdrop-blur-3xl border-l border-primary/20 shadow-[0_20px_80px_-20px_hsl(var(--primary)/0.5)] flex flex-col animate-fade-in"
           >
             <div className="flex items-center justify-between px-5 py-4 border-b border-primary/15">
               <div className="flex items-center gap-3">
