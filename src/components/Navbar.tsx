@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, LogIn, LogOut, UserCircle, Shield, Bell, LayoutDashboard } from "lucide-react";
+import {
+  Menu, X, LogIn, LogOut, UserCircle, Shield, Bell, LayoutDashboard,
+  Home, BookOpen, Wrench, Code2, ScrollText, Sparkles, Terminal,
+  Globe, KeyRound, GraduationCap, MessageSquare, Download, FileLock2,
+} from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
@@ -82,25 +86,25 @@ const Navbar = () => {
   };
 
   const navItems = [
-    { label: t("nav.home"), path: "/" },
-    { label: t("nav.guide"), path: "/الدليل" },
-    { label: t("nav.tools"), path: "/الادوات" },
-    { label: t("nav.programming"), path: "/البرمجة" },
-    { label: t("nav.scripts"), path: "/السكربتات" },
-    { label: t("nav.ai"), path: "/الذكاء" },
-    { label: t("nav.scanner"), path: "/الاوامر" },
-    { label: t("nav.webdev"), path: "/تطوير-الويب" },
-    { label: t("nav.password"), path: "/فحص-كلمة-المرور" },
-    { label: t("nav.quiz"), path: "/الاختبار" },
-    { label: t("nav.inquiry"), path: "/الاستفسارات" },
-    { label: t("nav.download"), path: "/التحميل" },
-    { label: t("nav.privacy"), path: "/سياسة-الخصوصية" },
+    { label: t("nav.home"), path: "/", icon: Home },
+    { label: t("nav.guide"), path: "/الدليل", icon: BookOpen },
+    { label: t("nav.tools"), path: "/الادوات", icon: Wrench },
+    { label: t("nav.programming"), path: "/البرمجة", icon: Code2 },
+    { label: t("nav.scripts"), path: "/السكربتات", icon: ScrollText },
+    { label: t("nav.ai"), path: "/الذكاء", icon: Sparkles },
+    { label: t("nav.scanner"), path: "/الاوامر", icon: Terminal },
+    { label: t("nav.webdev"), path: "/تطوير-الويب", icon: Globe },
+    { label: t("nav.password"), path: "/فحص-كلمة-المرور", icon: KeyRound },
+    { label: t("nav.quiz"), path: "/الاختبار", icon: GraduationCap },
+    { label: t("nav.inquiry"), path: "/الاستفسارات", icon: MessageSquare },
+    { label: t("nav.download"), path: "/التحميل", icon: Download },
+    { label: t("nav.privacy"), path: "/سياسة-الخصوصية", icon: FileLock2 },
   ];
 
   return (
-    <nav className="fixed top-3 left-3 right-3 lg:left-6 lg:right-6 z-50 rounded-2xl bg-card/10 backdrop-blur-3xl border border-primary/15 shadow-[0_8px_32px_-12px_hsl(var(--primary)/0.3)]">
-      <div className="px-3 lg:px-5">
-        <div className="flex items-center justify-between h-14 lg:h-16 gap-2">
+    <nav className="fixed top-3 left-3 right-3 xl:left-6 xl:right-6 z-50 rounded-2xl bg-card/10 backdrop-blur-3xl border border-primary/15 shadow-[0_8px_32px_-12px_hsl(var(--primary)/0.3)]">
+      <div className="px-3 xl:px-5">
+        <div className="flex items-center justify-between h-14 xl:h-16 gap-2">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center group-hover:box-glow transition-all duration-300">
@@ -110,7 +114,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-1 px-2 py-1">
+          <div className="hidden xl:flex items-center gap-1 px-2 py-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -127,7 +131,7 @@ const Navbar = () => {
           </div>
 
           {/* Theme Toggle & Auth */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden xl:flex items-center gap-3">
             <ThemeToggle />
             <div className="relative">
                 <button
@@ -223,7 +227,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="lg:hidden flex items-center gap-2">
+          <div className="xl:hidden flex items-center gap-2">
             <div className="relative">
                   <button
                     onClick={toggleNotifications}
@@ -301,28 +305,122 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isOpen && (
-          <div className="lg:hidden py-4 border-t border-border/30 animate-fade-in">
-            <div className="flex flex-col gap-2">
-              {navItems.map((item) => (
+      </div>
+
+      {/* Mobile Drawer — professional slide-in panel */}
+      {isOpen && (
+        <>
+          <div
+            onClick={() => setIsOpen(false)}
+            className="xl:hidden fixed inset-0 z-40 bg-background/70 backdrop-blur-md animate-fade-in"
+            aria-hidden
+          />
+          <div
+            dir="rtl"
+            className="xl:hidden fixed top-0 right-0 bottom-0 z-50 w-[86%] max-w-sm bg-card/70 backdrop-blur-3xl border-l border-primary/20 shadow-[0_20px_80px_-20px_hsl(var(--primary)/0.5)] flex flex-col animate-fade-in"
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-primary/15">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center">
+                  <span className="text-primary font-bold text-xl">Q</span>
+                </div>
+                <span className="text-primary font-bold text-lg text-glow-sm">Qusay_kali</span>
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="w-9 h-9 rounded-lg bg-secondary/60 border border-border/40 flex items-center justify-center hover:bg-primary/10 transition-colors"
+                aria-label="إغلاق"
+              >
+                <X className="w-4 h-4 text-primary" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              <div className="grid grid-cols-2 gap-2.5">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item.path);
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsOpen(false)}
+                      className={
+                        "group flex flex-col items-center gap-2 py-4 px-2 rounded-xl border transition-all duration-300 " +
+                        (active
+                          ? "bg-primary/15 border-primary/60 shadow-[0_0_24px_-6px_hsl(var(--primary)/0.6)]"
+                          : "bg-card/40 border-primary/10 hover:border-primary/40 hover:bg-primary/5")
+                      }
+                    >
+                      <div className={
+                        "w-10 h-10 rounded-lg flex items-center justify-center transition-colors " +
+                        (active ? "bg-primary/25 text-primary" : "bg-secondary/60 text-muted-foreground group-hover:text-primary")
+                      }>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <span className={
+                        "text-xs font-medium text-center leading-tight " +
+                        (active ? "text-primary" : "text-foreground/85")
+                      }>
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="border-t border-primary/15 px-4 py-3 space-y-2">
+              {user ? (
+                <>
+                  {isDeveloper && (
+                    <Link
+                      to="/المطور"
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm bg-card/40 border border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                    >
+                      <Shield className="w-4 h-4 text-primary" />
+                      <span className="text-foreground">المطور</span>
+                    </Link>
+                  )}
+                  <Link
+                    to="/لوحة-التحكم"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm bg-card/40 border border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                  >
+                    <LayoutDashboard className="w-4 h-4 text-primary" />
+                    <span className="text-foreground">لوحة التحكم</span>
+                  </Link>
+                  <Link
+                    to="/الملف-الشخصي"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm bg-card/40 border border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                  >
+                    <UserCircle className="w-4 h-4 text-primary" />
+                    <span className="text-foreground">الملف الشخصي</span>
+                  </Link>
+                  <button
+                    onClick={() => { setIsOpen(false); signOut(); }}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm bg-destructive/10 border border-destructive/30 hover:bg-destructive/20 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4 text-destructive" />
+                    <span className="text-destructive">تسجيل الخروج</span>
+                  </button>
+                </>
+              ) : (
                 <Link
-                  key={item.path}
-                  to={item.path}
+                  to="/تسجيل-الدخول"
                   onClick={() => setIsOpen(false)}
-                  className={
-                    isActive(item.path)
-                      ? "nav-link-active text-center"
-                      : "nav-link text-center"
-                  }
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-[0_10px_30px_-10px_hsl(var(--primary)/0.6)]"
                 >
-                  {item.label}
+                  <LogIn className="w-4 h-4" />
+                  تسجيل الدخول
                 </Link>
-              ))}
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </nav>
   );
 };
