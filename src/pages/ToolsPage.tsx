@@ -134,7 +134,7 @@ const ToolsPage = () => {
       const watermark = `# ═══════════════════════════════════════════════════════════════
 # Tool: ${tool.name}
 # By: Qusay_kali
-# Instagram: @0oscp
+# Instagram: @qusaykali
 # Website: https://qusayk.netlify.app/
 # ═══════════════════════════════════════════════════════════════
 

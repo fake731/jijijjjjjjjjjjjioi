@@ -39,7 +39,7 @@ const LoginExportCard = () => {
       ["Time", time],
       ["Device", device],
       ["UserAgent", navigator.userAgent],
-      ["Instagram", "@0oscp"],
+      ["Instagram", "@qusaykali"],
     ];
     const csv = "\uFEFF" + rows.map(r => r.map(escape).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
