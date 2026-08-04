@@ -32,7 +32,7 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.quiz": "الاختبار",
     "hero.title": "Qusay Kali",
     "hero.subtitle": "منصة للأمن السيبراني",
-    "hero.description": "دليلك الشامل لتعلم الأمن السيبراني من الصفر إلى الاحتراف",
+    "hero.description": "دليلك الشامل لتعلم الأمن السيبراني من الصفر",
     "hero.cta.tools": "استكشف الأدوات",
     "hero.cta.guide": "ابدأ التعلم",
     "features.title": "ماذا نقدم لك؟",

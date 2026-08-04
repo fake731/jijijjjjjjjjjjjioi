@@ -25,7 +25,7 @@ const HeroSection = () => {
           {typed}
         </p>
         <p className="text-sm md:text-base text-muted-foreground mb-8 max-w-xl mx-auto">
-          دليلك الشامل لتعلم الأمن السيبراني من الصفر إلى الاحتراف
+          دليلك الشامل لتعلم الأمن السيبراني من الصفر
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3">
