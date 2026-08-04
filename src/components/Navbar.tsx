@@ -227,7 +227,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="xl:hidden flex items-center gap-2">
+          <div className="xl:hidden flex items-center gap-1.5 shrink-0">
             <div className="relative">
                   <button
                     onClick={toggleNotifications}
