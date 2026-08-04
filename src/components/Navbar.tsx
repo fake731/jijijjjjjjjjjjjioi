@@ -110,7 +110,7 @@ const Navbar = () => {
             <div className="w-9 h-9 xl:w-10 xl:h-10 shrink-0 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center group-hover:box-glow transition-all duration-300">
               <span className="text-primary font-bold text-lg xl:text-xl">Q</span>
             </div>
-            <span className="text-primary font-bold text-base xl:text-xl text-glow-sm truncate">Qusay_kali</span>
+            <span className="hidden sm:inline text-primary font-bold text-base xl:text-xl text-glow-sm truncate">Qusay_kali</span>
           </Link>
 
           {/* Desktop Navigation */}
