@@ -103,14 +103,14 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-3 left-3 right-3 xl:left-6 xl:right-6 z-50 rounded-2xl bg-card/10 backdrop-blur-3xl border border-primary/15 shadow-[0_8px_32px_-12px_hsl(var(--primary)/0.3)]">
-      <div className="px-3 xl:px-5">
-        <div className="flex items-center justify-between h-14 xl:h-16 gap-2">
+      <div className="px-2 xl:px-5">
+        <div className="flex items-center justify-between h-14 xl:h-16 gap-2 min-w-0">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center group-hover:box-glow transition-all duration-300">
-              <span className="text-primary font-bold text-xl">Q</span>
+          <Link to="/" className="flex items-center gap-2 xl:gap-3 group min-w-0">
+            <div className="w-9 h-9 xl:w-10 xl:h-10 shrink-0 rounded-xl bg-primary/20 border border-primary/40 flex items-center justify-center group-hover:box-glow transition-all duration-300">
+              <span className="text-primary font-bold text-lg xl:text-xl">Q</span>
             </div>
-            <span className="text-primary font-bold text-xl text-glow-sm">Qusay_kali</span>
+            <span className="text-primary font-bold text-base xl:text-xl text-glow-sm truncate">Qusay_kali</span>
           </Link>
 
           {/* Desktop Navigation */}
