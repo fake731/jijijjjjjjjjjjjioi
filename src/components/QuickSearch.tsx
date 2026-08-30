@@ -231,7 +231,7 @@ const QuickSearch = () => {
       >
         <Search className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
         <span className="text-muted-foreground text-sm flex-1 text-right">
-          ابحث عن أي أداة، أمر، سكربت، دليل أو خطوات التحميل...
+          ابحث عن أي أداة، أمر، سكربت، دليل، برمجة، ويب، اختبار أو ذكاء...
         </span>
         <kbd className="hidden sm:flex items-center gap-1 px-2 py-1 rounded bg-background/50 text-xs text-muted-foreground border border-border/50">
           <span>⌘</span>
@@ -261,7 +261,7 @@ const QuickSearch = () => {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="ابحث عن أي أداة، أمر، سكربت، دليل أو خطوات التحميل..."
+                  placeholder="ابحث عن أي أداة، أمر، سكربت، دليل، برمجة، ويب، اختبار أو ذكاء..."
                   className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-lg"
                   dir="rtl"
                 />
@@ -333,6 +333,34 @@ const QuickSearch = () => {
                     >
                       <Wrench className="w-4 h-4 text-primary" />
                       <span>الأدوات</span>
+                    </button>
+                    <button
+                      onClick={() => navigate("/البرمجة")}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
+                    >
+                      <Code className="w-4 h-4 text-primary" />
+                      <span>البرمجة</span>
+                    </button>
+                    <button
+                      onClick={() => navigate("/تطوير-الويب")}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
+                    >
+                      <Globe className="w-4 h-4 text-primary" />
+                      <span>تطوير الويب</span>
+                    </button>
+                    <button
+                      onClick={() => navigate("/الاختبار")}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
+                    >
+                      <GraduationCap className="w-4 h-4 text-primary" />
+                      <span>الاختبار</span>
+                    </button>
+                    <button
+                      onClick={() => navigate("/الذكاء")}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors text-sm"
+                    >
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <span>Qusay AI</span>
                     </button>
                     <button
                       onClick={() => navigate("/السكربتات")}
