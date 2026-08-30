@@ -184,6 +184,14 @@ const QuickSearch = () => {
         return <BookOpen className="w-4 h-4" />;
       case "download":
         return <Download className="w-4 h-4" />;
+      case "programming":
+        return <Code className="w-4 h-4" />;
+      case "webdev":
+        return <Globe className="w-4 h-4" />;
+      case "quiz":
+        return <GraduationCap className="w-4 h-4" />;
+      case "ai":
+        return <Sparkles className="w-4 h-4" />;
       default:
         return <Search className="w-4 h-4" />;
     }
@@ -201,6 +209,14 @@ const QuickSearch = () => {
         return "دليل";
       case "download":
         return "تحميل";
+      case "programming":
+        return "برمجة";
+      case "webdev":
+        return "ويب";
+      case "quiz":
+        return "اختبار";
+      case "ai":
+        return "ذكاء";
       default:
         return "";
     }
