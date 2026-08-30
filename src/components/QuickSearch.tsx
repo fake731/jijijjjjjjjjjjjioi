@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { Search, Terminal, Wrench, FileCode, X, ArrowRight, BookOpen, Download } from "lucide-react";
+import {
+  Search, Terminal, Wrench, FileCode, X, ArrowRight, BookOpen, Download,
+  Code, Globe, Sparkles, GraduationCap, Shield, Cpu, Network, Bug, Lock,
+  KeyRound, Database, Server, Smartphone, Wifi, Binary, FileType, GitBranch,
+  Box, Workflow, TestTube, Layers, Atom, Palette, Zap, ServerIcon
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SearchItem {
   title: string;
   description: string;
-  type: "command" | "tool" | "script" | "guide" | "download";
+  type: "command" | "tool" | "script" | "guide" | "download" | "programming" | "webdev" | "quiz" | "ai";
   link: string;
 }
 
@@ -26,7 +31,11 @@ const searchData: SearchItem[] = [
   { title: "find", description: "البحث عن ملف", type: "command", link: "/الاوامر" },
   { title: "tar", description: "إنشاء أو فك أرشيف", type: "command", link: "/الاوامر" },
   { title: "ssh", description: "الاتصال عن بعد", type: "command", link: "/الاوامر" },
-  
+  { title: "nmap -sV", description: "فحص المنافذ مع إصدار الخدمة", type: "command", link: "/الاوامر" },
+  { title: "hydra -l user -P pass.txt ssh", description: "هجوم brute force عبر SSH", type: "command", link: "/الاوامر" },
+  { title: "sqlmap -u URL", description: "فحص حقن SQL", type: "command", link: "/الاوامر" },
+
+  // Tools
   { title: "Nmap", description: "فحص الشبكات والمنافذ", type: "tool", link: "/الادوات" },
   { title: "Metasploit", description: "إطار اختبار الاختراق", type: "tool", link: "/الادوات" },
   { title: "Burp Suite", description: "اختبار تطبيقات الويب", type: "tool", link: "/الادوات" },
@@ -40,14 +49,20 @@ const searchData: SearchItem[] = [
   { title: "Dirb", description: "اكتشاف المجلدات المخفية", type: "tool", link: "/الادوات" },
   { title: "Gobuster", description: "فحص DNS والمجلدات", type: "tool", link: "/الادوات" },
   { title: "Netcat", description: "أداة الشبكات الشاملة", type: "tool", link: "/الادوات" },
-  
+  { title: "OWASP ZAP", description: "فحص ثغرات الويب", type: "tool", link: "/الادوات" },
+  { title: "Maltego", description: "تحليل OSINT", type: "tool", link: "/الادوات" },
+
+  // Scripts
   { title: "Port Scanner", description: "ماسح المنافذ بايثون", type: "script", link: "/السكربتات" },
   { title: "Password Generator", description: "مولد كلمات المرور", type: "script", link: "/السكربتات" },
   { title: "Hash Cracker", description: "فك تشفير الهاش", type: "script", link: "/السكربتات" },
   { title: "Network Scanner", description: "ماسح الشبكة", type: "script", link: "/السكربتات" },
   { title: "Keylogger", description: "راصد لوحة المفاتيح", type: "script", link: "/السكربتات" },
   { title: "Backdoor", description: "باب خلفي بسيط", type: "script", link: "/السكربتات" },
+  { title: "Subdomain Finder", description: "اكتشاف النطاقات الفرعية", type: "script", link: "/السكربتات" },
+  { title: "Directory Bruter", description: "كشف المسارات المخفية", type: "script", link: "/السكربتات" },
 
+  // Guide
   { title: "أساسيات الأمن السيبراني", description: "المفاهيم الأساسية ومثلث CIA", type: "guide", link: "/الدليل" },
   { title: "CIA Triad", description: "السرية والنزاهة والتوافر", type: "guide", link: "/الدليل" },
   { title: "اختبار الاختراق", description: "Penetration Testing ومراحله", type: "guide", link: "/الدليل" },
@@ -59,11 +74,11 @@ const searchData: SearchItem[] = [
   { title: "OWASP Top 10", description: "أهم عشر ثغرات في تطبيقات الويب", type: "guide", link: "/الدليل" },
   { title: "أمن السحاب", description: "Cloud Security", type: "guide", link: "/الدليل" },
   { title: "التحقيق الجنائي الرقمي", description: "Digital Forensics", type: "guide", link: "/الدليل" },
-  { title: "البرمجة للأمن السيبراني", description: "Python و Bash و PowerShell", type: "guide", link: "/الدليل" },
   { title: "إدارة المخاطر", description: "Risk Management", type: "guide", link: "/الدليل" },
   { title: "أمن الهواتف", description: "Mobile Security", type: "guide", link: "/الدليل" },
   { title: "Privilege Escalation", description: "رفع الصلاحيات", type: "guide", link: "/الدليل" },
-  
+
+  // Downloads
   { title: "تحميل كالي لينكس", description: "خطوات تنزيل كالي لينكس", type: "download", link: "/التحميل" },
   { title: "Kali Linux ISO", description: "تحميل ملف ISO الرسمي", type: "download", link: "/التحميل" },
   { title: "VirtualBox Installation", description: "تثبيت كالي على VirtualBox", type: "download", link: "/التحميل" },
@@ -73,8 +88,41 @@ const searchData: SearchItem[] = [
   { title: "Live USB", description: "تشغيل كالي من USB", type: "download", link: "/التحميل" },
   { title: "Kali NetHunter", description: "كالي للهواتف الذكية", type: "download", link: "/التحميل" },
   { title: "Kali ARM", description: "كالي لأجهزة Raspberry Pi", type: "download", link: "/التحميل" },
-  { title: "متطلبات النظام", description: "System Requirements", type: "download", link: "/التحميل" },
   { title: "Termux كالي", description: "تثبيت كالي على Termux", type: "download", link: "/التحميل" },
+
+  // Programming
+  { title: "Python", description: "أساسيات ومواضيع متقدمة بلغة Python", type: "programming", link: "/البرمجة" },
+  { title: "C++", description: "البرمجة بلغة C++ من الصفر", type: "programming", link: "/البرمجة" },
+  { title: "JavaScript", description: "تعلم JavaScript للويب والأمن", type: "programming", link: "/البرمجة" },
+  { title: "أمن سيبراني", description: "دروس الأمن السيبراني بالبرمجة", type: "programming", link: "/البرمجة" },
+  { title: "شبكات", description: "برمجة الشبكات والبروتوكولات", type: "programming", link: "/البرمجة" },
+  { title: "اكتشاف ثغرات", description: "كتابة exploits وفحص الثغرات", type: "programming", link: "/البرمجة" },
+  { title: "Loops في Python", description: "for / while وتطبيقاتها", type: "programming", link: "/البرمجة" },
+  { title: "Functions في JavaScript", description: "الدوال والسهمية", type: "programming", link: "/البرمجة" },
+
+  // Web Development
+  { title: "HTML", description: "هيكل صفحات الويب", type: "webdev", link: "/تطوير-الويب" },
+  { title: "CSS", description: "تنسيق وتصميم الواجهات", type: "webdev", link: "/تطوير-الويب" },
+  { title: "JavaScript", description: "تفاعلية صفحات الويب", type: "webdev", link: "/تطوير-الويب" },
+  { title: "React", description: "مكتبة بناء الواجهات", type: "webdev", link: "/تطوير-الويب" },
+  { title: "Node.js", description: "JavaScript على الخادم", type: "webdev", link: "/تطوير-الويب" },
+  { title: "Git", description: "إدارة الإصدارات", type: "webdev", link: "/تطوير-الويب" },
+  { title: "APIs", description: "تصميم واستهلاك الواجهات البرمجية", type: "webdev", link: "/تطوير-الويب" },
+  { title: "قواعد البيانات", description: "SQL و NoSQL للويب", type: "webdev", link: "/تطوير-الويب" },
+
+  // Quiz
+  { title: "اختبار Python", description: "أسئلة في لغة Python", type: "quiz", link: "/الاختبار" },
+  { title: "اختبار C++", description: "أسئلة في لغة C++", type: "quiz", link: "/الاختبار" },
+  { title: "اختبار JavaScript", description: "أسئلة في JavaScript", type: "quiz", link: "/الاختبار" },
+  { title: "اختبار أمن سيبراني", description: "أسئلة أمن المعلومات", type: "quiz", link: "/الاختبار" },
+  { title: "اختبار شبكات", description: "أسئلة في الشبكات", type: "quiz", link: "/الاختبار" },
+  { title: "اختبار Linux", description: "أسئلة في Linux و Bash", type: "quiz", link: "/الاختبار" },
+  { title: "اختبار التشفير", description: "أسئلة في Cryptography", type: "quiz", link: "/الاختبار" },
+  { title: "اختبار كلمات المرور", description: "أسئلة في أمن كلمات المرور", type: "quiz", link: "/الاختبار" },
+
+  // AI
+  { title: "Qusay AI", description: "مساعد AI للأمن والبرمجة", type: "ai", link: "/الذكاء" },
+  { title: "AI Pro", description: "وصول متقدم للمطورين", type: "ai", link: "/ai2" },
 ];
 
 const QuickSearch = () => {
