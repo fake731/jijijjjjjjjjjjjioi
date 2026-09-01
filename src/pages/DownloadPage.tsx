@@ -1,4 +1,6 @@
 import React from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ShareButton from "@/components/ShareButton";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Download, Monitor, HardDrive, Smartphone, Terminal, ExternalLink, ChevronDown, ChevronUp, Globe, CheckCircle, AlertCircle, Info, Usb, Settings, Shield, Wifi, Users, Laptop, Server, Cloud, Package, Code, Cpu, HardDriveDownload, FolderOpen, Play, RotateCcw, Zap, Clock, FileText, Command, Wrench, Box, Layers, MonitorSmartphone, TabletSmartphone, Lock } from "lucide-react";
@@ -807,6 +809,10 @@ const DownloadPage = () => {
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between gap-3 mb-6" dir="rtl">
+          <Breadcrumbs />
+          <ShareButton title="التحميل — Qusay_kali" />
+        </div>
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">

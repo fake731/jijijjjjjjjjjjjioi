@@ -1,4 +1,6 @@
 import { useState, useMemo } from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ShareButton from "@/components/ShareButton";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { webDevCategories, WebDevCategory, WebDevTopic } from "@/data/webDevData";
@@ -53,6 +55,10 @@ const WebDevPage = () => {
       <Navbar />
       <main className="pt-28 pb-16">
         <div className="container mx-auto px-3 sm:px-6 max-w-[1700px]">
+        <div className="flex items-center justify-between gap-3 mb-6" dir="rtl">
+          <Breadcrumbs />
+          <ShareButton title="تطوير الويب — Qusay_kali" />
+        </div>
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">

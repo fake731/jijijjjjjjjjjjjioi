@@ -1,4 +1,6 @@
 import Navbar from "@/components/Navbar";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ShareButton from "@/components/ShareButton";
 import Footer from "@/components/Footer";
 import { ChevronDown, ChevronUp, Copy, Check, Search, Download, LayoutGrid, List, Terminal, Globe, Lock } from "lucide-react";
 import { useState, useMemo } from "react";
@@ -197,6 +199,10 @@ const ToolsPage = () => {
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-3 sm:px-4 max-w-[1700px]">
+        <div className="flex items-center justify-between gap-3 mb-6" dir="rtl">
+          <Breadcrumbs />
+          <ShareButton title="الأدوات — Qusay_kali" />
+        </div>
           {/* Header */}
           <motion.div 
             initial={{ opacity: 0, y: -20 }}

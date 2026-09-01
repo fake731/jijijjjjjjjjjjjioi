@@ -1,4 +1,6 @@
 import Navbar from "@/components/Navbar";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ShareButton from "@/components/ShareButton";
 import Footer from "@/components/Footer";
 import { BookOpen, Shield, Target, Eye, Lock, Network, Database, Terminal, AlertTriangle, CheckCircle, ChevronDown, ChevronUp, Zap, Bug, FileCode, Server, Wifi, Key, Globe, Cpu, Cloud, Smartphone, Code, Radio, Search, Users, Layers, Activity, HardDrive, MonitorSpeaker, Fingerprint, ShieldCheck, Skull, Crosshair, Binary, Braces, Wrench } from "lucide-react";
 import { useState } from "react";
@@ -1269,6 +1271,10 @@ const GuidePage = () => {
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between gap-3 mb-6" dir="rtl">
+          <Breadcrumbs />
+          <ShareButton title="الدليل — Qusay_kali" />
+        </div>
           {/* Header */}
           <div className="text-center mb-16">
             <div className="flex justify-center mb-6">
