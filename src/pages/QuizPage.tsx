@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ShareButton from "@/components/ShareButton";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -289,6 +291,10 @@ const QuizPage = () => {
     <div className="min-h-screen bg-background relative">
       <Navbar />
       <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-[1900px]" dir="rtl">
+        <div className="flex items-center justify-between gap-3 mb-6" dir="rtl">
+          <Breadcrumbs />
+          <ShareButton title="الاختبار — Qusay_kali" />
+        </div>
         <div className="text-center mb-10">
           <div className="flex justify-center mb-6">
             <div className="glow-orbit float-soft w-20 h-20 rounded-3xl bg-primary/10 border border-primary/30 backdrop-blur-2xl flex items-center justify-center">

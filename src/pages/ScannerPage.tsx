@@ -1,4 +1,6 @@
 import Navbar from "@/components/Navbar";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ShareButton from "@/components/ShareButton";
 import Footer from "@/components/Footer";
 import { Terminal, Copy, Check, Globe, FolderOpen, FileText, User, Settings, HardDrive, Network, Search, Trash2, Edit, Archive, Clock, Key, Shield, Monitor, Cpu, Database, Command, ArrowRight, Home, List, Eye, Download, Upload, Layers, Box, RefreshCw, Power, Zap, Wifi, Bug, Server } from "lucide-react";
 import { useState } from "react";
@@ -269,6 +271,10 @@ const ScannerPage = () => {
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between gap-3 mb-6" dir="rtl">
+          <Breadcrumbs />
+          <ShareButton title="الفحص — Qusay_kali" />
+        </div>
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-6">

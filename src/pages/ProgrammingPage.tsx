@@ -1,4 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import ShareButton from "@/components/ShareButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/Navbar";
@@ -108,6 +110,10 @@ const ProgrammingPage = () => {
     <div className="min-h-screen bg-background relative" dir="rtl">
       <Navbar />
       <main className="container mx-auto px-3 sm:px-6 pt-28 pb-16 max-w-[1900px]">
+        <div className="flex items-center justify-between gap-3 mb-6" dir="rtl">
+          <Breadcrumbs />
+          <ShareButton title="البرمجة — Qusay_kali" />
+        </div>
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-6">
