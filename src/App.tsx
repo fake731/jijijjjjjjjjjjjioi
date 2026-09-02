@@ -131,7 +131,6 @@ const AppShell = () => {
       <BrowserRouter>
         <InlineContentEditor />
         <DeviceNotifications />
-        <ReadingTools />
         <AnimatedRoutes />
       </BrowserRouter>
     </TooltipProvider>
@@ -144,9 +143,7 @@ const App = () => (
       <LanguageProvider>
         <AuthProvider>
           <SiteContentProvider>
-            <ReadingPrefsProvider>
-              <AppShell />
-            </ReadingPrefsProvider>
+            <AppShell />
           </SiteContentProvider>
         </AuthProvider>
       </LanguageProvider>
