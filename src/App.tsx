@@ -24,8 +24,6 @@ import { usePageVisit } from "@/hooks/usePageVisit";
 import { useDeviceNotifications } from "@/hooks/useDeviceNotifications";
 import PageSkeleton from "@/components/PageSkeleton";
 import { useLowPowerDevice } from "@/hooks/useLowPowerDevice";
-import { ReadingPrefsProvider } from "@/hooks/useReadingPrefs";
-import ReadingTools from "@/components/ReadingTools";
 
 // Eagerly-loaded routes: Home + NotFound stay in the main bundle so the LCP
 // hero paints instantly. Everything else is code-split.

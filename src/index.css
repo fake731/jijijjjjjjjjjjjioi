@@ -1300,24 +1300,3 @@ img { max-width: 100%; height: auto; }
 }
 
 
-/* ===== Reading experience: font scaling + reading mode ===== */
-:root { --font-scale: 1; }
-body { font-size: calc(1rem * var(--font-scale)); }
-main p, main li, main span, main td, article p, article li {
-  font-size: calc(1em * var(--font-scale));
-}
-
-html.reading-mode .aurora-overlay,
-html.reading-mode .shooting-stars-host,
-html.reading-mode .noise-overlay,
-html.reading-mode .vignette-overlay,
-html.reading-mode .scanlines-overlay,
-html.reading-mode canvas.space-canvas,
-html.reading-mode .magnetic-cursor-glow { display: none !important; }
-
-html.reading-mode body { background: hsl(var(--background)); }
-html.reading-mode main { max-width: 900px; margin-inline: auto; }
-html.reading-mode p, html.reading-mode li { line-height: 2; letter-spacing: 0.2px; }
-html.reading-mode * { text-shadow: none !important; }
-html.reading-mode .glass-interactive,
-html.reading-mode .hover-lift-pro { transform: none !important; }
