@@ -107,7 +107,7 @@ const Base64HexTool = () => {
 
 /* ---------- AES encrypt / decrypt (Web Crypto: PBKDF2 + AES-GCM) ---------- */
 
-const deriveKey = async (password: string, salt: Uint8Array) => {
+const deriveKey = async (password: string, salt: BufferSource) => {
   const material = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
   return crypto.subtle.deriveKey(
     { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
@@ -120,7 +120,7 @@ const deriveKey = async (password: string, salt: Uint8Array) => {
 
 const toB64 = (buf: ArrayBuffer | Uint8Array) =>
   btoa(String.fromCharCode(...new Uint8Array(buf instanceof Uint8Array ? buf : new Uint8Array(buf))));
-const fromB64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const fromB64 = (s: string): Uint8Array<ArrayBuffer> => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 
 const EncryptTool = () => {
   const [text, setText] = useState("");
