@@ -39,6 +39,7 @@ const GuidePage = lazy(() => import("./pages/GuidePage"));
 const DownloadPage = lazy(() => import("./pages/DownloadPage"));
 const WebDevPage = lazy(() => import("./pages/WebDevPage"));
 const PasswordCheckerPage = lazy(() => import("./pages/PasswordCheckerPage"));
+const UtilitiesPage = lazy(() => import("./pages/UtilitiesPage"));
 const InquiryPage = lazy(() => import("./pages/InquiryPage"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
@@ -93,6 +94,7 @@ const AnimatedRoutes = () => {
             <Route path="/التحميل" element={<DownloadPage />} />
             <Route path="/تطوير-الويب" element={<WebDevPage />} />
             <Route path="/فحص-كلمة-المرور" element={<PasswordCheckerPage />} />
+            <Route path="/أدوات-سريعة" element={<UtilitiesPage />} />
             <Route path="/الاستفسارات" element={<InquiryPage />} />
             <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
             <Route path="/دخول-المطور" element={<DevLoginPage />} />
