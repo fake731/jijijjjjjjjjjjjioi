@@ -308,9 +308,10 @@ const Navbar = () => {
 
       </div>
 
-      {/* Mobile Drawer — professional slide-in panel */}
-      {isOpen && (
+      {/* Mobile Drawer — professional slide-in panel (portal so it escapes the blurred navbar) */}
+      {isOpen && createPortal(
         <>
+
           <div
             onClick={() => setIsOpen(false)}
             className="xl:hidden fixed inset-0 z-40 bg-background/70 backdrop-blur-md animate-fade-in"
