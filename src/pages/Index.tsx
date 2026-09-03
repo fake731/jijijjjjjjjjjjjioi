@@ -5,6 +5,8 @@ import FeaturesSection from "@/components/FeaturesSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 import QuickSearch from "@/components/QuickSearch";
+import LatestVideos from "@/components/LatestVideos";
+
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Bell, CheckCheck, X } from "lucide-react";
@@ -48,7 +50,10 @@ const Index = () => {
       <main>
         <HeroSection />
 
+        <LatestVideos />
+
         {/* Notifications Section */}
+
         {user && notifications.length > 0 && (
           <section className="py-6 relative" dir="rtl">
             <div className="container mx-auto px-4">

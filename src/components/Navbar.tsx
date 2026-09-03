@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
+
 import {
   Menu, X, LogIn, LogOut, UserCircle, Shield, Bell, LayoutDashboard,
   Home, BookOpen, Wrench, Code2, ScrollText, Sparkles, Terminal,
@@ -308,9 +310,10 @@ const Navbar = () => {
 
       </div>
 
-      {/* Mobile Drawer — professional slide-in panel */}
-      {isOpen && (
+      {/* Mobile Drawer — professional slide-in panel (portal so it escapes the blurred navbar) */}
+      {isOpen && createPortal(
         <>
+
           <div
             onClick={() => setIsOpen(false)}
             className="xl:hidden fixed inset-0 z-40 bg-background/70 backdrop-blur-md animate-fade-in"
@@ -420,8 +423,10 @@ const Navbar = () => {
               )}
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
+
     </nav>
   );
 };
