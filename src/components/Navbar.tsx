@@ -423,8 +423,10 @@ const Navbar = () => {
               )}
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
+
     </nav>
   );
 };
