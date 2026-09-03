@@ -50,7 +50,10 @@ const Index = () => {
       <main>
         <HeroSection />
 
+        <LatestVideos />
+
         {/* Notifications Section */}
+
         {user && notifications.length > 0 && (
           <section className="py-6 relative" dir="rtl">
             <div className="container mx-auto px-4">
