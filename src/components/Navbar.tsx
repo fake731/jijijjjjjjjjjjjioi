@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link, useLocation } from "react-router-dom";
+
 import {
   Menu, X, LogIn, LogOut, UserCircle, Shield, Bell, LayoutDashboard,
   Home, BookOpen, Wrench, Code2, ScrollText, Sparkles, Terminal,
