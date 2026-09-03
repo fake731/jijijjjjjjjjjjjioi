@@ -125,6 +125,7 @@ const fromB64 = (s: string): Uint8Array<ArrayBuffer> => Uint8Array.from(atob(s),
 const EncryptTool = () => {
   const [text, setText] = useState("");
   const [password, setPassword] = useState("");
+  const [noPassword, setNoPassword] = useState(false);
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -132,25 +133,35 @@ const EncryptTool = () => {
   const run = async (encrypt: boolean) => {
     setError("");
     setOutput("");
-    if (!text || !password) { setError("أدخل النص وكلمة المرور"); return; }
+    if (!text || (!noPassword && !password)) { setError(noPassword ? "أدخل النص" : "أدخل النص وكلمة المرور"); return; }
     setBusy(true);
     try {
       if (encrypt) {
-        const salt = crypto.getRandomValues(new Uint8Array(16));
         const iv = crypto.getRandomValues(new Uint8Array(12));
-        const key = await deriveKey(password, salt);
-        const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text));
-        setOutput(`QK1.${toB64(salt)}.${toB64(iv)}.${toB64(cipher)}`);
+        if (noPassword) {
+          // مفتاح عشوائي مضمّن داخل الناتج — مناسب للإخفاء السريع فقط
+          const rawKey = crypto.getRandomValues(new Uint8Array(32));
+          const key = await crypto.subtle.importKey("raw", rawKey, "AES-GCM", false, ["encrypt"]);
+          const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text));
+          setOutput(`QK2.${toB64(rawKey)}.${toB64(iv)}.${toB64(cipher)}`);
+        } else {
+          const salt = crypto.getRandomValues(new Uint8Array(16));
+          const key = await deriveKey(password, salt);
+          const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text));
+          setOutput(`QK1.${toB64(salt)}.${toB64(iv)}.${toB64(cipher)}`);
+        }
       } else {
         const parts = text.trim().split(".");
-        if (parts.length !== 4 || parts[0] !== "QK1") throw new Error();
-        const key = await deriveKey(password, fromB64(parts[1]));
-        const plain = await crypto.subtle.decrypt(
-          { name: "AES-GCM", iv: fromB64(parts[2]) },
-          key,
-          fromB64(parts[3])
-        );
-        setOutput(new TextDecoder().decode(plain));
+        if (parts.length !== 4) throw new Error();
+        if (parts[0] === "QK2") {
+          const key = await crypto.subtle.importKey("raw", fromB64(parts[1]), "AES-GCM", false, ["decrypt"]);
+          const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(parts[2]) }, key, fromB64(parts[3]));
+          setOutput(new TextDecoder().decode(plain));
+        } else if (parts[0] === "QK1") {
+          const key = await deriveKey(password, fromB64(parts[1]));
+          const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(parts[2]) }, key, fromB64(parts[3]));
+          setOutput(new TextDecoder().decode(plain));
+        } else throw new Error();
       }
     } catch {
       setError("فشلت العملية — تأكد من كلمة المرور والنص المشفّر");
@@ -165,6 +176,15 @@ const EncryptTool = () => {
         <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
         تشفير AES-256-GCM حقيقي عبر Web Crypto — كل المعالجة تتم على جهازك ولا يُرسل أي شيء للخادم.
       </div>
+      <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={noPassword}
+          onChange={(e) => { setNoPassword(e.target.checked); setError(""); }}
+          className="w-4 h-4 accent-[hsl(var(--primary))]"
+        />
+        تشفير بدون كلمة مرور (المفتاح يُولَّد تلقائياً ويُدمج داخل الناتج)
+      </label>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -173,13 +193,20 @@ const EncryptTool = () => {
         className={inputCls}
         dir="auto"
       />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="كلمة المرور"
-        className={inputCls}
-      />
+      {!noPassword && (
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="كلمة المرور"
+          className={inputCls}
+        />
+      )}
+      {noPassword && (
+        <p className="text-[11px] text-amber-400">
+          تنبيه: بدون كلمة مرور يكون المفتاح داخل النص المشفّر — مناسب للإخفاء السريع وليس لحماية بيانات حساسة.
+        </p>
+      )}
       <div className="flex gap-2">
         <button
           onClick={() => run(true)}
@@ -209,6 +236,7 @@ const EncryptTool = () => {
     </div>
   );
 };
+
 
 /* ---------- QR generator ---------- */
 
