@@ -5,7 +5,9 @@ import { Play, Youtube, X, ExternalLink, Gauge, MonitorPlay } from "lucide-react
  * ضع هنا معرّفات فيديوهات يوتيوب (الجزء بعد v= في الرابط).
  * مثال: https://www.youtube.com/watch?v=dQw4w9WgXcQ  →  "dQw4w9WgXcQ"
  */
-export const VIDEO_IDS: { id: string; title: string }[] = [];
+export const VIDEO_IDS: { id: string; title: string }[] = [
+  { id: "lDf6aBcP4A8", title: "راب" },
+];
 
 const CHANNEL_URL = "https://www.youtube.com/@Qusay_kali";
 
