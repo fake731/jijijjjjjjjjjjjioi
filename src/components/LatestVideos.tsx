@@ -6,7 +6,7 @@ import { Play, Youtube, X, ExternalLink, Gauge, MonitorPlay } from "lucide-react
  * مثال: https://www.youtube.com/watch?v=dQw4w9WgXcQ  →  "dQw4w9WgXcQ"
  */
 export const VIDEO_IDS: { id: string; title: string }[] = [
-  { id: "lDf6aBcP4A8", title: "راب" },
+  { id: "lDf6aBcP4A8", title: "تنزيل كالي لينكس في 5 دقائق ! 🌐💻 Download Kali Linux in 5 minutes !" },
 ];
 
 const CHANNEL_URL = "https://www.youtube.com/@Qusay_kali";

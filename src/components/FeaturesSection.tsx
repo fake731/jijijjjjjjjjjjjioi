@@ -1,4 +1,4 @@
-import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail, Trophy, Braces } from "lucide-react";
+import { Brain, Terminal, Wrench, Code, BookOpen, Download, Globe, Lock, Mail, Trophy, Braces, Wand2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/hooks/use-language";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
@@ -117,6 +117,15 @@ const FeaturesSection = () => {
       color: "text-amber-400",
       bg: "bg-amber-500/10",
       border: "border-amber-500/30",
+    },
+    {
+      icon: Wand2,
+      title: "أدوات سريعة",
+      description: "Base64، تشفير، QR، فك ضغط الأكواد وأكثر",
+      link: "/أدوات-سريعة",
+      color: "text-teal-400",
+      bg: "bg-teal-500/10",
+      border: "border-teal-500/30",
     },
     {
       icon: Download,
