@@ -8,6 +8,7 @@ import {
   Binary, Lock, Unlock, QrCode, Link2, Copy, Check, ArrowLeftRight,
   ShieldCheck, ShieldAlert, ExternalLink, Wrench,
   Fingerprint, FileKey, Hash, Braces, Clock, Type, Palette, Network,
+  FileCode2, Download as DownloadIcon,
 } from "lucide-react";
 
 /* ---------- shared bits ---------- */
@@ -125,8 +126,6 @@ const fromB64 = (s: string): Uint8Array<ArrayBuffer> => Uint8Array.from(atob(s),
 
 const EncryptTool = () => {
   const [text, setText] = useState("");
-  const [password, setPassword] = useState("");
-  const [noPassword, setNoPassword] = useState(false);
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -134,38 +133,24 @@ const EncryptTool = () => {
   const run = async (encrypt: boolean) => {
     setError("");
     setOutput("");
-    if (!text || (!noPassword && !password)) { setError(noPassword ? "أدخل النص" : "أدخل النص وكلمة المرور"); return; }
+    if (!text) { setError("أدخل النص"); return; }
     setBusy(true);
     try {
       if (encrypt) {
         const iv = crypto.getRandomValues(new Uint8Array(12));
-        if (noPassword) {
-          // مفتاح عشوائي مضمّن داخل الناتج — مناسب للإخفاء السريع فقط
-          const rawKey = crypto.getRandomValues(new Uint8Array(32));
-          const key = await crypto.subtle.importKey("raw", rawKey, "AES-GCM", false, ["encrypt"]);
-          const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text));
-          setOutput(`QK2.${toB64(rawKey)}.${toB64(iv)}.${toB64(cipher)}`);
-        } else {
-          const salt = crypto.getRandomValues(new Uint8Array(16));
-          const key = await deriveKey(password, salt);
-          const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text));
-          setOutput(`QK1.${toB64(salt)}.${toB64(iv)}.${toB64(cipher)}`);
-        }
+        const rawKey = crypto.getRandomValues(new Uint8Array(32));
+        const key = await crypto.subtle.importKey("raw", rawKey, "AES-GCM", false, ["encrypt"]);
+        const cipher = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text));
+        setOutput(`QK2.${toB64(rawKey)}.${toB64(iv)}.${toB64(cipher)}`);
       } else {
         const parts = text.trim().split(".");
-        if (parts.length !== 4) throw new Error();
-        if (parts[0] === "QK2") {
-          const key = await crypto.subtle.importKey("raw", fromB64(parts[1]), "AES-GCM", false, ["decrypt"]);
-          const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(parts[2]) }, key, fromB64(parts[3]));
-          setOutput(new TextDecoder().decode(plain));
-        } else if (parts[0] === "QK1") {
-          const key = await deriveKey(password, fromB64(parts[1]));
-          const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(parts[2]) }, key, fromB64(parts[3]));
-          setOutput(new TextDecoder().decode(plain));
-        } else throw new Error();
+        if (parts.length !== 4 || parts[0] !== "QK2") throw new Error();
+        const key = await crypto.subtle.importKey("raw", fromB64(parts[1]), "AES-GCM", false, ["decrypt"]);
+        const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(parts[2]) }, key, fromB64(parts[3]));
+        setOutput(new TextDecoder().decode(plain));
       }
     } catch {
-      setError("فشلت العملية — تأكد من كلمة المرور والنص المشفّر");
+      setError("فشلت العملية — تأكد من النص المشفّر");
     } finally {
       setBusy(false);
     }
@@ -175,17 +160,8 @@ const EncryptTool = () => {
     <div className="space-y-4">
       <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/5 border border-primary/20 rounded-xl px-4 py-2.5">
         <ShieldCheck className="w-4 h-4 text-primary shrink-0" />
-        تشفير AES-256-GCM حقيقي عبر Web Crypto — كل المعالجة تتم على جهازك ولا يُرسل أي شيء للخادم.
+        تشفير AES-256-GCM بدون كلمة مرور — كل المعالجة تتم على جهازك ولا يُرسل أي شيء للخادم.
       </div>
-      <label className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none">
-        <input
-          type="checkbox"
-          checked={noPassword}
-          onChange={(e) => { setNoPassword(e.target.checked); setError(""); }}
-          className="w-4 h-4 accent-[hsl(var(--primary))]"
-        />
-        تشفير بدون كلمة مرور (المفتاح يُولَّد تلقائياً ويُدمج داخل الناتج)
-      </label>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -194,20 +170,6 @@ const EncryptTool = () => {
         className={inputCls}
         dir="auto"
       />
-      {!noPassword && (
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="كلمة المرور"
-          className={inputCls}
-        />
-      )}
-      {noPassword && (
-        <p className="text-[11px] text-amber-400">
-          تنبيه: بدون كلمة مرور يكون المفتاح داخل النص المشفّر — مناسب للإخفاء السريع وليس لحماية بيانات حساسة.
-        </p>
-      )}
       <div className="flex gap-2">
         <button
           onClick={() => run(true)}
@@ -232,6 +194,128 @@ const EncryptTool = () => {
             <CopyBtn text={output} />
           </div>
           <p className="text-sm font-mono break-all text-foreground" dir="auto">{output}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ---------- Code beautifier (HTML / CSS / JS) ---------- */
+
+const beautifyCss = (src: string) => {
+  let out = "", depth = 0;
+  const s = src.replace(/\s+/g, " ").trim();
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === "{") { depth++; out += " {\n" + "  ".repeat(depth); }
+    else if (c === "}") { depth = Math.max(0, depth - 1); out = out.replace(/\s+$/, "") + "\n" + "  ".repeat(depth) + "}\n" + "  ".repeat(depth); }
+    else if (c === ";") { out += ";\n" + "  ".repeat(depth); }
+    else out += c;
+  }
+  return out.split("\n").map((l) => l.replace(/\s+$/, "")).filter((l, i, a) => l.trim() || (a[i - 1] || "").trim()).join("\n").trim();
+};
+
+const beautifyHtml = (src: string) => {
+  const s = src.replace(/>\s+</g, "><").trim();
+  const tokens = s.split(/(<[^>]+>)/).filter((t) => t.trim());
+  const voids = /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr|!doctype)/i;
+  let depth = 0;
+  const lines: string[] = [];
+  for (const tk of tokens) {
+    if (/^<\//.test(tk)) depth = Math.max(0, depth - 1);
+    lines.push("  ".repeat(depth) + tk.trim());
+    if (/^<[^/!]/.test(tk) && !/\/>$/.test(tk) && !voids.test(tk.slice(1))) depth++;
+  }
+  return lines.join("\n");
+};
+
+const beautifyJs = (src: string) => {
+  let out = "", depth = 0, inStr: string | null = null;
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i], prev = src[i - 1];
+    if (inStr) {
+      out += c;
+      if (c === inStr && prev !== "\\") inStr = null;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === "`") { inStr = c; out += c; continue; }
+    if (c === "{" || c === "[") { depth++; out += c + "\n" + "  ".repeat(depth); }
+    else if (c === "}" || c === "]") { depth = Math.max(0, depth - 1); out = out.replace(/[ \t]+$/, "").replace(/\n?$/, "\n") + "  ".repeat(depth) + c; }
+    else if (c === ";") out += ";\n" + "  ".repeat(depth);
+    else if (c === "," && depth > 0) out += ",\n" + "  ".repeat(depth);
+    else if (c === "\n") continue;
+    else out += c;
+  }
+  return out.split("\n").map((l) => l.replace(/\s+$/, "")).filter((l) => l.trim()).join("\n");
+};
+
+const BeautifyTool = () => {
+  const [lang, setLang] = useState<"html" | "css" | "js">("html");
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+
+  const run = () => {
+    if (!input.trim()) { setOutput(""); return; }
+    try {
+      setOutput(lang === "css" ? beautifyCss(input) : lang === "html" ? beautifyHtml(input) : beautifyJs(input));
+    } catch {
+      setOutput(input);
+    }
+  };
+
+  const download = () => {
+    const blob = new Blob([output], { type: "text/plain;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `qusay_kali.${lang}`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        {(["html", "css", "js"] as const).map((l) => (
+          <button
+            key={l}
+            onClick={() => { setLang(l); setOutput(""); }}
+            className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-colors ${
+              lang === l ? "bg-primary/15 border-primary/60 text-foreground" : "bg-card/40 border-primary/15 text-muted-foreground hover:border-primary/40"
+            }`}
+          >
+            {l.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <textarea
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        rows={6}
+        dir="ltr"
+        placeholder="ألصق الكود المضغوط (minified) هنا..."
+        className={inputCls}
+      />
+      <button
+        onClick={run}
+        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+      >
+        <FileCode2 className="w-4 h-4" /> فك الضغط وتنسيق الكود
+      </button>
+      {output && (
+        <div className="rounded-xl bg-card/40 border border-primary/15 p-4 space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">الناتج</span>
+            <div className="flex items-center gap-2">
+              <CopyBtn text={output} />
+              <button
+                onClick={download}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+              >
+                <DownloadIcon className="w-3.5 h-3.5" /> تحميل
+              </button>
+            </div>
+          </div>
+          <pre className="text-xs font-mono text-foreground overflow-x-auto max-h-80 whitespace-pre" dir="ltr">{output}</pre>
         </div>
       )}
     </div>
