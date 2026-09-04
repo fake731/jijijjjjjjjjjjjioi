@@ -882,6 +882,7 @@ const tools = [
   { id: "text", label: "محلّل النصوص", icon: Type, color: "text-fuchsia-400", component: TextTool },
   { id: "color", label: "محوّل الألوان", icon: Palette, color: "text-pink-400", component: ColorTool },
   { id: "subnet", label: "حاسبة الشبكات", icon: Network, color: "text-yellow-400", component: SubnetTool },
+  { id: "beautify", label: "فك ضغط HTML/CSS/JS", icon: FileCode2, color: "text-cyan-300", component: BeautifyTool },
 ] as const;
 
 
