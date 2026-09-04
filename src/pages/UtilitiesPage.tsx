@@ -7,6 +7,7 @@ import QRCode from "qrcode";
 import {
   Binary, Lock, Unlock, QrCode, Link2, Copy, Check, ArrowLeftRight,
   ShieldCheck, ShieldAlert, ExternalLink, Wrench,
+  Fingerprint, FileKey, Hash, Braces, Clock, Type, Palette, Network,
 } from "lucide-react";
 
 /* ---------- shared bits ---------- */
