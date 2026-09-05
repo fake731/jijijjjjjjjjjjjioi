@@ -4,9 +4,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Trash2, ChevronDown, Copy, Mail, Code, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Users, Search, Trash2, ChevronDown, Copy, Mail, Code, Monitor, Smartphone, Tablet, ShieldCheck, ShieldOff } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+const fieldLabels: Record<string, string> = {
+  id: "المعرّف", email: "البريد", display_name: "الاسم", avatar_url: "الصورة",
+  country: "البلد", city: "المدينة", region: "المنطقة", ip_address: "عنوان IP",
+  phone: "الهاتف", age: "العمر", gender: "الجنس", device_type: "نوع الجهاز",
+  user_agent: "المتصفح", created_at: "تاريخ التسجيل", updated_at: "آخر تحديث",
+  timezone: "المنطقة الزمنية", language: "اللغة", bio: "نبذة",
+};
 
 const deviceIcon = (type: string | null) => {
   if (!type) return null;
@@ -23,10 +33,31 @@ const UsersTab = () => {
     selectedUsers, setSelectedUsers, toggleUserSelection, selectAllUsers,
     expandedUser, setExpandedUser, confirmDelete, setConfirmDelete,
     handleDeleteUser, handleBulkDelete, deletingUser,
-    userRoles, getUserEngagement, copyToClipboard,
+    userRoles, getUserEngagement, copyToClipboard, fetchAllData,
   } = useDeveloper();
 
   const [deviceFilter, setDeviceFilter] = useState("all");
+  const [roleBusy, setRoleBusy] = useState<string | null>(null);
+
+  const changeRole = async (userId: string, role: "developer" | "user") => {
+    setRoleBusy(userId);
+    try {
+      if (role === "developer") {
+        const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: "developer" });
+        if (error && !error.message.includes("duplicate")) throw error;
+        toast.success("تمت ترقية المستخدم إلى مطور");
+      } else {
+        const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "developer");
+        if (error) throw error;
+        toast.success("تم إرجاع المستخدم إلى مستخدم عادي");
+      }
+      await fetchAllData();
+    } catch (e: any) {
+      toast.error(e?.message || "تعذّر تغيير الدور");
+    } finally {
+      setRoleBusy(null);
+    }
+  };
 
   const uniqueDevices = Array.from(new Set(filteredProfiles.map(p => (p as any).device_type).filter(Boolean))) as string[];
 
@@ -170,10 +201,30 @@ const UsersTab = () => {
                       </div>
                     ))}
                   </div>
+                  {/* All stored data for this user */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {Object.entries(p as Record<string, any>).map(([k, v]) => (
+                      <div key={k} className="p-2.5 rounded-lg bg-card/70 border border-border/20 min-w-0">
+                        <p className="text-[10px] text-muted-foreground">{fieldLabels[k] || k}</p>
+                        <p className="text-xs text-foreground break-all" dir="auto">
+                          {v === null || v === undefined || v === "" ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                   <div className="flex gap-2 flex-wrap">
                     <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(p.id)}><Copy className="w-3 h-3" />نسخ ID</Button>
                     <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(p.email || "")}><Mail className="w-3 h-3" />نسخ البريد</Button>
                     <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(JSON.stringify(p, null, 2))}><Code className="w-3 h-3" />نسخ JSON</Button>
+                    {userRoles[p.id] === "developer" ? (
+                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" disabled={roleBusy === p.id || p.id === user?.id} onClick={() => changeRole(p.id, "user")}>
+                        <ShieldOff className="w-3 h-3" />{roleBusy === p.id ? "..." : "إرجاعه مستخدم"}
+                      </Button>
+                    ) : (
+                      <Button size="sm" className="h-7 text-xs gap-1" disabled={roleBusy === p.id} onClick={() => changeRole(p.id, "developer")}>
+                        <ShieldCheck className="w-3 h-3" />{roleBusy === p.id ? "..." : "ترقية إلى مطور"}
+                      </Button>
+                    )}
                   </div>
                 </div>
               );
