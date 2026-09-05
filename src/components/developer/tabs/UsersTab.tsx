@@ -4,9 +4,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Trash2, ChevronDown, Copy, Mail, Code, Monitor, Smartphone, Tablet } from "lucide-react";
+import { Users, Search, Trash2, ChevronDown, Copy, Mail, Code, Monitor, Smartphone, Tablet, ShieldCheck, ShieldOff } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+const fieldLabels: Record<string, string> = {
+  id: "المعرّف", email: "البريد", display_name: "الاسم", avatar_url: "الصورة",
+  country: "البلد", city: "المدينة", region: "المنطقة", ip_address: "عنوان IP",
+  phone: "الهاتف", age: "العمر", gender: "الجنس", device_type: "نوع الجهاز",
+  user_agent: "المتصفح", created_at: "تاريخ التسجيل", updated_at: "آخر تحديث",
+  timezone: "المنطقة الزمنية", language: "اللغة", bio: "نبذة",
+};
 
 const deviceIcon = (type: string | null) => {
   if (!type) return null;
