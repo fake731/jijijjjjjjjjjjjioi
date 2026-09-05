@@ -39,6 +39,25 @@ const UsersTab = () => {
 
   const [deviceFilter, setDeviceFilter] = useState("all");
   const [roleBusy, setRoleBusy] = useState<string | null>(null);
+  const [nameDraft, setNameDraft] = useState<Record<string, string>>({});
+  const [savingName, setSavingName] = useState<string | null>(null);
+
+  const saveName = async (userId: string) => {
+    const newName = (nameDraft[userId] ?? "").trim();
+    if (!newName) { toast.error("أدخل اسماً صالحاً"); return; }
+    setSavingName(userId);
+    try {
+      const { error } = await supabase.from("profiles").update({ display_name: newName }).eq("id", userId);
+      if (error) throw error;
+      toast.success("تم تحديث الاسم");
+      await fetchAllData();
+    } catch (e: any) {
+      toast.error(e?.message || "تعذّر تحديث الاسم");
+    } finally {
+      setSavingName(null);
+    }
+  };
+
 
   const changeRole = async (userId: string, role: "developer" | "user") => {
     setRoleBusy(userId);
