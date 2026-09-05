@@ -45,7 +45,7 @@ const Footer = () => {
                   <Link to="/تسجيل-الدخول" className="text-sm text-muted-foreground hover:text-primary transition-colors">تسجيل الدخول</Link>
                 </>
               )}
-              <Link to="/دخول-المطور" className="text-sm text-muted-foreground hover:text-primary transition-colors">دخول قصي</Link>
+              <Link to="/3" className="text-sm text-muted-foreground hover:text-primary transition-colors">دخول قصي</Link>
             </div>
           </div>
         </div>

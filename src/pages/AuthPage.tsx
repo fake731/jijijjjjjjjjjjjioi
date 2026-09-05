@@ -219,7 +219,7 @@ const AuthPage = () => {
         if (loginData.user) {
           await syncProfileFromMetadata(loginData.user);
           const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", loginData.user.id).eq("role", "developer").maybeSingle();
-          if (roleData) { toast.success("مرحباً بك يا قصي!"); navigate("/المطور"); return; }
+          if (roleData) { toast.success("مرحباً بك يا قصي!"); navigate("/2"); return; }
         }
         toast.success("تم تسجيل الدخول بنجاح!");
         navigate("/");
@@ -493,7 +493,7 @@ const AuthPage = () => {
 
                 {mode === "login" && (
                   <div className="pt-4 border-t border-border/20">
-                    <Link to="/دخول-المطور" className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60 hover:text-primary/80 transition-colors">
+                    <Link to="/3" className="flex items-center justify-center gap-2 text-xs text-muted-foreground/60 hover:text-primary/80 transition-colors">
                       <Shield className="w-3 h-3" />
                       دخول المطور
                     </Link>

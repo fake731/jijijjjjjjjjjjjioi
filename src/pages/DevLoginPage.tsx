@@ -34,7 +34,7 @@ const DevLoginPage = () => {
   }
 
   if (user) {
-    return <Navigate to="/المطور" replace />;
+    return <Navigate to="/2" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -62,7 +62,7 @@ const DevLoginPage = () => {
 
         if (roleData) {
           toast.success("مرحباً بك يا قصي!");
-          navigate("/المطور");
+          navigate("/2");
         } else {
           await supabase.auth.signOut();
           toast.error("هذا الحساب غير مصرح له بالدخول");
