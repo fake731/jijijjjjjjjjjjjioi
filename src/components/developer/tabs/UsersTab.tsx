@@ -170,10 +170,30 @@ const UsersTab = () => {
                       </div>
                     ))}
                   </div>
+                  {/* All stored data for this user */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {Object.entries(p as Record<string, any>).map(([k, v]) => (
+                      <div key={k} className="p-2.5 rounded-lg bg-card/70 border border-border/20 min-w-0">
+                        <p className="text-[10px] text-muted-foreground">{fieldLabels[k] || k}</p>
+                        <p className="text-xs text-foreground break-all" dir="auto">
+                          {v === null || v === undefined || v === "" ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                   <div className="flex gap-2 flex-wrap">
                     <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(p.id)}><Copy className="w-3 h-3" />نسخ ID</Button>
                     <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(p.email || "")}><Mail className="w-3 h-3" />نسخ البريد</Button>
                     <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(JSON.stringify(p, null, 2))}><Code className="w-3 h-3" />نسخ JSON</Button>
+                    {userRoles[p.id] === "developer" ? (
+                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" disabled={roleBusy === p.id || p.id === user?.id} onClick={() => changeRole(p.id, "user")}>
+                        <ShieldOff className="w-3 h-3" />{roleBusy === p.id ? "..." : "إرجاعه مستخدم"}
+                      </Button>
+                    ) : (
+                      <Button size="sm" className="h-7 text-xs gap-1" disabled={roleBusy === p.id} onClick={() => changeRole(p.id, "developer")}>
+                        <ShieldCheck className="w-3 h-3" />{roleBusy === p.id ? "..." : "ترقية إلى مطور"}
+                      </Button>
+                    )}
                   </div>
                 </div>
               );
