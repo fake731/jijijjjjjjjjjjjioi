@@ -137,7 +137,11 @@ const AIPage = () => {
   }, [showHistory, user, fetchConversations]);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = messagesEndRef.current;
+    const container = el?.parentElement;
+    if (container) {
+      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+    }
   }, []);
 
   useEffect(() => {
@@ -592,7 +596,7 @@ const AIPage = () => {
           {/* Chat Container with Drop Zone */}
           <div 
             ref={dropZoneRef}
-            className={`flex-1 cyber-card overflow-hidden flex flex-col relative transition-all duration-200 ${isDragging ? 'border-primary border-2 bg-primary/5' : ''}`}
+            className={`flex-1 cyber-card overflow-hidden flex flex-col relative transition-all duration-200 h-[65vh] md:h-[calc(100vh-16rem)] ${isDragging ? 'border-primary border-2 bg-primary/5' : ''}`}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
