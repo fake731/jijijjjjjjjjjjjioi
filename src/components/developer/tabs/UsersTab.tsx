@@ -33,10 +33,31 @@ const UsersTab = () => {
     selectedUsers, setSelectedUsers, toggleUserSelection, selectAllUsers,
     expandedUser, setExpandedUser, confirmDelete, setConfirmDelete,
     handleDeleteUser, handleBulkDelete, deletingUser,
-    userRoles, getUserEngagement, copyToClipboard,
+    userRoles, getUserEngagement, copyToClipboard, fetchAllData,
   } = useDeveloper();
 
   const [deviceFilter, setDeviceFilter] = useState("all");
+  const [roleBusy, setRoleBusy] = useState<string | null>(null);
+
+  const changeRole = async (userId: string, role: "developer" | "user") => {
+    setRoleBusy(userId);
+    try {
+      if (role === "developer") {
+        const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: "developer" });
+        if (error && !error.message.includes("duplicate")) throw error;
+        toast.success("تمت ترقية المستخدم إلى مطور");
+      } else {
+        const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", "developer");
+        if (error) throw error;
+        toast.success("تم إرجاع المستخدم إلى مستخدم عادي");
+      }
+      await fetchAllData();
+    } catch (e: any) {
+      toast.error(e?.message || "تعذّر تغيير الدور");
+    } finally {
+      setRoleBusy(null);
+    }
+  };
 
   const uniqueDevices = Array.from(new Set(filteredProfiles.map(p => (p as any).device_type).filter(Boolean))) as string[];
 
