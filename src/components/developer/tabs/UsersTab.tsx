@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, Search, Trash2, ChevronDown, Copy, Mail, Code, Monitor, Smartphone, Tablet, ShieldCheck, ShieldOff } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Users, Search, Trash2, ChevronDown, Copy, Mail, Code, Monitor, Smartphone, Tablet, ShieldCheck, ShieldOff, Pencil } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,6 +39,25 @@ const UsersTab = () => {
 
   const [deviceFilter, setDeviceFilter] = useState("all");
   const [roleBusy, setRoleBusy] = useState<string | null>(null);
+  const [nameDraft, setNameDraft] = useState<Record<string, string>>({});
+  const [savingName, setSavingName] = useState<string | null>(null);
+
+  const saveName = async (userId: string) => {
+    const newName = (nameDraft[userId] ?? "").trim();
+    if (!newName) { toast.error("أدخل اسماً صالحاً"); return; }
+    setSavingName(userId);
+    try {
+      const { error } = await supabase.from("profiles").update({ display_name: newName }).eq("id", userId);
+      if (error) throw error;
+      toast.success("تم تحديث الاسم");
+      await fetchAllData();
+    } catch (e: any) {
+      toast.error(e?.message || "تعذّر تحديث الاسم");
+    } finally {
+      setSavingName(null);
+    }
+  };
+
 
   const changeRole = async (userId: string, role: "developer" | "user") => {
     setRoleBusy(userId);
@@ -185,50 +205,80 @@ const UsersTab = () => {
                 })}
               </tbody>
             </table>
-            {expandedUser && (() => {
+            {(() => {
               const p = displayedProfiles.find(pr => pr.id === expandedUser);
-              if (!p) return null;
-              const eng = getUserEngagement(p.id);
-              const dt = (p as any).device_type as string | null;
+              const eng = p ? getUserEngagement(p.id) : null;
+              const dt = p ? ((p as any).device_type as string | null) : null;
               return (
-                <div className="p-4 bg-secondary/10 border-t border-border/20 space-y-3">
-                  <h4 className="text-sm font-bold text-foreground">تفاصيل: {p.display_name || p.email}</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                    {[{ l: "الزيارات", v: eng.visits }, { l: "محادثات AI", v: eng.chats }, { l: "نقاط التفاعل", v: eng.score }, { l: "الدور", v: userRoles[p.id] || "user" }, { l: "الجهاز", v: dt || "غير محدد" }].map((item, i) => (
-                      <div key={i} className="p-3 rounded-lg bg-card/80 border border-border/20">
-                        <p className="text-[10px] text-muted-foreground">{item.l}</p>
-                        <p className="text-lg font-bold text-foreground">{item.v}</p>
-                      </div>
-                    ))}
-                  </div>
-                  {/* All stored data for this user */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {Object.entries(p as Record<string, any>).map(([k, v]) => (
-                      <div key={k} className="p-2.5 rounded-lg bg-card/70 border border-border/20 min-w-0">
-                        <p className="text-[10px] text-muted-foreground">{fieldLabels[k] || k}</p>
-                        <p className="text-xs text-foreground break-all" dir="auto">
-                          {v === null || v === undefined || v === "" ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v)}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(p.id)}><Copy className="w-3 h-3" />نسخ ID</Button>
-                    <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(p.email || "")}><Mail className="w-3 h-3" />نسخ البريد</Button>
-                    <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => copyToClipboard(JSON.stringify(p, null, 2))}><Code className="w-3 h-3" />نسخ JSON</Button>
-                    {userRoles[p.id] === "developer" ? (
-                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" disabled={roleBusy === p.id || p.id === user?.id} onClick={() => changeRole(p.id, "user")}>
-                        <ShieldOff className="w-3 h-3" />{roleBusy === p.id ? "..." : "إرجاعه مستخدم"}
-                      </Button>
-                    ) : (
-                      <Button size="sm" className="h-7 text-xs gap-1" disabled={roleBusy === p.id} onClick={() => changeRole(p.id, "developer")}>
-                        <ShieldCheck className="w-3 h-3" />{roleBusy === p.id ? "..." : "ترقية إلى مطور"}
-                      </Button>
+                <Dialog open={!!p} onOpenChange={(o) => { if (!o) setExpandedUser(null); }}>
+                  <DialogContent className="max-w-[96vw] w-[96vw] h-[92vh] overflow-y-auto p-4 sm:p-6">
+                    {p && eng && (
+                      <>
+                        <DialogHeader>
+                          <DialogTitle className="text-right">تفاصيل: {p.display_name || p.email}</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                            {[{ l: "الزيارات", v: eng.visits }, { l: "محادثات AI", v: eng.chats }, { l: "نقاط التفاعل", v: eng.score }, { l: "الدور", v: userRoles[p.id] || "user" }, { l: "الجهاز", v: dt || "غير محدد" }].map((item, i) => (
+                              <div key={i} className="p-3 rounded-lg bg-card/80 border border-border/20">
+                                <p className="text-[10px] text-muted-foreground">{item.l}</p>
+                                <p className="text-lg font-bold text-foreground">{item.v}</p>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Rename */}
+                          <div className="flex gap-2 items-center flex-wrap">
+                            <Input
+                              value={nameDraft[p.id] ?? (p.display_name || "")}
+                              onChange={(e) => setNameDraft({ ...nameDraft, [p.id]: e.target.value })}
+                              placeholder="اسم المستخدم"
+                              className="max-w-xs bg-secondary/30 border-border/30"
+                              dir="auto"
+                            />
+                            <Button size="sm" className="h-9 gap-1" disabled={savingName === p.id} onClick={() => saveName(p.id)}>
+                              <Pencil className="w-3.5 h-3.5" />{savingName === p.id ? "..." : "حفظ الاسم"}
+                            </Button>
+                          </div>
+
+                          {/* All stored data for this user */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+                            {Object.entries(p as Record<string, any>).map(([k, v]) => (
+                              <div key={k} className="p-2.5 rounded-lg bg-card/70 border border-border/20 min-w-0">
+                                <p className="text-[10px] text-muted-foreground">{fieldLabels[k] || k}</p>
+                                <p className="text-xs text-foreground break-all" dir="auto">
+                                  {v === null || v === undefined || v === "" ? "—" : typeof v === "object" ? JSON.stringify(v) : String(v)}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => copyToClipboard(p.id)}><Copy className="w-3 h-3" />نسخ ID</Button>
+                            <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => copyToClipboard(p.email || "")}><Mail className="w-3 h-3" />نسخ البريد</Button>
+                            <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => copyToClipboard(JSON.stringify(p, null, 2))}><Code className="w-3 h-3" />نسخ JSON</Button>
+                            {userRoles[p.id] === "developer" ? (
+                              <Button size="sm" variant="outline" className="h-8 text-xs gap-1" disabled={roleBusy === p.id || p.id === user?.id} onClick={() => changeRole(p.id, "user")}>
+                                <ShieldOff className="w-3 h-3" />{roleBusy === p.id ? "..." : "إرجاعه مستخدم"}
+                              </Button>
+                            ) : (
+                              <Button size="sm" className="h-8 text-xs gap-1" disabled={roleBusy === p.id} onClick={() => changeRole(p.id, "developer")}>
+                                <ShieldCheck className="w-3 h-3" />{roleBusy === p.id ? "..." : "ترقية إلى قصي"}
+                              </Button>
+                            )}
+                            {p.id !== user?.id && (
+                              <Button size="sm" variant="destructive" className="h-8 text-xs gap-1" disabled={deletingUser === p.id} onClick={async () => { await handleDeleteUser(p.id); setExpandedUser(null); }}>
+                                <Trash2 className="w-3 h-3" />{deletingUser === p.id ? "..." : "حذف المستخدم"}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </>
                     )}
-                  </div>
-                </div>
+                  </DialogContent>
+                </Dialog>
               );
             })()}
+
             {displayedProfiles.length === 0 && <p className="text-center text-muted-foreground py-8">لا يوجد مستخدمين مطابقين</p>}
           </div>
         </CardContent>

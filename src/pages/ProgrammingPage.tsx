@@ -229,7 +229,7 @@ const ProgrammingPage = () => {
                           {list.length === 0 ? (
                             <div className="text-center py-10">
                               <BookOpen className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
-                              <p className="text-sm text-muted-foreground">لا يوجد محتوى — اطلب من المطور إضافته.</p>
+                              <p className="text-sm text-muted-foreground">لا يوجد محتوى — اطلب من قصي إضافته.</p>
                             </div>
                           ) : DIFF_ORDER.map(level => {
                             const bucket = grouped[level];

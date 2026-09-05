@@ -29,7 +29,7 @@ const routeLabels: Record<string, string> = {
   "/تسجيل-الدخول": "تسجيل الدخول",
   "/لوحة-التحكم": "لوحة التحكم",
   "/الملف-الشخصي": "الملف الشخصي",
-  "/المطور": "المطور",
+  "/المطور": "قصي",
 };
 
 export const Breadcrumbs = ({ items, className = "" }: BreadcrumbsProps) => {

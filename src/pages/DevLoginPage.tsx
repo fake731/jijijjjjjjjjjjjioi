@@ -43,7 +43,7 @@ const DevLoginPage = () => {
 
     // Check email before even trying to sign in
     if (!ALLOWED_DEV_EMAILS.includes(email.trim().toLowerCase())) {
-      toast.error("هذا البريد غير مصرح له بالدخول كمطور");
+      toast.error("هذا البريد غير مصرح له بالدخول");
       setLoading(false);
       return;
     }
@@ -61,11 +61,11 @@ const DevLoginPage = () => {
           .maybeSingle();
 
         if (roleData) {
-          toast.success("مرحباً بك أيها المطور!");
+          toast.success("مرحباً بك يا قصي!");
           navigate("/المطور");
         } else {
           await supabase.auth.signOut();
-          toast.error("هذا الحساب غير مصرح له بالدخول كمطور");
+          toast.error("هذا الحساب غير مصرح له بالدخول");
         }
       }
     } catch (error: any) {
@@ -84,8 +84,8 @@ const DevLoginPage = () => {
             <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/20 border border-primary/40 flex items-center justify-center mb-2">
               <Shield className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="text-2xl text-foreground">دخول المطورين</CardTitle>
-            <CardDescription className="text-muted-foreground">هذه الصفحة مخصصة للمطورين المصرح لهم فقط</CardDescription>
+            <CardTitle className="text-2xl text-foreground">دخول قصي</CardTitle>
+            <CardDescription className="text-muted-foreground">هذه الصفحة مخصصة لقصي فقط</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -137,7 +137,7 @@ const DevLoginPage = () => {
                 ) : (
                   <>
                     <Shield className="h-4 w-4" />
-                    دخول كمطور
+                    دخول
                   </>
                 )}
               </Button>

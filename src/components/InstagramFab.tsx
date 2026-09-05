@@ -9,7 +9,7 @@ const InstagramFab = () => {
       href={`https://wa.me/${phone}?text=${text}`}
       target="_blank"
       rel="noopener noreferrer"
-      title="واتساب — تواصل مع المطور"
+      title="واتساب — تواصل مع قصي"
       className="fixed bottom-5 left-5 z-[55] w-12 h-12 rounded-2xl flex items-center justify-center
                  bg-card/30 backdrop-blur-2xl border border-emerald-400/40
                  shadow-[0_8px_30px_-6px_hsl(145_80%_50%/0.5)]

@@ -457,7 +457,7 @@ const AI2Page = () => {
     } else {
       setPasswordError(
         language === "ar"
-          ? "كلمة السر غير صحيحة. تواصل مع المطور على انستغرام للحصول عليها."
+          ? "كلمة السر غير صحيحة. تواصل مع قصي على انستغرام للحصول عليها."
           : "Incorrect password. Contact the developer on Instagram to get it."
       );
     }
@@ -482,7 +482,7 @@ const AI2Page = () => {
       ? "هذا السؤال يتطلب صلاحيات متقدمة. أدخل كلمة السر للمتابعة." 
       : "This question requires advanced permissions. Enter the password to continue.",
     passwordHint: language === "ar" 
-      ? "للحصول على كلمة السر، تواصل مع المطور على انستغرام" 
+      ? "للحصول على كلمة السر، تواصل مع قصي على انستغرام" 
       : "To get the password, contact the developer on Instagram",
     enterPassword: language === "ar" ? "أدخل كلمة السر..." : "Enter password...",
     cancel: language === "ar" ? "إلغاء" : "Cancel",
