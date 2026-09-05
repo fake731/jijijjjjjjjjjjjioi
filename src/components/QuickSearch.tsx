@@ -122,7 +122,7 @@ const searchData: SearchItem[] = [
 
   // AI
   { title: "Qusay AI", description: "مساعد AI للأمن والبرمجة", type: "ai", link: "/الذكاء" },
-  { title: "AI Pro", description: "وصول متقدم للمطورين", type: "ai", link: "/ai2" },
+  { title: "AI Pro", description: "وصول متقدم", type: "ai", link: "/ai2" },
 ];
 
 const QuickSearch = () => {

@@ -62,7 +62,7 @@ const Index = () => {
                   <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center">
                     <Bell className="w-4 h-4 text-primary" />
                   </div>
-                  <h2 className="text-lg font-bold text-foreground">إشعارات من المطور</h2>
+                  <h2 className="text-lg font-bold text-foreground">إشعارات من قصي</h2>
                   {unreadCount > 0 && (
                     <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-bold">
                       {unreadCount} جديد

@@ -215,7 +215,7 @@ const ProfilePage = () => {
 
             {/* City */}
             <div className="space-y-2">
-              <Label className="text-foreground">المدينة <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+              <Label className="text-foreground">المدينة</Label>
               <div className="relative">
                 <MapPin className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -230,7 +230,7 @@ const ProfilePage = () => {
 
             {/* Phone */}
             <div className="space-y-2">
-              <Label className="text-foreground">رقم الهاتف <span className="text-muted-foreground text-xs">(اختياري)</span></Label>
+              <Label className="text-foreground">رقم الهاتف</Label>
               <div className="relative">
                 <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input

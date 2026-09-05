@@ -105,7 +105,7 @@ const BannedUsersTab = () => {
               <input
                 value={banReason}
                 onChange={e => setBanReason(e.target.value)}
-                placeholder="سبب الحظر (اختياري)..."
+                placeholder="سبب الحظر..."
                 className="w-full h-9 px-3 rounded-lg border border-border bg-background text-foreground text-sm mb-2"
               />
               <button

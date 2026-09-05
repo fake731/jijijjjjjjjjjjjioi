@@ -384,7 +384,7 @@ const Navbar = () => {
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm bg-card/40 border border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-colors"
                     >
                       <Shield className="w-4 h-4 text-primary" />
-                      <span className="text-foreground">المطور</span>
+                      <span className="text-foreground">قصي</span>
                     </Link>
                   )}
                   <Link

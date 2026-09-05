@@ -133,7 +133,7 @@ const SiteContentTab = () => {
             />
           </div>
           <div className="space-y-1">
-            <Label className="text-xs">وصف (اختياري)</Label>
+            <Label className="text-xs">وصف</Label>
             <Input
               value={newItem.description}
               onChange={e => setNewItem(n => ({ ...n, description: e.target.value }))}
