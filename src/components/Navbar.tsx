@@ -189,7 +189,7 @@ const Navbar = () => {
               <div className="flex items-center gap-2">
                 {isDeveloper && (
                   <Link
-                    to="/المطور"
+                    to="/2"
                     className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                   >
                     <Shield className="w-4 h-4" />
@@ -197,7 +197,7 @@ const Navbar = () => {
                   </Link>
                 )}
                 <Link
-                  to="/لوحة-التحكم"
+                  to="/1"
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                 >
                   <LayoutDashboard className="w-4 h-4" />
@@ -379,7 +379,7 @@ const Navbar = () => {
                 <>
                   {isDeveloper && (
                     <Link
-                      to="/المطور"
+                      to="/2"
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm bg-card/40 border border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-colors"
                     >
@@ -388,7 +388,7 @@ const Navbar = () => {
                     </Link>
                   )}
                   <Link
-                    to="/لوحة-التحكم"
+                    to="/1"
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm bg-card/40 border border-primary/10 hover:border-primary/40 hover:bg-primary/5 transition-colors"
                   >

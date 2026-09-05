@@ -105,7 +105,7 @@ const InlineContentEditor = () => {
 
   // Hide on developer-internal pages
   if (!isDeveloper) return null;
-  if (location.pathname.startsWith("/المطور") || location.pathname.startsWith("/دخول-المطور")) return null;
+  if (location.pathname.startsWith("/2") || location.pathname.startsWith("/3")) return null;
 
   const items = Object.entries(content).map(([key, v]) => ({ key, ...v }));
 

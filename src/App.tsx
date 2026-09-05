@@ -97,9 +97,9 @@ const AnimatedRoutes = () => {
             <Route path="/أدوات-سريعة" element={<UtilitiesPage />} />
             <Route path="/الاستفسارات" element={<InquiryPage />} />
             <Route path="/سياسة-الخصوصية" element={<PrivacyPolicyPage />} />
-            <Route path="/دخول-المطور" element={<DevLoginPage />} />
-            <Route path="/المطور" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
-            <Route path="/لوحة-التحكم" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
+            <Route path="/3" element={<DevLoginPage />} />
+            <Route path="/2" element={<ProtectedRoute><DeveloperPage /></ProtectedRoute>} />
+            <Route path="/1" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
             <Route path="/الاختبار" element={<QuizPage />} />
             <Route path="/البرمجة" element={<ProgrammingPage />} />
             <Route path="*" element={<NotFound />} />
