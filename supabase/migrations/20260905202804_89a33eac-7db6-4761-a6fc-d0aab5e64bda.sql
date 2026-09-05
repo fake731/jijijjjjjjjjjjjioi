@@ -1,0 +1,3 @@
+CREATE POLICY "Developers can update any profile" ON public.profiles FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'developer')) WITH CHECK (public.has_role(auth.uid(), 'developer'));
+CREATE POLICY "Developers can delete profiles" ON public.profiles FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'developer'));
+GRANT UPDATE, DELETE ON public.profiles TO authenticated;
