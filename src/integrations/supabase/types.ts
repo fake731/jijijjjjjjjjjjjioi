@@ -317,6 +317,99 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_requests: {
+        Row: {
+          amount_usd: number
+          created_at: string
+          id: string
+          kind: string
+          note: string | null
+          plan_key: string | null
+          proof_path: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          sender_name: string | null
+          status: string
+          transfer_reference: string | null
+          updated_at: string
+          user_email: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_usd: number
+          created_at?: string
+          id?: string
+          kind?: string
+          note?: string | null
+          plan_key?: string | null
+          proof_path?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sender_name?: string | null
+          status?: string
+          transfer_reference?: string | null
+          updated_at?: string
+          user_email?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_usd?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          note?: string | null
+          plan_key?: string | null
+          proof_path?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          sender_name?: string | null
+          status?: string
+          transfer_reference?: string | null
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payment_settings: {
+        Row: {
+          account_holder: string
+          account_number: string
+          bank_name: string
+          created_at: string
+          donations_enabled: boolean
+          iban: string
+          id: string
+          instructions: string
+          updated_at: string
+        }
+        Insert: {
+          account_holder?: string
+          account_number?: string
+          bank_name?: string
+          created_at?: string
+          donations_enabled?: boolean
+          iban?: string
+          id?: string
+          instructions?: string
+          updated_at?: string
+        }
+        Update: {
+          account_holder?: string
+          account_number?: string
+          bank_name?: string
+          created_at?: string
+          donations_enabled?: boolean
+          iban?: string
+          id?: string
+          instructions?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
@@ -527,6 +620,57 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_plans: {
+        Row: {
+          active: boolean
+          created_at: string
+          daily_chats: number
+          daily_images: number
+          duration_days: number
+          features: Json
+          id: string
+          name_ar: string
+          name_en: string
+          order_index: number
+          plan_key: string
+          price_usd: number
+          unlimited: boolean
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          daily_chats?: number
+          daily_images?: number
+          duration_days?: number
+          features?: Json
+          id?: string
+          name_ar: string
+          name_en: string
+          order_index?: number
+          plan_key: string
+          price_usd: number
+          unlimited?: boolean
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          daily_chats?: number
+          daily_images?: number
+          duration_days?: number
+          features?: Json
+          id?: string
+          name_ar?: string
+          name_en?: string
+          order_index?: number
+          plan_key?: string
+          price_usd?: number
+          unlimited?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_ai_limits: {
         Row: {
           created_at: string
@@ -602,12 +746,103 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          granted_by: string | null
+          id: string
+          plan_key: string
+          source_request_id: string | null
+          started_at: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          granted_by?: string | null
+          id?: string
+          plan_key: string
+          source_request_id?: string | null
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          granted_by?: string | null
+          id?: string
+          plan_key?: string
+          source_request_id?: string | null
+          started_at?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount_usd: number
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          destination: string | null
+          id: string
+          method: string
+          note: string | null
+          reference: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_usd: number
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          destination?: string | null
+          id?: string
+          method?: string
+          note?: string | null
+          reference?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_usd?: number
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          destination?: string | null
+          id?: string
+          method?: string
+          note?: string | null
+          reference?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       cleanup_expired_otps: { Args: never; Returns: undefined }
+      get_active_subscription: {
+        Args: { _user_id: string }
+        Returns: {
+          daily_chats: number
+          daily_images: number
+          expires_at: string
+          plan_key: string
+          unlimited: boolean
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
