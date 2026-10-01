@@ -99,6 +99,7 @@ const Navbar = () => {
     { label: t("nav.password"), path: "/فحص-كلمة-المرور", icon: KeyRound },
     { label: t("nav.utilities"), path: "/أدوات-سريعة", icon: Wrench },
     { label: t("nav.quiz"), path: "/الاختبار", icon: GraduationCap },
+    { label: "الاشتراك", path: "/الاشتراك", icon: GraduationCap },
     { label: t("nav.inquiry"), path: "/الاستفسارات", icon: MessageSquare },
     { label: t("nav.download"), path: "/التحميل", icon: Download },
     { label: t("nav.privacy"), path: "/سياسة-الخصوصية", icon: FileLock2 },

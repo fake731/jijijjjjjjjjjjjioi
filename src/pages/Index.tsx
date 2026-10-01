@@ -6,6 +6,7 @@ import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
 import QuickSearch from "@/components/QuickSearch";
 import LatestVideos from "@/components/LatestVideos";
+import SupportSection from "@/components/payments/SupportSection";
 
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,6 +52,7 @@ const Index = () => {
         <HeroSection />
 
         <LatestVideos />
+        <SupportSection />
 
         {/* Notifications Section */}
 

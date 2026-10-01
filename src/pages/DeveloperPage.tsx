@@ -46,6 +46,7 @@ import AISettingsTab from "@/components/developer/tabs/AISettingsTab";
 import UserSegmentsTab from "@/components/developer/tabs/UserSegmentsTab";
 import SiteContentTab from "@/components/developer/tabs/SiteContentTab";
 import AILimitsTab from "@/components/developer/tabs/AILimitsTab";
+import PaymentsTab from "@/components/developer/tabs/PaymentsTab";
 
 const sectionTitles: Record<DevSection, string> = {
   overview: "لوحة القيادة",
@@ -84,6 +85,7 @@ const sectionTitles: Record<DevSection, string> = {
   "inquiries": "الاستفسارات",
   "site-content": "محرر محتوى الموقع",
   "ai-limits": "حدود AI للمستخدمين",
+  payments: "المدفوعات والسحب",
 };
 
 const DeveloperContent = () => {
@@ -131,6 +133,7 @@ const DeveloperContent = () => {
       case "user-segments": return <UserSegmentsTab />;
       case "site-content": return <SiteContentTab />;
       case "ai-limits": return <AILimitsTab />;
+      case "payments": return <PaymentsTab />;
       default: return <OverviewTab />;
     }
   };
