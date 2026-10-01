@@ -53,7 +53,10 @@ export function useAnimationsPaused() {
 
   useEffect(() => {
     setPaused(current);
-    return subscribeAnimationsPaused(setPaused);
+    const unsub = subscribeAnimationsPaused(setPaused);
+    return () => {
+      unsub();
+    };
   }, []);
 
   return paused;
