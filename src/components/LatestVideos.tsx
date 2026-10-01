@@ -7,6 +7,8 @@ import { Play, Youtube, X, ExternalLink, Gauge, MonitorPlay } from "lucide-react
  */
 export const VIDEO_IDS: { id: string; title: string }[] = [
   { id: "lDf6aBcP4A8", title: "تنزيل كالي لينكس في 5 دقائق ! 🌐💻 Download Kali Linux in 5 minutes !" },
+  { id: "0Uxi5zr6Xug", title: "كيف تبدأ بالأمن السيبراني مجانا | موقع qusaykali" },
+  { id: "ZHdapBH5P0I", title: "أداة CamPhish — التوعية بخطر الروابط المزيفة عبر الكاميرا" },
 ];
 
 const CHANNEL_URL = "https://www.youtube.com/@Qusay_kali";
