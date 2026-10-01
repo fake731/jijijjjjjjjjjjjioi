@@ -61,8 +61,12 @@ serve(async (req) => {
           .select("daily_limit, unlimited")
           .eq("user_id", userId)
           .maybeSingle();
-        const unlimited = !!limitRow?.unlimited;
-        const dailyLimit = typeof limitRow?.daily_limit === "number" ? limitRow.daily_limit : 3;
+        const { data: subRows } = await supabaseAdmin.rpc("get_active_subscription", { _user_id: userId });
+        const sub = Array.isArray(subRows) ? subRows[0] : null;
+        const unlimited = !!limitRow?.unlimited || !!sub?.unlimited;
+        const dailyLimit = sub
+          ? Math.max(sub.daily_chats ?? 0, typeof limitRow?.daily_limit === "number" ? limitRow.daily_limit : 0)
+          : (typeof limitRow?.daily_limit === "number" ? limitRow.daily_limit : 3);
 
         if (!unlimited) {
           const todayStart = new Date();
