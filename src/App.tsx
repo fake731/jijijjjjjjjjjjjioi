@@ -50,6 +50,7 @@ const DevLoginPage = lazy(() => import("./pages/DevLoginPage"));
 const UserDashboardPage = lazy(() => import("./pages/UserDashboardPage"));
 const QuizPage = lazy(() => import("./pages/QuizPage"));
 const ProgrammingPage = lazy(() => import("./pages/ProgrammingPage"));
+const SubscribePage = lazy(() => import("./pages/SubscribePage"));
 
 const queryClient = new QueryClient();
 
@@ -102,6 +103,7 @@ const AnimatedRoutes = () => {
             <Route path="/1" element={<ProtectedRoute><UserDashboardPage /></ProtectedRoute>} />
             <Route path="/الاختبار" element={<QuizPage />} />
             <Route path="/البرمجة" element={<ProgrammingPage />} />
+            <Route path="/الاشتراك" element={<SubscribePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
