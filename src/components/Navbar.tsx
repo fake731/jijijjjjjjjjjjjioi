@@ -8,6 +8,7 @@ import {
   Globe, KeyRound, GraduationCap, MessageSquare, Download, FileLock2,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
+import MotionToggle from "./MotionToggle";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -136,6 +137,7 @@ const Navbar = () => {
 
           {/* Theme Toggle & Auth */}
           <div className="hidden xl:flex items-center gap-3">
+            <MotionToggle />
             <ThemeToggle />
             <div className="relative">
                 <button
@@ -295,6 +297,7 @@ const Navbar = () => {
                 <LogIn className="w-4 h-4 text-primary" />
               </Link>
             )}
+            <MotionToggle />
             <ThemeToggle />
             <button
               onClick={() => setIsOpen(!isOpen)}

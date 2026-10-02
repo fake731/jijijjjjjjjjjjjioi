@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { Brain, Send, User, Bot, Lock, Globe, Instagram, Image, X, FileText, Paperclip, Camera, Upload, Copy, LogIn, History, Plus, Trash2, Search, Code, Shield, Monitor } from "lucide-react";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import AIUsageBadge from "@/components/AIUsageBadge";
 import { Link } from "react-router-dom";
 
 interface Message {
@@ -40,6 +41,7 @@ const AIPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [usageKey, setUsageKey] = useState(0);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -455,6 +457,7 @@ const AIPage = () => {
       ]);
     } finally {
       setIsLoading(false);
+      setUsageKey((k) => k + 1);
     }
   };
 
@@ -526,6 +529,7 @@ const AIPage = () => {
             </h1>
             <p className="text-muted-foreground">{t.subtitle}</p>
             <p className="text-xs text-primary/70 mt-1">{t.developer}</p>
+            <AIUsageBadge language={language} refreshKey={usageKey} />
             <div className="flex items-center justify-center gap-3 mt-4">
               {user && (
                 <>

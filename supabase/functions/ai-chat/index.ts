@@ -68,6 +68,20 @@ serve(async (req) => {
           ? Math.max(sub.daily_chats ?? 0, typeof limitRow?.daily_limit === "number" ? limitRow.daily_limit : 0)
           : (typeof limitRow?.daily_limit === "number" ? limitRow.daily_limit : 3);
 
+        const lastMsg = messages.filter((m: any) => m.role === "user").pop();
+        const newImages = Array.isArray(lastMsg?.content) ? lastMsg.content.filter((c: any) => c.type === "image_url").length : 0;
+        if (!unlimited && newImages > 0) {
+          const imageLimit = sub ? (sub.daily_images ?? 0) : 3;
+          const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
+          const { data: imgLogs } = await supabaseAdmin.from("ai_chat_logs").select("image_urls")
+            .eq("user_id", userId).gte("created_at", dayStart.toISOString()).not("image_urls", "is", null);
+          const used = (imgLogs || []).reduce((n: number, l: any) => n + (l.image_urls?.length || 0), 0);
+          if (used + newImages > imageLimit) {
+            const msg = language === "ar" ? `لقد استنفدت حد الصور اليومي (${imageLimit}).` : `Daily image limit reached (${imageLimit}).`;
+            return new Response(JSON.stringify({ error: msg }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+          }
+        }
+
         if (!unlimited) {
           const todayStart = new Date();
           todayStart.setHours(0, 0, 0, 0);
