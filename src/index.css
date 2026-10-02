@@ -1300,3 +1300,11 @@ img { max-width: 100%; height: auto; }
 }
 
 
+
+/* Global pause-animations switch */
+html.animations-paused *,
+html.animations-paused *::before,
+html.animations-paused *::after {
+  animation-play-state: paused !important;
+  transition-duration: 0.01ms !important;
+}

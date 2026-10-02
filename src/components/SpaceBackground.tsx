@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { getAnimationsPaused, subscribeAnimationsPaused } from "@/hooks/useAnimationsPaused";
 
 const SpaceBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -463,10 +464,14 @@ const SpaceBackground = () => {
       ctx.fillText("Qusay", 0, 0);
       ctx.restore();
 
-      animationId = requestAnimationFrame(draw);
+      if (!getAnimationsPaused()) animationId = requestAnimationFrame(draw);
     };
 
     animationId = requestAnimationFrame(draw);
+    const unsubPause = subscribeAnimationsPaused((paused) => {
+      cancelAnimationFrame(animationId);
+      if (!paused) animationId = requestAnimationFrame(draw);
+    });
 
     const handleResize = () => {
       width = window.innerWidth;
@@ -486,6 +491,7 @@ const SpaceBackground = () => {
 
     return () => {
       cancelAnimationFrame(animationId);
+      unsubPause();
       window.removeEventListener("resize", handleResize);
     };
   }, []);

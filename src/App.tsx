@@ -16,6 +16,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import ScrollToTopFab from "@/components/ScrollToTopFab";
 import ShootingStars from "@/components/ShootingStars";
 import AuroraOverlay from "@/components/AuroraOverlay";
+import { useAnimationsPaused } from "@/hooks/useAnimationsPaused";
 import LoginExportCard from "@/components/LoginExportCard";
 import InlineContentEditor from "@/components/InlineContentEditor";
 import InstagramFab from "@/components/InstagramFab";
@@ -115,7 +116,8 @@ const AnimatedRoutes = () => {
 
 const AppShell = () => {
   // Auto-disable heavy background effects on low-end devices / reduced motion.
-  const lowPower = useLowPowerDevice();
+  const paused = useAnimationsPaused();
+  const lowPower = useLowPowerDevice() || paused;
   return (
     <TooltipProvider>
       <SpaceBackground />
