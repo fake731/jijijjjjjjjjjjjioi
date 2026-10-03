@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Check, X, FileImage, Wallet, Loader2 } from "lucide-react";
+import EarningsReport from "@/components/developer/EarningsReport";
 
 const PaymentsTab = () => {
   const { user } = useAuth();
@@ -105,6 +106,8 @@ const PaymentsTab = () => {
           </CardContent></Card>
         ))}
       </div>
+
+      <EarningsReport reqs={reqs} wds={wds} />
 
       <div className="flex gap-2 flex-wrap">
         {[["pending", "معلّقة"], ["approved", "مقبولة"], ["rejected", "مرفوضة"], ["all", "الكل"]].map(([k, l]) => (
