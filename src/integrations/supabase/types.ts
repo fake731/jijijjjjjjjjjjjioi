@@ -98,6 +98,57 @@ export type Database = {
         }
         Relationships: []
       }
+      cheat_sheets: {
+        Row: {
+          accent: string
+          active: boolean
+          category: string
+          commands: Json
+          created_at: string
+          created_by: string | null
+          description: string
+          icon: string
+          id: string
+          language: string
+          order_index: number
+          title: string
+          tool_name: string
+          updated_at: string
+        }
+        Insert: {
+          accent?: string
+          active?: boolean
+          category?: string
+          commands?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          icon?: string
+          id?: string
+          language?: string
+          order_index?: number
+          title: string
+          tool_name: string
+          updated_at?: string
+        }
+        Update: {
+          accent?: string
+          active?: boolean
+          category?: string
+          commands?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          icon?: string
+          id?: string
+          language?: string
+          order_index?: number
+          title?: string
+          tool_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       feature_flags: {
         Row: {
           created_at: string
@@ -128,6 +179,48 @@ export type Database = {
           name?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      glossary_terms: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          definition: string
+          example: string
+          id: string
+          related: string
+          short_definition: string
+          term: string
+          term_ar: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          definition?: string
+          example?: string
+          id?: string
+          related?: string
+          short_definition?: string
+          term: string
+          term_ar?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          definition?: string
+          example?: string
+          id?: string
+          related?: string
+          short_definition?: string
+          term?: string
+          term_ar?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -202,6 +295,104 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      learning_paths: {
+        Row: {
+          accent: string
+          active: boolean
+          category: string
+          created_at: string
+          description_ar: string
+          description_en: string
+          icon: string
+          id: string
+          order_index: number
+          slug: string
+          title_ar: string
+          title_en: string
+          updated_at: string
+        }
+        Insert: {
+          accent?: string
+          active?: boolean
+          category?: string
+          created_at?: string
+          description_ar?: string
+          description_en?: string
+          icon?: string
+          id?: string
+          order_index?: number
+          slug: string
+          title_ar: string
+          title_en?: string
+          updated_at?: string
+        }
+        Update: {
+          accent?: string
+          active?: boolean
+          category?: string
+          created_at?: string
+          description_ar?: string
+          description_en?: string
+          icon?: string
+          id?: string
+          order_index?: number
+          slug?: string
+          title_ar?: string
+          title_en?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      learning_steps: {
+        Row: {
+          created_at: string
+          description: string
+          difficulty: string
+          external_url: string
+          id: string
+          order_index: number
+          path_id: string
+          step_type: string
+          target_route: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          difficulty?: string
+          external_url?: string
+          id?: string
+          order_index?: number
+          path_id: string
+          step_type?: string
+          target_route?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          difficulty?: string
+          external_url?: string
+          id?: string
+          order_index?: number
+          path_id?: string
+          step_type?: string
+          target_route?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_steps_path_id_fkey"
+            columns: ["path_id"]
+            isOneToOne: false
+            referencedRelation: "learning_paths"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       login_exports: {
         Row: {
@@ -727,6 +918,45 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_path_progress: {
+        Row: {
+          completed_at: string
+          id: string
+          path_id: string
+          step_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          path_id: string
+          step_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          path_id?: string
+          step_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_path_progress_path_id_fkey"
+            columns: ["path_id"]
+            isOneToOne: false
+            referencedRelation: "learning_paths"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_path_progress_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "learning_steps"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
