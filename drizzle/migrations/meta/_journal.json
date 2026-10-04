@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791111039949,
+      "tag": "0000_create_learning_paths_glossary_cheatsheets",
+      "breakpoints": true
+    }
+  ]
+}
