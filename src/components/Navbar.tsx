@@ -6,6 +6,7 @@ import {
   Menu, X, LogIn, LogOut, UserCircle, Shield, Bell, LayoutDashboard,
   Home, BookOpen, Wrench, Code2, ScrollText, Sparkles, Terminal,
   Globe, KeyRound, GraduationCap, MessageSquare, Download, FileLock2,
+  Route, BookA,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import MotionToggle from "./MotionToggle";
@@ -99,6 +100,9 @@ const Navbar = () => {
     { label: t("nav.webdev"), path: "/تطوير-الويب", icon: Globe },
     { label: t("nav.password"), path: "/فحص-كلمة-المرور", icon: KeyRound },
     { label: t("nav.utilities"), path: "/أدوات-سريعة", icon: Wrench },
+    { label: t("nav.paths"), path: "/المسارات", icon: Route },
+    { label: t("nav.glossary"), path: "/القاموس", icon: BookA },
+    { label: t("nav.cheats"), path: "/اوراق-سريعة", icon: ScrollText },
     { label: t("nav.quiz"), path: "/الاختبار", icon: GraduationCap },
     { label: "الاشتراك", path: "/الاشتراك", icon: GraduationCap },
     { label: t("nav.inquiry"), path: "/الاستفسارات", icon: MessageSquare },
