@@ -6,7 +6,7 @@ import {
   Menu, X, LogIn, LogOut, UserCircle, Shield, Bell, LayoutDashboard,
   Home, BookOpen, Wrench, Code2, ScrollText, Sparkles, Terminal,
   Globe, KeyRound, GraduationCap, MessageSquare, Download, FileLock2,
-  Route, BookA, ScrollText,
+  Route, BookA,
 } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import MotionToggle from "./MotionToggle";
