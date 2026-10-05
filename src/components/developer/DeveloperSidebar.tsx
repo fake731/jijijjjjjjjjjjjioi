@@ -15,7 +15,7 @@ export type DevSection =
   | "permission-manager" | "system-health" | "audit-trail" 
   | "content-moderation" | "backup-restore" | "feature-flags" 
   | "user-segments" | "performance" | "inquiries" | "ai-settings"
-  | "site-content" | "ai-limits" | "payments";
+  | "site-content" | "ai-limits" | "payments" | "learning-content";
 
 interface NavItem {
   id: DevSection;
@@ -85,6 +85,7 @@ const navGroups: { title: string; items: NavItem[] }[] = [
       { id: "payments", label: "المدفوعات والسحب", icon: Wallet, group: "system" },
       { id: "ai-limits", label: "حدود AI للمستخدمين", icon: Gauge, group: "system" },
       { id: "site-content", label: "محرر محتوى الموقع", icon: FileEdit, group: "system" },
+      { id: "learning-content", label: "المحتوى التعليمي", icon: FileText, group: "system" },
       { id: "export", label: "تصدير البيانات", icon: Download, group: "system" },
     ],
   },
